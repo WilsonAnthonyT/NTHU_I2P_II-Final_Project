@@ -22,7 +22,6 @@ add_executable(Final-Project
 #    Bullet/BeamBullet.cpp
 #    Bullet/BeamBullet.hpp
 
-        #hello
 #    Enemy/Enemy.cpp
 #    Enemy/Enemy.hpp
 #    Enemy/SoldierEnemy.cpp

@@ -8,9 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "Enemy/Enemy.hpp"
-#include "Enemy/SoldierEnemy.hpp"
-#include "Enemy/TankEnemy.hpp"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
@@ -21,12 +18,6 @@
 
 #include <allegro5/allegro_primitives.h>
 
-#include "Enemy/PlaneEnemy.hpp"
-#include "Turret/LaserTurret.hpp"
-#include "Turret/MachineGunTurret.hpp"
-#include "Turret/BeamTurret.hpp"
-#include "Turret/TurretButton.hpp"
-#include "Turret/Shovel.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/Plane.hpp"
 #include "UI/Component/Label.hpp"
