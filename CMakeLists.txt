@@ -12,7 +12,7 @@ file(COPY Resource/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY Resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY allegro_monolith-5.2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable(2025_I2P2_TowerDefense
+add_executable(Final-Project
     Bullet/Bullet.cpp
     Bullet/Bullet.hpp
     Bullet/FireBullet.cpp
@@ -95,16 +95,16 @@ add_executable(2025_I2P2_TowerDefense
 )
 
 IF (WIN32)
-    target_include_directories(2025_I2P2_TowerDefense PUBLIC C:/allegro/include)
-    target_link_directories(2025_I2P2_TowerDefense PUBLIC C:/allegro/lib)
-    target_compile_options(2025_I2P2_TowerDefense PUBLIC ${ALLEGRO5_CFLAGS_OTHER})
-    target_link_libraries(2025_I2P2_TowerDefense liballegro_monolith)
+    target_include_directories(Final-Project  PUBLIC C:/allegro/include)
+    target_link_directories(Final-Project  PUBLIC C:/allegro/lib)
+    target_compile_options(Final-Project  PUBLIC ${ALLEGRO5_CFLAGS_OTHER})
+    target_link_libraries(Final-Project liballegro_monolith)
 ELSE()
     find_package(PkgConfig)
     pkg_check_modules(ALLEGRO5 REQUIRED allegro-5 allegro_main-5 allegro_font-5 allegro_dialog-5 allegro_primitives-5 allegro_image-5 allegro_ttf-5 allegro_audio-5 allegro_acodec-5)
-    target_include_directories(2025_I2P2_TowerDefense PUBLIC lib)
-    target_include_directories(2025_I2P2_TowerDefense PUBLIC ${ALLEGRO5_INCLUDE_DIRS})
-    target_compile_options(2025_I2P2_TowerDefense PUBLIC ${ALLEGRO5_CFLAGS_OTHER})
-    target_link_libraries(2025_I2P2_TowerDefense ${ALLEGRO5_LIBRARIES})
-    target_link_directories(2025_I2P2_TowerDefense PUBLIC ${ALLEGRO5_LIBRARY_DIRS})
+    target_include_directories(Final-Project PUBLIC lib)
+    target_include_directories(Final-Project  PUBLIC ${ALLEGRO5_INCLUDE_DIRS})
+    target_compile_options(Final-Project  PUBLIC ${ALLEGRO5_CFLAGS_OTHER})
+    target_link_libraries(Final-Project  ${ALLEGRO5_LIBRARIES})
+    target_link_directories(Final-Project  PUBLIC ${ALLEGRO5_LIBRARY_DIRS})
 ENDIF()
