@@ -54,7 +54,6 @@ void LeaderboardScene::Update(float deltaTime) {
     else if (tick == 1) {
         tick = 0;
         setScore();
-
         // Get current time
         std::time_t now = std::time(nullptr);
 
