@@ -20,9 +20,9 @@ namespace Engine {
 class PlayScene final : public Engine::IScene {
 private:
     enum TileType {
+        TILE_AIR,
         TILE_DIRT,
-        TILE_FLOOR,
-        TILE_OCCUPIED,
+        TILE_WPLATFORM,
     };
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
@@ -73,15 +73,12 @@ public:
     void OnMouseMove(int mx, int my) override;
     void OnMouseUp(int button, int mx, int my) override;
     void OnKeyDown(int keyCode) override;
-    void Hit();
     int GetMoney() const;
     void EarnMoney(int money);
     void ReadMap();
     void ReadEnemyWave();
     void ConstructUI();
     void UIBtnClicked(int id);
-    bool CheckSpaceValid(int x, int y);
-    std::vector<std::vector<int>> CalculateBFSDistance();
     void HomeOnClick(int id);
     void RestartOnClick(int id);
     // void ModifyReadMapTiles();

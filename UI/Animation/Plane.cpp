@@ -2,7 +2,6 @@
 #include <cmath>
 #include <string>
 
-#include "Enemy/Enemy.hpp"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/Collider.hpp"
 #include "Engine/GameEngine.hpp"
@@ -29,61 +28,7 @@ Plane::Plane() : Sprite("play/plane.png", -100, Engine::GameEngine::GetInstance(
     Size.y = GetBitmapHeight() * sizeMultiplier;
 }
 void Plane::Update(float deltaTime) {
-    int phase;
-    float scaleExp;
-    switch (stage) {
-        case 0:
-            // Check if out of boundary.
-            if (!Engine::Collider::IsRectOverlap(Position - Size / 2, Position + Size / 2, Engine::Point(-100, 0), PlayScene::GetClientSize())) {
-                Position = PlayScene::GetClientSize() / 2;
-                Velocity = Engine::Point();
-                bmp = bmps[0];
-                Size.x = GetBitmapWidth() * minScale;
-                Size.y = GetBitmapHeight() * minScale;
-                scale = 1.0f * minScale;
-                stage++;
-            }
-            break;
-        case 1:
-            timeTicks += deltaTime;
-            if (timeTicks >= timeSpanLight) {
-                bmp = shockwave;
-                stage++;
-                AudioHelper::PlayAudio("shockwave.ogg");
-                break;
-            }
-            scaleExp = ((timeSpanLight + timeSpanShockwave - timeTicks) * log2(minScale) + timeTicks * log2(maxScale)) / (timeSpanLight + timeSpanShockwave);
-            scale = pow(2, scaleExp);
-            Size.x = GetBitmapWidth() * scale;
-            Size.y = GetBitmapHeight() * scale;
-            CollisionRadius = shockWaveRadius * scale;
-            phase = floor(timeTicks / timeSpanLight * bmps.size());
-            bmp = bmps[phase];
-            break;
-        case 2:
-            timeTicks += deltaTime;
-            if (timeTicks >= timeSpanLight + timeSpanShockwave) {
-                timeTicks = 0;
-                stage++;
-                break;
-            }
-            scaleExp = ((timeSpanLight + timeSpanShockwave - timeTicks) * log2(minScale) + timeTicks * log2(maxScale)) / (timeSpanLight + timeSpanShockwave);
-            scale = pow(2, scaleExp);
-            Size.x = GetBitmapWidth() * scale;
-            Size.y = GetBitmapHeight() * scale;
-            CollisionRadius = shockWaveRadius * scale;
-            // Check if overlap with enemy.
-            for (auto &it : getPlayScene()->EnemyGroup->GetObjects()) {
-                Enemy *enemy = dynamic_cast<Enemy *>(it);
-                if (Engine::Collider::IsCircleOverlap(Position, CollisionRadius, enemy->Position, enemy->CollisionRadius))
-                    enemy->Hit(INFINITY);
-            }
-            break;
-        case 3:
-            getPlayScene()->EffectGroup->RemoveObject(objectIterator);
-            return;
-    }
-    Sprite::Update(deltaTime);
+
 }
 void Plane::Draw() const {
     // FIXME: known issue
