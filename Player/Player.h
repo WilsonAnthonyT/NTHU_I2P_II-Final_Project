@@ -17,12 +17,22 @@ protected:
     float hp;
     float TintTimer;
     PlayScene *Play;
+    float verticalVelocity;
+    bool isJumping;
+    float jumpForce;
+    bool flipped;
+    bool isFalling;
+    bool goDown;
+    float goDownTimer = 0.0f;
 
 public:
     Player(std::string img, float x, float y, float radius, float speed, float hp);
     void Update(float deltaTime) override;
     void Draw() const override;
-    void OnKeyDown(int keyCode);
+
+    bool IsCollision(float x, float y);
+
+
 };
 
 

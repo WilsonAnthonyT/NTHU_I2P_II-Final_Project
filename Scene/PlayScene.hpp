@@ -19,11 +19,6 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
-    enum TileType {
-        TILE_AIR,
-        TILE_DIRT,
-        TILE_WPLATFORM,
-    };
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
 
@@ -33,6 +28,12 @@ protected:
     int SpeedMult;
 
 public:
+    enum TileType {
+        TILE_AIR,
+        TILE_DIRT,
+        TILE_WPLATFORM,
+    };
+    static const float Gravity;
     static bool DebugMode;
     static bool Pause;
     static const std::vector<Engine::Point> directions;

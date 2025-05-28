@@ -32,6 +32,7 @@ bool pressed;
 bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 const int PlayScene::BlockSize = 64;
+const float PlayScene::Gravity = 1280.0f;
 const float PlayScene::DangerTime = 7.61;
 Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
 const std::vector<int> PlayScene::code = {
