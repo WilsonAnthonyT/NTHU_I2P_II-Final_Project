@@ -26,10 +26,10 @@ namespace Engine {
     class ImageButton;
 }
 
+int PlayScene::MapWidth = 0, PlayScene::MapHeight = 0;
 bool pressed;
 bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
-const int PlayScene::MapWidth = 25, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
 const float PlayScene::DangerTime = 7.61;
 const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
@@ -114,6 +114,8 @@ void PlayScene::ReadMap() {
     char c;
     std::vector<int> mapData;
     std::ifstream fin(filename);
+    fin >> MapHeight >> MapWidth;
+    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     while (fin >> c) {
         switch (c) {
             case '0': mapData.push_back(0); break;
@@ -160,16 +162,16 @@ void PlayScene::ReadMap() {
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if((mapData[idx-1])!=1&&idx%MapWidth!=0)
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if (mapData[idx+1] != 1&&idx%MapWidth!=24)
+                if (mapData[idx+1] != 1&&idx%MapWidth!=(MapWidth-1))
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if((mapData[idx-MapWidth-1])!=1&&idx%MapWidth!=0)
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if (mapData[idx-MapWidth+1] != 1&&idx%MapWidth!=24)
+                if (mapData[idx-MapWidth+1] != 1&&idx%MapWidth!=(MapWidth-1))
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num==2) {
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if ((mapData[idx-1]==1&&mapData[idx+1]==1)&&idx%MapWidth!=24&&idx%MapWidth!=0)
+                if ((mapData[idx-1]==1&&mapData[idx+1]==1)&&idx%MapWidth!=(MapWidth-1)&&idx%MapWidth!=0)
                     TileMapGroup->AddNewObject(new Engine::Image("play/platform-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 else if (mapData[idx-1]==1)
                     TileMapGroup->AddNewObject(new Engine::Image("play/platform-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
