@@ -29,7 +29,7 @@ namespace Engine {
 bool pressed;
 bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
-const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
+const int PlayScene::MapWidth = 25, PlayScene::MapHeight = 13;
 const int PlayScene::BlockSize = 64;
 const float PlayScene::DangerTime = 7.61;
 const Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
@@ -80,7 +80,7 @@ void PlayScene::Update(float deltaTime) {
 
 }
 void PlayScene::Draw() const {
-
+    IScene::Draw();
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
 
@@ -112,66 +112,88 @@ void PlayScene::ReadMap() {
     std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
     // Read map file.
     char c;
-    std::vector<bool> mapData;
+    std::vector<int> mapData;
     std::ifstream fin(filename);
     while (fin >> c) {
         switch (c) {
-            case '0': mapData.push_back(false); break;
-            case '1': mapData.push_back(true); break;
+            case '0': mapData.push_back(0); break;
+            case '1': mapData.push_back(1); break;
+            case '2': mapData.push_back(2); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
-                    throw std::ios_base::failure("Map data is corrupted.");
+                    throw std::ios_base::failure("Map data is corrupted 1.");
                 break;
-            default: throw std::ios_base::failure("Map data is corrupted.");
+            default: throw std::ios_base::failure("Map data is corrupted 2.");
         }
     }
     fin.close();
     // Validate map data.
     if (static_cast<int>(mapData.size()) != MapWidth * MapHeight)
-        throw std::ios_base::failure("Map data is corrupted.");
+        throw std::ios_base::failure("Map data is corrupted 3.");
     // Store map in 2d array.
     mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth));
     for (int i = 0; i < MapHeight; i++) {
         for (int j = 0; j < MapWidth; j++) {
-            const int num = mapData[i * MapWidth + j];
-            mapState[i][j] = num ? TILE_FLOOR : TILE_DIRT;
-            if (num)
+            int idx = i * MapWidth + j;
+            const int num = mapData[idx];
+            switch (num) {
+                case 0:
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 1:
+                    mapState[i][j]=TILE_DIRT;
+                    break;
+                case 2:
+                    mapState[i][j]=TILE_WPLATFORM;
+                    break;
+                default:
+                    mapState[i][j]=TILE_AIR;
+                    break;
+
+            }
+            if (num==0)
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-            else
+            else if (num==1) {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != 1)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if((mapData[idx-1])!=1&&idx%MapWidth!=0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx+1] != 1&&idx%MapWidth!=24)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if((mapData[idx-MapWidth-1])!=1&&idx%MapWidth!=0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth+1] != 1&&idx%MapWidth!=24)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }
+            else if (num==2) {
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if ((mapData[idx-1]==1&&mapData[idx+1]==1)&&idx%MapWidth!=24&&idx%MapWidth!=0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                else if (mapData[idx-1]==1)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                else if (mapData[idx+1]==1)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                else if (mapData[idx-1]==2||mapData[idx+1]==2)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }
         }
     }
+    // for (int i = 0; i < MapHeight; i++) {
+    //     for (int j = 0; j < MapWidth; j++) {
+    //         if (num)
+    //             TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+    //         else
+    //             TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+    //     }
+    // }
 }
 void PlayScene::ReadEnemyWave() {
 
 }
 void PlayScene::ConstructUI() {
-    // Background
-    UIGroup->AddNewObject(new Engine::Image("play/sand.png", 1280, 0, 320, 832));
-    // Text
-    UIGroup->AddNewObject(new Engine::Label(std::string("Stage ") + std::to_string(MapId), "pirulen.ttf", 32, 1294, 0));
-    UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, 48));
-    UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, 88));
-    UIGroup->AddNewObject(new Engine::Label(std::string("Tools"), "pirulen.ttf", 22, 1294, 480));
-    UIGroup->AddNewObject(new Engine::Label(std::string("Turrets"), "pirulen.ttf", 22, 1294, 195));
 
-    Engine::ImageButton *button;
-    //button = new Engine::ImageButton("play/HomeButton.png", "play/HomeButton_pressed.png", 1400, 735, 80, 80);    AT THE CENTER
-    button = new Engine::ImageButton("play/HomeButton.png", "play/HomeButton_pressed.png", 1500, 730, 80, 80);
-    button->SetOnClickCallback(std::bind(&PlayScene::HomeOnClick, this, 3));
-    UIGroup->AddNewControlObject(button);
-
-    button = new Engine::ImageButton("play/RestartButton.png", "play/RestartButton_pressed.png", 1300, 730, 80, 80);
-    button->SetOnClickCallback(std::bind(&PlayScene::RestartOnClick, this, 4));
-    UIGroup->AddNewControlObject(button);
-
-    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
-    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
-    int shift = 135 + 25;
-    dangerIndicator = new Engine::Sprite("play/benjamin.png", w - shift, h - shift);
-    dangerIndicator->Tint.a = 0;
-    UIGroup->AddNewObject(dangerIndicator);
 }
 
 void PlayScene::UIBtnClicked(int id) {
