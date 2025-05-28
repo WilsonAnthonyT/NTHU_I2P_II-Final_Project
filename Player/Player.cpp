@@ -130,11 +130,10 @@ bool Player::IsCollision(float x, float y) {
     float playerBottom = y + halfSize;
 
     // Screen boundaries
-    int screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
-    int screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+    Engine::Point MapBound=PlayScene::GetClientSize();
 
-    if (playerLeft < 0 || playerRight > screenWidth ||
-        playerTop < 0 || playerBottom > screenHeight) {
+    if (playerLeft < 0 || playerRight > MapBound.x ||
+        playerTop < 0 || playerBottom > MapBound.y) {
         return true;
     }
 

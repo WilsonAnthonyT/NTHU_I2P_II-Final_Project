@@ -19,8 +19,11 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
+    Engine::Point Camera;
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
+    int screenWidth;
+    int screenHeight;
 
 protected:
     int lives;

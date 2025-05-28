@@ -14,6 +14,9 @@
 #include "Engine/LOG.hpp"
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
+
+#include <map>
+
 #include "LeaderboardScene.hpp"
 
 #include <allegro5/allegro_primitives.h>
@@ -40,10 +43,14 @@ const std::vector<int> PlayScene::code = {
     ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_ENTER
 };
+Player *player1;
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
 void PlayScene::Initialize() {
+    screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
+    screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+    Camera.x=0,Camera.y=0;
     mapState.clear();
     keyStrokes.clear();
     ticks = 0;
@@ -80,10 +87,26 @@ void PlayScene::Terminate() {
 }
 void PlayScene::Update(float deltaTime) {
     PlayerGroup->Update(deltaTime);
+    Engine::Point target = player1->Position;
+    Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
+    Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
+    // Camera.x = (target.x - screenWidth / 2);
+    // Camera.y = (target.y - screenHeight / 2);
+    if (Camera.x < 0)Camera.x = 0;
+    if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
+    if (Camera.y < 0)Camera.y = 0;
+    if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
 }
 void PlayScene::Draw() const {
-    IScene::Draw();
-    PlayerGroup->Draw();
+    ALLEGRO_TRANSFORM trans;
+    al_identity_transform(&trans);
+    al_translate_transform(&trans, -Camera.x, -Camera.y);  // apply camera offset
+    al_use_transform(&trans);  // set transform for all following drawing
+    IScene::Draw();            // will draw tiles/UI, now offset by camera
+    PlayerGroup->Draw();       // players, effects, etc.
+    al_identity_transform(&trans);
+    al_use_transform(&trans);
+    UIGroup->Draw();
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
 
@@ -190,7 +213,7 @@ void PlayScene::ReadMap() {
             else if (num=='P') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize / 2, i * BlockSize + BlockSize / 2);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(new Player("play/1panda.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,192,100));
+                PlayerGroup->AddNewObject(player1 = new Player("play/1panda.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,192,100));
             }
         }
     }
