@@ -91,6 +91,8 @@ add_executable(Final-Project
     UI/Component/Slider.hpp
     
     main.cpp
+        Player/Player.cpp
+        Player/Player.h
 )
 
 IF (WIN32)
