@@ -39,8 +39,7 @@ public:
     static int MapWidth, MapHeight;
     static const int BlockSize;
     static const float DangerTime;
-    static const Engine::Point SpawnGridPoint;
-    static const Engine::Point EndGridPoint;
+    static Engine::Point SpawnGridPoint;
     static const std::vector<int> code;
     int MapId;
     float ticks;
@@ -50,7 +49,7 @@ public:
     Group *GroundEffectGroup;
     Group *DebugIndicatorGroup;
     Group *BulletGroup;
-    Group *TowerGroup;
+    Group *PlayerGroup;
     Group *EnemyGroup;
     Group *EffectGroup;
     Group *UIGroup;

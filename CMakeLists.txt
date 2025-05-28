@@ -89,10 +89,11 @@ add_executable(Final-Project
     UI/Component/Label.hpp
     UI/Component/Slider.cpp
     UI/Component/Slider.hpp
-    
+
+    Player/Player.cpp
+    Player/Player.h
+
     main.cpp
-        Player/Player.cpp
-        Player/Player.h
 )
 
 IF (WIN32)
