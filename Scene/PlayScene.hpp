@@ -36,7 +36,7 @@ public:
     static bool DebugMode;
     static bool Pause;
     static const std::vector<Engine::Point> directions;
-    static const int MapWidth, MapHeight;
+    static int MapWidth, MapHeight;
     static const int BlockSize;
     static const float DangerTime;
     static const Engine::Point SpawnGridPoint;
