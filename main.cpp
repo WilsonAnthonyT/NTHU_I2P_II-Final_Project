@@ -12,6 +12,7 @@
 #include "Scene/LeaderboardScene.hpp"
 #include "Scene/ScoreboardScene.hpp"
 
+int PlayScene::BlockSize = 0;
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
 	Engine::GameEngine& game = Engine::GameEngine::GetInstance();
@@ -27,6 +28,7 @@ int main(int argc, char **argv) {
 	game.AddNewScene("scoreboard", new ScoreboardScene());	//ADDED
 
     // TODO HACKATHON-1 (1/1): Change the start scene
+
 	game.Start("start", 90, 1600, 832, true);
 	return 0;
 }

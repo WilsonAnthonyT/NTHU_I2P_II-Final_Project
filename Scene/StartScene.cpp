@@ -20,6 +20,7 @@
 
 bool Engine::IScene::DebugMode = false;
 void StartScene::Initialize() {
+    PlayScene::BlockSize = Engine::GameEngine::GetInstance().GetScreenWidth() / 16;
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
@@ -46,16 +47,12 @@ void StartScene::Initialize() {
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, halfW, halfH / 2 *2.5 + 50, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 *3, 400, 100);
-    btn->SetOnClickCallback([]() {
-        Engine::GameEngine::shouldQuit = true;
-    });
+    btn->SetOnClickCallback(std::bind(&StartScene::EXITonClick, this, 0));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Quit Game", "pirulen.ttf", 48, halfW, halfH / 2 *3 + 50, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("play/target-invalid.png", "play/floor.png", w - 100, 0, 100, 100);
-    btn->SetOnClickCallback([]() {
-        Engine::GameEngine::shouldQuit = true;
-    });
+    btn = new Engine::ImageButton("play/target-invalid.png", "play/invalid-pressed.png", w - 100, 0, 100, 100);
+    btn->SetOnClickCallback(std::bind(&StartScene::EXITonClick, this, 1));
     AddNewControlObject(btn);
 }
 void StartScene::Terminate() {
@@ -69,5 +66,8 @@ void StartScene::SettingsOnClick(int stage) {
 }
 void StartScene::TrophyOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
+}
+void StartScene::EXITonClick(int stage) {
+    Engine::GameEngine::shouldQuit = true;
 }
 

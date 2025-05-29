@@ -17,5 +17,6 @@ public:
     void PlayOnClick(int stage);
     void TrophyOnClick(int stage);
     void SettingsOnClick(int stage);
+    void EXITonClick(int stage);
 };
 #endif   // INC_2025_I2P2_TOWERDEFENSE_WITH_ANSWER_STARTSCENE_H
