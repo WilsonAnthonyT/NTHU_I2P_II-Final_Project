@@ -44,8 +44,6 @@ const std::vector<int> PlayScene::code = {
     ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_ENTER
 };
-Player *player1;
-Player *player2;
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 
@@ -101,7 +99,15 @@ void PlayScene::Update(float deltaTime) {
     }
     PlayerGroup->Update(deltaTime);
 
-    Engine::Point target = (player1->Position + player2->Position)/2;
+    std::vector<Player*> players;
+    for (auto& it : PlayerGroup->GetObjects()) {
+        Player *player = dynamic_cast<Player *>(it);
+        if (player) {
+            players.push_back(player);
+        }
+    }
+
+    Engine::Point target = (players[0]->Position + players[1]->Position)/2;
     Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
     Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
     // Camera.x = (target.x - screenWidth / 2);
@@ -256,12 +262,12 @@ void PlayScene::ReadMap() {
             else if (num=='B') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player1 = new MeleePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
+                PlayerGroup->AddNewObject(new MeleePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
             }
             else if (num=='A') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player2 = new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
+                PlayerGroup->AddNewObject(new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
             }
         }
     }
@@ -274,6 +280,7 @@ void PlayScene::ReadMap() {
     //     }
     // }
 }
+
 void PlayScene::ReadEnemyWave() {
 
 }

@@ -84,7 +84,7 @@ void MeleePlayer::Update(float deltaTime) {
 
             // Find the exact ground position
             const float tolerance = 1.0f / 64.0f * PlayScene::BlockSize;
-            float testY = Position.y - tolerance;
+            float testY = Position.y;
             while (!IsCollision(Position.x, testY + 1)) {
                 testY += 1;
             }
