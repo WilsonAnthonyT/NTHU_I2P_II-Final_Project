@@ -128,7 +128,7 @@ void Player::Draw() const {
         float playerLeft = Position.x - halfSize_x;
         float playerRight = Position.x + halfSize_x;
         float playerTop = abs(Position.y);
-        float playerBottom = Position.y + Size.y + tolerance;
+        float playerBottom = Position.y + Size.y - tolerance;
         al_draw_rectangle(playerLeft, playerTop, playerRight, playerBottom, al_map_rgb(255, 0, 0), 2.0);
     }
 }
@@ -141,10 +141,10 @@ bool Player::IsCollision(float x, float y) {
     float halfSize_x = abs(Size.x) / 2;
     //std::cout << "SIZE PLAYER X: " << Size.x / 2 << " FROM TILESIZE " << PlayScene::BlockSize << " to " << PlayScene::BlockSize *0.7 /2<< std::endl;
 
-    float playerLeft = x - halfSize_x;
-    float playerRight = x + halfSize_x;
-    float playerTop = abs(y);
-    float playerBottom = y + Size.y + tolerance;
+    float playerLeft = x - halfSize_x + tolerance;
+    float playerRight = x + halfSize_x - tolerance;
+    float playerTop = y + tolerance;
+    float playerBottom = y + Size.y - tolerance;
 
     // Screen boundaries
     Engine::Point MapBound=PlayScene::GetClientSize();

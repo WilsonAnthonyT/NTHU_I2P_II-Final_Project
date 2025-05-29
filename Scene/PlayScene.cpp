@@ -248,7 +248,7 @@ void PlayScene::ReadMap() {
             else if (num=='P') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player1 = new Player("play/bryantilt.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,BlockSize * 2.25,100));
+                PlayerGroup->AddNewObject(player1 = new Player("play/1panda.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,BlockSize * 2.25,100));
             }
         }
     }
