@@ -3,6 +3,7 @@
 #include <iostream>
 #include <allegro5/allegro_primitives.h>
 #include "Engine/IScene.hpp"
+#include "Engine/Collider.hpp"
 
 #include "Engine/GameEngine.hpp"
 #include "Engine/Sprite.hpp"
@@ -53,8 +54,25 @@ bool Player::IsCollision(float x, float y) {
     float playerTop = y + tolerance;
     float playerBottom = y + Size.y - tolerance;
 
+    for (auto& it : scene->PlayerGroup->GetObjects()) {
+        Player* friends = dynamic_cast<Player*>(it);
+        // Skip if enemy is not visible, is the healer itself, or invalid
+        if (!friends || !friends->Visible || friends == this) continue;
+        int half_P2 = abs(friends->Size.x) / 2;
+
+        float p2_Left = friends->Position.x - half_P2;
+        float p2_Right = friends->Position.x + half_P2;
+        float p2_Top = friends->Position.y;
+        float p2_Bottom = friends->Position.y + friends->Size.y;
+
+        bool overlapX = playerLeft < p2_Right && playerRight > p2_Left;
+        bool overlapY = playerTop < p2_Bottom && playerBottom > p2_Top;
+
+        if (overlapX && overlapY) return true;
+    }
+
     // Screen boundaries
-    Engine::Point MapBound=PlayScene::GetClientSize();
+    Engine::Point MapBound = PlayScene::GetClientSize();
     float ScreenBound = PlayScene::Camera.x + Engine::GameEngine::GetInstance().GetScreenWidth();
 
     if (playerLeft < 0 || playerRight > MapBound.x ||
@@ -82,7 +100,6 @@ bool Player::IsCollision(float x, float y) {
                 else if (scene->mapState[yTile][xTile] == PlayScene::TILE_WPLATFORM) {
                     // Only collide if player's bottom is touching the platform's top
                     float platformTop = yTile * PlayScene::BlockSize;
-                    float platformBottom = platformTop + PlayScene::BlockSize;
 
                     // Check if player's bottom is within the top few pixels of the platform
                     const float platformCollisionThreshold = PlayScene::BlockSize/8; // Adjust this value as needed

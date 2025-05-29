@@ -8,6 +8,7 @@
 
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
+#include "Player/Player.h"
 #include "UI/Component/Slider.hpp"
 
 class Turret;

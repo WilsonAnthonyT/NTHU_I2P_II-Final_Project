@@ -31,8 +31,6 @@ public:
     void Draw() const override;
 
     bool IsCollision(float x, float y);
-
-
 };
 
 
