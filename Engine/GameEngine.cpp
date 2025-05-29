@@ -19,6 +19,10 @@
 #include "Resources.hpp"
 #include "Scene/PlayScene.hpp"
 
+
+//quit
+bool Engine::GameEngine::shouldQuit = false;
+//---------------------------------------
 namespace Engine {
     void GameEngine::initAllegro5() {
         if (!al_init()) throw Allegro5Exception("failed to initialize allegro");
@@ -40,9 +44,37 @@ namespace Engine {
         if (!al_install_keyboard()) throw Allegro5Exception("failed to install keyboard");
         if (!al_install_mouse()) throw Allegro5Exception("failed to install mouse");
 
-        // Setup game display.
+
+// For Full Screen--------------------------------------------------->>>>>>>>>>>>>>
+        al_set_new_display_flags(fullscreen ? ALLEGRO_FULLSCREEN_WINDOW : ALLEGRO_WINDOWED);
+
+        // Create display
+        ALLEGRO_MONITOR_INFO info;
+        al_get_monitor_info(0, &info);
+
+        // Compute width and height
+        if (fullscreen) {
+            screenW = info.x2 - info.x1;
+            screenH = info.y2 - info.y1;
+        }
         display = al_create_display(screenW, screenH);
-        if (!display) throw Allegro5Exception("failed to create display");
+
+        // If fullscreen failed, try falling back to windowed mode
+        if (!display && fullscreen) {
+            LOG(WARN) << "Fullscreen mode failed, falling back to windowed mode";
+            al_set_new_display_flags(ALLEGRO_WINDOWED);
+            display = al_create_display(screenW, screenH);
+            this->fullscreen = false;
+        }
+        else {
+            LOG(WARN) << "Fullscreen successful";
+        }
+//=====================================================================================
+        // If we still don't have a display, throw error
+        if (!display) {
+            throw Allegro5Exception("failed to create display");
+        }
+
         al_set_window_title(display, title);
         // Set alpha blending mode.
         al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
@@ -83,6 +115,9 @@ namespace Engine {
         auto timestamp = std::chrono::steady_clock::now();
         while (!done) {
             al_wait_for_event(event_queue, &event);
+            if (shouldQuit) {
+                event.type = ALLEGRO_EVENT_DISPLAY_CLOSE;
+            }
             switch (event.type) {
                 case ALLEGRO_EVENT_DISPLAY_CLOSE:
                     // Event for clicking the window close button.
@@ -193,10 +228,12 @@ namespace Engine {
         activeScene->Initialize();
         LOG(INFO) << "Changed to " << name << " scene";
     }
-    void GameEngine::Start(const std::string &firstSceneName, int fps, int screenW, int screenH,
-                           int reserveSamples, const char *title, const char *icon, bool freeMemoryOnSceneChanged, float deltaTimeThreshold) {
+    void GameEngine::Start(const std::string &firstSceneName, int fps, int screenW, int screenH, bool fullscreen,
+                           int reserveSamples,  const char *title, const char *icon, bool freeMemoryOnSceneChanged, float deltaTimeThreshold) {
         LOG(INFO) << "Game Initializing...";
         // Update Allegro5 configs.
+        this->fullscreen = fullscreen;
+
         this->fps = fps;
         this->screenW = screenW;
         this->screenH = screenH;

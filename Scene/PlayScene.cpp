@@ -34,8 +34,8 @@ int PlayScene::MapWidth = 0, PlayScene::MapHeight = 0;
 bool pressed;
 bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
-const int PlayScene::BlockSize = 64;
-const float PlayScene::Gravity = 1280.0f;
+int PlayScene::BlockSize = 0;
+float PlayScene::Gravity = 0;
 const float PlayScene::DangerTime = 7.61;
 Engine::Point PlayScene::SpawnGridPoint = Engine::Point(-1, 0);
 const std::vector<int> PlayScene::code = {
@@ -51,6 +51,7 @@ Engine::Point PlayScene::GetClientSize() {
 void PlayScene::Initialize() {
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+    BlockSize = screenWidth / 16;
     Camera.x=0,Camera.y=0;
     mapState.clear();
     keyStrokes.clear();
@@ -59,6 +60,9 @@ void PlayScene::Initialize() {
     lives = 10;
     money = 150;
     SpeedMult = 1;
+    Gravity = 18.0f * BlockSize;
+
+    //Pause
     IsPaused = false;
     // Add groups from bottom to top.
     AddNewObject(TileMapGroup = new Group());
@@ -120,6 +124,20 @@ void PlayScene::Draw() const {
     al_identity_transform(&trans);
     al_use_transform(&trans);
     UIGroup->Draw();
+
+    //for map debug
+    if (DebugMode) {
+        for (int i = 0; i < MapHeight; i++) {
+            for (int j = 0; j < MapWidth; j++) {
+                if (mapState[i][j] == TILE_DIRT || mapState[i][j] == TILE_WPLATFORM) {
+                    float x = j * BlockSize - Camera.x;
+                    float y = i * BlockSize - Camera.y;
+                    ALLEGRO_COLOR color = (mapState[i][j] == TILE_DIRT) ? al_map_rgb(255, 0, 0) : al_map_rgb(0, 255, 0);
+                    al_draw_rectangle(x, y, x + BlockSize, y + BlockSize, color, 2.0);
+                }
+            }
+        }
+    }
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
     IScene::OnMouseDown(button, mx, my);
@@ -230,9 +248,9 @@ void PlayScene::ReadMap() {
                     TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num=='P') {
-                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize / 2, i * BlockSize + BlockSize / 2);
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player1 = new Player("play/1panda.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,192,100));
+                PlayerGroup->AddNewObject(player1 = new Player("play/1panda.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,BlockSize * 2.25,100));
             }
         }
     }
@@ -260,6 +278,9 @@ void PlayScene::UIBtnClicked(int id) {
 void PlayScene::HomeOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
+
+
+//-----------For Pause UI-------------------------
 
 void PlayScene::CreatePauseUI() {
     //get width and height

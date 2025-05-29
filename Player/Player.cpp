@@ -1,5 +1,6 @@
 #include "Player.h"
 
+#include <iostream>
 #include <allegro5/allegro_primitives.h>
 
 #include "Engine/GameEngine.hpp"
@@ -15,7 +16,10 @@ Player::Player(std::string img, float x, float y, float radius, float speed, flo
     isFalling = false;
     goDown = false;
     // Calculate jump force for exactly 1.5 blocks (96 pixels) high
-    jumpForce = sqrt(2 * PlayScene::Gravity * 96); // 192 pixels/s
+    jumpForce = sqrt(2 * PlayScene::Gravity * ((PlayScene::BlockSize)/2)*3); // 192 pixels/s
+    Size = Engine::Point(PlayScene::BlockSize * 0.7, PlayScene::BlockSize * 0.7);
+    Anchor = Engine::Point(0.5, 0);
+    tolerance = 1.0 / 64.0 * PlayScene::BlockSize;
 }
 
 void Player::Update(float deltaTime) {
@@ -35,7 +39,7 @@ void Player::Update(float deltaTime) {
     }
     if (al_key_down(&keyState, ALLEGRO_KEY_S)) {
         goDown = true;
-        goDownTimer = 0.16f; // Reset timer to 0.5 seconds
+        goDownTimer = 0.2f; // Reset timer to 0.5 seconds
     }
     else if (goDownTimer > 0) {
         goDownTimer -= deltaTime;
@@ -92,7 +96,8 @@ void Player::Update(float deltaTime) {
             verticalVelocity = 0;
 
             // Find the exact ground position
-            float testY = Position.y;
+            const float tolerance = 1.0f / 64.0f * PlayScene::BlockSize;
+            float testY = Position.y - tolerance;
             while (!IsCollision(Position.x, testY + 1)) {
                 testY += 1;
             }
@@ -115,6 +120,16 @@ void Player::Update(float deltaTime) {
 }
 void Player::Draw() const {
     Sprite::Draw();
+    if (PlayScene::DebugMode) {
+        float halfSize_x = abs(Size.x) / 2;
+        //std::cout << "SIZE PLAYER X: " << Size.x / 2 << " FROM TILESIZE " << PlayScene::BlockSize << " to " << PlayScene::BlockSize *0.7 /2<< std::endl;
+
+        float playerLeft = Position.x - halfSize_x;
+        float playerRight = Position.x + halfSize_x;
+        float playerTop = abs(Position.y);
+        float playerBottom = Position.y + Size.y + tolerance;
+        al_draw_rectangle(playerLeft, playerTop, playerRight, playerBottom, al_map_rgb(255, 0, 0), 2.0);
+    }
 }
 
 bool Player::IsCollision(float x, float y) {
@@ -122,12 +137,13 @@ bool Player::IsCollision(float x, float y) {
     if (!scene) return true;
 
     // Calculate player's square hitbox with 1-pixel tolerance
-    const float tolerance = 1.0f;
-    float halfSize = PlayScene::BlockSize / 2.0f - tolerance;
-    float playerLeft = x - halfSize;
-    float playerRight = x + halfSize;
-    float playerTop = y - halfSize;
-    float playerBottom = y + halfSize;
+    float halfSize_x = abs(Size.x) / 2;
+    //std::cout << "SIZE PLAYER X: " << Size.x / 2 << " FROM TILESIZE " << PlayScene::BlockSize << " to " << PlayScene::BlockSize *0.7 /2<< std::endl;
+
+    float playerLeft = x - halfSize_x;
+    float playerRight = x + halfSize_x;
+    float playerTop = abs(y);
+    float playerBottom = y + Size.y + tolerance;
 
     // Screen boundaries
     Engine::Point MapBound=PlayScene::GetClientSize();
@@ -156,7 +172,7 @@ bool Player::IsCollision(float x, float y) {
                     float platformBottom = platformTop + PlayScene::BlockSize;
 
                     // Check if player's bottom is within the top few pixels of the platform
-                    const float platformCollisionThreshold = 10.0f; // Adjust this value as needed
+                    const float platformCollisionThreshold = PlayScene::BlockSize/8; // Adjust this value as needed
                     if (playerBottom >= platformTop &&
                         playerBottom <= platformTop + platformCollisionThreshold &&
                         playerRight > xTile * PlayScene::BlockSize &&

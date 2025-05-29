@@ -38,12 +38,12 @@ public:
         TILE_DIRT,
         TILE_WPLATFORM,
     };
-    static const float Gravity;
+    static float Gravity;
     static bool DebugMode;
     static bool Pause;
     static const std::vector<Engine::Point> directions;
     static int MapWidth, MapHeight;
-    static const int BlockSize;
+    static int BlockSize;
     static const float DangerTime;
     static Engine::Point SpawnGridPoint;
     static const std::vector<int> code;

@@ -76,7 +76,19 @@ namespace Engine {
         /// <param name="name">The name of the scene you want to change to.</param>
         void changeScene(const std::string &name);
 
+        bool fullscreen;  // Track fullscreen state
+        // ... other members ...
+
     public:
+        // Modify Start() to accept fullscreen parameter
+        //void Start(const std::string& firstScene, int fps, int width, int height, bool fullscreen = false);
+
+        //for close button
+        static bool shouldQuit;
+
+        // Optional: Toggle fullscreen at runtime
+        void ToggleFullscreen(bool enable);
+
         // Note: We'll ignore C++11's move constructor, move assignment operator in this project for simplicity.
         /// <summary>
         /// Copy constructor is deleted, no copying allowed.
@@ -97,8 +109,8 @@ namespace Engine {
         /// <param name="title">Window's title text.</param>
         /// <param name="icon">Window's icon image path.</param>
         /// <param name="freeMemoryOnSceneChanged">Determines whether to free memory between scenes.</param>
-        void Start(const std::string &firstSceneName, int fps = 60, int screenW = 800, int screenH = 600, int reserveSamples = 1000,
-                   const char *title = "Tower Defense (I2P(II)_2025 Mini Project 2)",
+        void Start(const std::string &firstSceneName, int fps = 60, int screenW = 800, int screenH = 600, bool fullscreen = false, int reserveSamples = 1000,
+                   const char *title = "Pepek",
                    const char *icon = "icon.png", bool freeMemoryOnSceneChanged = false,
                    float deltaTimeThreshold = 0.05);
         /// <summary>
