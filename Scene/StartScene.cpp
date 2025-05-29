@@ -18,7 +18,7 @@
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
-// TODO HACKATHON-2 (1/3): You can imitate the 2 files: 'StartScene.hpp', 'StartScene.cpp' to implement your SettingsScene.
+bool Engine::IScene::DebugMode = false;
 void StartScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
@@ -70,3 +70,4 @@ void StartScene::SettingsOnClick(int stage) {
 void StartScene::TrophyOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
 }
+

@@ -43,6 +43,8 @@ namespace Engine {
         /// Delegate the draw event to all visible objects.
         /// </summary>
         void Draw() const override;
+        void OnKeyDown(int keyCode) override;
+        static bool DebugMode;
     };
 }
 #endif   // ISCENE_HPP

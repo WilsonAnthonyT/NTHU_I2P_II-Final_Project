@@ -32,7 +32,6 @@ namespace Engine {
 
 int PlayScene::MapWidth = 0, PlayScene::MapHeight = 0;
 bool pressed;
-bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 int PlayScene::BlockSize = 0;
 float PlayScene::Gravity = 0;
@@ -129,12 +128,17 @@ void PlayScene::Draw() const {
     if (DebugMode) {
         for (int i = 0; i < MapHeight; i++) {
             for (int j = 0; j < MapWidth; j++) {
-                if (mapState[i][j] == TILE_DIRT || mapState[i][j] == TILE_WPLATFORM) {
-                    float x = j * BlockSize - Camera.x;
-                    float y = i * BlockSize - Camera.y;
-                    ALLEGRO_COLOR color = (mapState[i][j] == TILE_DIRT) ? al_map_rgb(255, 0, 0) : al_map_rgb(0, 255, 0);
-                    al_draw_rectangle(x, y, x + BlockSize, y + BlockSize, color, 2.0);
+                float x = j * BlockSize - Camera.x;
+                float y = i * BlockSize - Camera.y;
+                ALLEGRO_COLOR color = al_map_rgb(255, 255, 255);
+                if (mapState[i][j] == TILE_DIRT) {
+                    color = al_map_rgb(255, 0, 0);
                 }
+                else if (mapState[i][j] == TILE_WPLATFORM) {
+                    color = al_map_rgb(0, 255, 0);
+                }
+                al_draw_rectangle(x, y, x + BlockSize, y + BlockSize, color, 2.0);
+
             }
         }
     }
@@ -153,9 +157,6 @@ void PlayScene::OnKeyDown(int keyCode) {
 
     if (IsPaused && keyCode != ALLEGRO_KEY_ESCAPE) return;
 
-    if (keyCode == ALLEGRO_KEY_TAB) {
-        DebugMode = !DebugMode;
-    }
     if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) {
         // Hotkey for Speed up.
         SpeedMult = keyCode - ALLEGRO_KEY_0;

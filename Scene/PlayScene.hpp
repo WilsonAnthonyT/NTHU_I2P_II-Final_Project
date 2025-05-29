@@ -39,7 +39,6 @@ public:
         TILE_WPLATFORM,
     };
     static float Gravity;
-    static bool DebugMode;
     static bool Pause;
     static const std::vector<Engine::Point> directions;
     static int MapWidth, MapHeight;

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <allegro5/allegro_primitives.h>
+#include "Engine/IScene.hpp"
 
 #include "Engine/GameEngine.hpp"
 #include "Engine/Sprite.hpp"
@@ -120,7 +121,7 @@ void Player::Update(float deltaTime) {
 }
 void Player::Draw() const {
     Sprite::Draw();
-    if (PlayScene::DebugMode) {
+    if (Engine::IScene::DebugMode) {
         float halfSize_x = abs(Size.x) / 2;
         //std::cout << "SIZE PLAYER X: " << Size.x / 2 << " FROM TILESIZE " << PlayScene::BlockSize << " to " << PlayScene::BlockSize *0.7 /2<< std::endl;
 
