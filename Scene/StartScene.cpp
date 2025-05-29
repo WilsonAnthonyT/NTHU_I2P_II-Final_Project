@@ -40,12 +40,19 @@ void StartScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Play", "pirulen.ttf", 48, halfW, halfH / 2 + 250, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 500, 400, 100);
     btn->SetOnClickCallback(std::bind(&StartScene::SettingsOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, halfW, halfH / 2 + 550, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("play/target-invalid.png", "stage-select/floor.png", w - 100, 0, 100, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 1000, 400, 100);
+    btn->SetOnClickCallback([]() {
+        Engine::GameEngine::shouldQuit = true;
+    });
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Quit Game", "pirulen.ttf", 48, halfW, halfH / 2 + 1050, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn = new Engine::ImageButton("play/target-invalid.png", "play/target-invalid.png", w - 100, 0, 100, 100);
     btn->SetOnClickCallback([]() {
         Engine::GameEngine::shouldQuit = true;
     });
