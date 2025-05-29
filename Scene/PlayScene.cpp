@@ -46,6 +46,7 @@ const std::vector<int> PlayScene::code = {
 Player *player1;
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
+
 }
 void PlayScene::Initialize() {
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
@@ -58,6 +59,7 @@ void PlayScene::Initialize() {
     lives = 10;
     money = 150;
     SpeedMult = 1;
+    IsPaused = false;
     // Add groups from bottom to top.
     AddNewObject(TileMapGroup = new Group());
     AddNewObject(GroundEffectGroup = new Group());
@@ -77,16 +79,23 @@ void PlayScene::Initialize() {
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     // Start BGM.
-    bgmId = AudioHelper::PlayBGM("play.ogg");
+    bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
+    CreatePauseUI();
 }
 void PlayScene::Terminate() {
-    AudioHelper::StopBGM(bgmId);
+    AudioHelper::StopSample(bgmInstance);
     AudioHelper::StopSample(deathBGMInstance);
     deathBGMInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
+    UpdatePauseState();
+    if (IsPaused) {
+        UIGroup->Update(deltaTime);
+        return;
+    }
     PlayerGroup->Update(deltaTime);
+
     Engine::Point target = player1->Position;
     Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
     Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
@@ -98,6 +107,10 @@ void PlayScene::Update(float deltaTime) {
     if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
 }
 void PlayScene::Draw() const {
+    if (IsPaused) {
+        UIGroup->Draw();
+        return;
+    }
     ALLEGRO_TRANSFORM trans;
     al_identity_transform(&trans);
     al_translate_transform(&trans, -Camera.x, -Camera.y);  // apply camera offset
@@ -109,22 +122,28 @@ void PlayScene::Draw() const {
     UIGroup->Draw();
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
-
+    IScene::OnMouseDown(button, mx, my);
 }
 void PlayScene::OnMouseMove(int mx, int my) {
-
+    IScene::OnMouseMove(mx, my);
 }
 void PlayScene::OnMouseUp(int button, int mx, int my) {
-
+    IScene::OnMouseUp(button, mx, my);
 }
 void PlayScene::OnKeyDown(int keyCode) {
     IScene::OnKeyDown(keyCode);
+
+    if (IsPaused && keyCode != ALLEGRO_KEY_ESCAPE) return;
+
     if (keyCode == ALLEGRO_KEY_TAB) {
         DebugMode = !DebugMode;
     }
     if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) {
         // Hotkey for Speed up.
         SpeedMult = keyCode - ALLEGRO_KEY_0;
+    }
+    if (keyCode == ALLEGRO_KEY_ESCAPE) {
+        IsPaused = !IsPaused;
     }
 }
 int PlayScene::GetMoney() const {
@@ -242,6 +261,145 @@ void PlayScene::HomeOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
 
-void PlayScene::RestartOnClick(int stage) {
+void PlayScene::CreatePauseUI() {
+    //get width and height
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x + Camera.x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y + Camera.y;
+    int halfW = w / 2, halfH = h / 2;
+
+    //for I forgot
+    int h_margin = 150;
+    int w_obj = 600, h_obj = 500 + h_margin;
+
+    //button position
+    int btnPosX = (w - 400) / 2;
+    int btnPosY = (h - h_obj) / 2 + h_margin;
+
+    //label position
+    int lblPosX = w/2;
+    int lblPosY = (h - h_obj) / 2 + h_margin;
+
+
+    //outer box bbc and text
+    pauseOverlay = new Engine::Image("play/sand.png", (w - w_obj) / 2, (h - h_obj) / 2, w_obj, h_obj);
+    pauseOverlay->Visible = false;
+    UIGroup->AddNewObject(pauseOverlay);
+
+    pauseText = new Engine::Label("PAUSED", "pirulen.ttf", 48, lblPosX, lblPosY - 100, 0, 0, 100, 255, 0.5, 0.5);
+    pauseText->Visible = false;
+    UIGroup->AddNewObject(pauseText);
+
+    //to continue perhaps
+    continueButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 100, 400, 100);
+    continueButton->Visible = false;
+    continueButton->Enabled = false;
+    UIGroup->AddNewControlObject(continueButton);
+    continueButton->SetOnClickCallback(std::bind(&PlayScene::ContinueOnClick, this, 1));
+
+    //restart if frustrated
+    restartButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 230, 400, 100);
+    restartButton->Visible = false;
+    restartButton->Enabled = false;
+    UIGroup->AddNewControlObject(restartButton);
+    restartButton->SetOnClickCallback(std::bind(&PlayScene::RestartOnClick, this, 1));
+
+    //exit to stage scene
+    exitButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 360, 400, 100);
+    exitButton->Visible = false;
+    exitButton->Enabled = false;
+    UIGroup->AddNewControlObject(exitButton);
+    exitButton->SetOnClickCallback(std::bind(&PlayScene::BackOnClick, this, 1));
+
+    //the label
+    continueLabel = new Engine::Label("Continue", "pirulen.ttf", 48, lblPosX, lblPosY + 150, 0, 0, 0, 255, 0.5, 0.5);
+    continueLabel->Visible = false;
+    UIGroup->AddNewObject(continueLabel);
+
+    restartLabel = new Engine::Label("Retry", "pirulen.ttf", 48, lblPosX, lblPosY + 280, 0, 0, 0, 255, 0.5, 0.5);
+    restartLabel->Visible = false;
+    UIGroup->AddNewObject(restartLabel);
+
+    exitLabel = new Engine::Label("Exit", "pirulen.ttf", 48, lblPosX, lblPosY + 410, 0, 0, 0, 255, 0.5, 0.5);
+    exitLabel->Visible = false;
+    UIGroup->AddNewObject(exitLabel);
+
+    //slider
+    sliderBGM = new Slider(40 + halfW - 95, halfH - 200 - 2, 190, 4);
+    sliderBGM->Visible = false;
+    sliderBGM->Enabled = false;
+    sliderBGM->SetValue(AudioHelper::BGMVolume);
+    sliderBGM->SetOnValueChangedCallback(std::bind(&PlayScene::BGMSlideOnValueChanged, this, std::placeholders::_1));
+    UIGroup->AddNewControlObject(sliderBGM);
+
+    BGMSlider = new Engine::Label("BGM: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 200, 0, 0, 0, 255, 0.5, 0.5);
+    BGMSlider->Visible = false;
+    UIGroup->AddNewObject(BGMSlider);
+
+    //slider
+    sliderSFX = new Slider(40 + halfW - 95, halfH - 150 + 2, 190, 4);
+    sliderSFX->Visible = false;
+    sliderSFX->Enabled = false;
+    sliderSFX->SetValue(AudioHelper::SFXVolume);
+    sliderSFX->SetOnValueChangedCallback(std::bind(&PlayScene::SFXSlideOnValueChanged, this, std::placeholders::_1));
+    UIGroup->AddNewControlObject(sliderSFX);
+
+    SFXSlider = new Engine::Label("SFX: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 150, 0, 0, 0, 255, 0.5, 0.5);
+    SFXSlider->Visible = false;
+    UIGroup->AddNewObject(SFXSlider);
+}
+
+//-------For Exit, restart, and Continue Button------------------
+void PlayScene::BackOnClick(int state) {
+    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+}
+
+void PlayScene::ContinueOnClick(int state) {
+    IsPaused = false;
+}
+
+void PlayScene::RestartOnClick(int state) {
+    IsPaused = false;
     Engine::GameEngine::GetInstance().ChangeScene("play");
+}
+//volume
+void PlayScene::BGMSlideOnValueChanged(float value) {
+    AudioHelper::BGMVolume = value;
+    AudioHelper::ChangeSampleVolume(bgmInstance, value);
+}
+void PlayScene::SFXSlideOnValueChanged(float value) {
+    AudioHelper::SFXVolume = value;
+}
+
+//---For Pause---------------->>>>>>>>>>>>>>>>>>
+void PlayScene::UpdatePauseState() {
+    bool show = IsPaused;
+    if (pauseOverlay) {
+        pauseOverlay->Visible = show;
+        pauseText->Visible = show;
+    }
+    if (continueButton) {
+        continueButton->Visible = show;
+        continueButton->Enabled = show;
+        continueLabel->Visible = show;
+    }
+    if (exitButton) {
+        exitButton->Visible = show;
+        exitButton->Enabled = show;
+        exitLabel->Visible = show;
+    }
+    if (restartButton) {
+        restartButton->Visible = show;
+        restartButton->Enabled = show;
+        restartLabel->Visible = show;
+    }
+    if (sliderBGM) {
+        sliderBGM->Visible = show;
+        sliderBGM->Enabled = show;
+        BGMSlider->Visible = show;
+    }
+    if (sliderSFX) {
+        sliderSFX->Visible = show;
+        sliderSFX->Enabled = show;
+        SFXSlider->Visible = show;
+    }
 }

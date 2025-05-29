@@ -8,6 +8,7 @@
 
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
+#include "UI/Component/Slider.hpp"
 
 class Turret;
 namespace Engine {
@@ -22,6 +23,7 @@ private:
     Engine::Point Camera;
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
+    std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
     int screenWidth;
     int screenHeight;
 
@@ -83,7 +85,32 @@ public:
     void ConstructUI();
     void UIBtnClicked(int id);
     void HomeOnClick(int id);
-    void RestartOnClick(int id);
     // void ModifyReadMapTiles();
+
+    //----Pause-----
+    bool IsPaused = false;
+    void UpdatePauseState();
+    void CreatePauseUI();
+    //----
+    Engine::Image *pauseOverlay;
+    Engine::Label *pauseText;
+
+    Engine::ImageButton *continueButton;
+    Engine::ImageButton *restartButton;
+    Engine::ImageButton *exitButton;
+
+    Engine::Label *continueLabel;
+    Engine::Label *exitLabel;
+    Engine::Label *restartLabel;
+    Engine::Label *BGMSlider;
+    Engine::Label *SFXSlider;
+
+    Slider *sliderBGM, *sliderSFX;
+    //----
+    void BackOnClick(int state);
+    void ContinueOnClick(int state);
+    void RestartOnClick(int state);
+    void BGMSlideOnValueChanged(float value);
+    void SFXSlideOnValueChanged(float value);
 };
 #endif   // PLAYSCENE_HPP
