@@ -27,7 +27,7 @@ protected:
     float tolerance;
 
 public:
-    Player(std::string img, float x, float y, float radius, float speed, float hp);
+    Player(std::string img, float x, float y, float speed, float hp);
     void Update(float deltaTime) override;
     void Draw() const override;
 

@@ -20,7 +20,6 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
-    Engine::Point Camera;
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
@@ -38,6 +37,7 @@ public:
         TILE_DIRT,
         TILE_WPLATFORM,
     };
+    static Engine::Point Camera;
     static float Gravity;
     static bool Pause;
     static const std::vector<Engine::Point> directions;

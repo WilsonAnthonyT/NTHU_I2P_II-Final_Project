@@ -92,6 +92,10 @@ add_executable(Final-Project
 
     Player/Player.cpp
     Player/Player.h
+    PLayer/MeleePlayer.cpp
+    PLayer/MeleePlayer.hpp
+    PLayer/RangePlayer.cpp
+    PLayer/RangePlayer.hpp
 
     main.cpp
 )

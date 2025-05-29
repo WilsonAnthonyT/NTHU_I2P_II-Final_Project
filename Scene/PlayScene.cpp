@@ -21,7 +21,9 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "Player/MeleePlayer.hpp"
 #include "Player/Player.h"
+#include "Player/RangePlayer.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
@@ -32,6 +34,7 @@ namespace Engine {
 
 int PlayScene::MapWidth = 0, PlayScene::MapHeight = 0;
 bool pressed;
+Engine::Point PlayScene::Camera;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 float PlayScene::Gravity = 0;
 const float PlayScene::DangerTime = 7.61;
@@ -42,6 +45,7 @@ const std::vector<int> PlayScene::code = {
     ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_ENTER
 };
 Player *player1;
+Player *player2;
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 
@@ -97,7 +101,7 @@ void PlayScene::Update(float deltaTime) {
     }
     PlayerGroup->Update(deltaTime);
 
-    Engine::Point target = player1->Position;
+    Engine::Point target = (player1->Position + player2->Position)/2;
     Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
     Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
     // Camera.x = (target.x - screenWidth / 2);
@@ -182,7 +186,8 @@ void PlayScene::ReadMap() {
             case '0': mapData.push_back('0'); break;
             case '1': mapData.push_back('1'); break;
             case '2': mapData.push_back('2'); break;
-            case 'P': mapData.push_back('P'); break;
+            case 'B': mapData.push_back('B'); break;
+            case 'A': mapData.push_back('A'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -211,7 +216,10 @@ void PlayScene::ReadMap() {
                 case '2':
                     mapState[i][j]=TILE_WPLATFORM;
                     break;
-                case 'P':
+                case 'B':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'A':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -225,14 +233,14 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if (mapData[idx-MapWidth] != '1')
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if((mapData[idx-1])!='1'&&idx%MapWidth!=0)
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if (mapData[idx+1] != '1'&&idx%MapWidth!=(MapWidth-1))
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if((mapData[idx-MapWidth-1])!='1'&&idx%MapWidth!=0)
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if (mapData[idx-MapWidth+1] != '1'&&idx%MapWidth!=(MapWidth-1))
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if((mapData[idx-1])!='1'&&idx%MapWidth!=0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx+1] != '1'&&idx%MapWidth!=(MapWidth-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if((mapData[idx-MapWidth-1])!='1'&&idx%MapWidth!=0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth+1] != '1'&&idx%MapWidth!=(MapWidth-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num=='2') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
@@ -245,10 +253,15 @@ void PlayScene::ReadMap() {
                 else if (mapData[idx-1]=='2'||mapData[idx+1]=='2')
                     TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
-            else if (num=='P') {
+            else if (num=='B') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player1 = new Player("play/1panda.png",SpawnCoordinate.x,SpawnCoordinate.y,BlockSize,BlockSize * 2.25,100));
+                PlayerGroup->AddNewObject(player1 = new MeleePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
+            }
+            else if (num=='A') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player2 = new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
             }
         }
     }
