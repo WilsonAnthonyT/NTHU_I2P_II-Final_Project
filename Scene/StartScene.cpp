@@ -29,7 +29,7 @@ void StartScene::Initialize() {
     AddNewObject(new Engine::Label("Tower Defense", "pirulen.ttf", 120, halfW, halfH / 3 + 50, 10, 255, 255, 255, 0.5, 0.5));
 
     //AddNewObject(new Engine::Image("trophy.png", 60, h - 150, 85, 85));
-    btn = new Engine::ImageButton("trophy.png", "trophy.png", 60, h - 150, 85, 85);
+    btn = new Engine::ImageButton("trophy.png", "play/floor.png", 60, h - 150, 85, 85);
     btn->SetOnClickCallback(std::bind(&StartScene::TrophyOnClick, this, 0));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Scoreboard", "pirulen.ttf", 16, 60 + 43, h - 42, 220, 220, 220, 205, 0.5, 0.5));
@@ -52,7 +52,7 @@ void StartScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Quit Game", "pirulen.ttf", 48, halfW, halfH / 2 + 1050, 0, 0, 0, 255, 0.5, 0.5));
 
-    btn = new Engine::ImageButton("play/target-invalid.png", "play/target-invalid.png", w - 100, 0, 100, 100);
+    btn = new Engine::ImageButton("play/target-invalid.png", "play/floor.png", w - 100, 0, 100, 100);
     btn->SetOnClickCallback([]() {
         Engine::GameEngine::shouldQuit = true;
     });

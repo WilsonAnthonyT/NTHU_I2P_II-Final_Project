@@ -227,14 +227,14 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if (mapData[idx-MapWidth] != '1')
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if((mapData[idx-1])!='1'&&idx%MapWidth!=0)
-                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if (mapData[idx+1] != '1'&&idx%MapWidth!=(MapWidth-1))
-                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if((mapData[idx-MapWidth-1])!='1'&&idx%MapWidth!=0)
-                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if (mapData[idx-MapWidth+1] != '1'&&idx%MapWidth!=(MapWidth-1))
-                    TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // if((mapData[idx-1])!='1'&&idx%MapWidth!=0)
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // if (mapData[idx+1] != '1'&&idx%MapWidth!=(MapWidth-1))
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // if((mapData[idx-MapWidth-1])!='1'&&idx%MapWidth!=0)
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // if (mapData[idx-MapWidth+1] != '1'&&idx%MapWidth!=(MapWidth-1))
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num=='2') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
