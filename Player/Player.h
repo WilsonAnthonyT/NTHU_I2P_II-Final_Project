@@ -25,7 +25,6 @@ protected:
     bool goDown;
     float goDownTimer = 0.0f;
     float tolerance;
-
 public:
     Player(std::string img, float x, float y, float speed, float hp);
     void Update(float deltaTime) override;

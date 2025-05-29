@@ -64,7 +64,7 @@ bool Player::IsCollision(float x, float y) {
 
     if (playerLeft < PlayScene::Camera.x || playerRight > ScreenBound) {
         return true;
-        }
+    }
 
     // Ground collisions
     int leftTile = static_cast<int>(playerLeft / PlayScene::BlockSize);

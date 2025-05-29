@@ -28,6 +28,9 @@
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 
+#include "Enemy/Enemy.hpp"
+#include "Enemy/SoldierEnemy.hpp"
+
 namespace Engine {
     class ImageButton;
 }
@@ -46,9 +49,9 @@ const std::vector<int> PlayScene::code = {
 };
 Player *player1;
 Player *player2;
+Enemy *enemy;
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
-
 }
 void PlayScene::Initialize() {
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
@@ -71,6 +74,7 @@ void PlayScene::Initialize() {
     AddNewObject(DebugIndicatorGroup = new Group());
     AddNewObject(EffectGroup = new Group());
     AddNewObject(PlayerGroup = new Group());
+    AddNewObject(EnemyGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
@@ -100,6 +104,7 @@ void PlayScene::Update(float deltaTime) {
         return;
     }
     PlayerGroup->Update(deltaTime);
+    EnemyGroup->Update(deltaTime);
 
     Engine::Point target = (player1->Position + player2->Position)/2;
     Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
@@ -188,6 +193,7 @@ void PlayScene::ReadMap() {
             case '2': mapData.push_back('2'); break;
             case 'B': mapData.push_back('B'); break;
             case 'A': mapData.push_back('A'); break;
+            case 'E': mapData.push_back('E'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -220,6 +226,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'A':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'E':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -262,6 +271,11 @@ void PlayScene::ReadMap() {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2 = new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
+            }
+            else if (num == 'E') {
+                Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                EnemyGroup->AddNewObject((enemy = new SoldierEnemy((int)EnemySpawnCoordinate.x, (int)EnemySpawnCoordinate.y)));
             }
         }
     }

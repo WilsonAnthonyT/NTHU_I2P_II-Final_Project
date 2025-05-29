@@ -22,14 +22,10 @@ add_executable(Final-Project
 #    Bullet/BeamBullet.cpp
 #    Bullet/BeamBullet.hpp
 
-#    Enemy/Enemy.cpp
-#    Enemy/Enemy.hpp
-#    Enemy/SoldierEnemy.cpp
-#    Enemy/SoldierEnemy.hpp
-#    Enemy/PlaneEnemy.cpp
-#    Enemy/PlaneEnemy.hpp
-#    Enemy/TankEnemy.cpp
-#    Enemy/TankEnemy.hpp
+    Enemy/Enemy.cpp
+    Enemy/Enemy.hpp
+    Enemy/SoldierEnemy.cpp
+    Enemy/SoldierEnemy.hpp
 
     Engine/Allegro5Exception.cpp
     Engine/Allegro5Exception.hpp
@@ -98,6 +94,10 @@ add_executable(Final-Project
     PLayer/RangePlayer.hpp
 
     main.cpp
+        Weapon/MeleeWeapon.cpp
+        Weapon/MeleeWeapon.h
+        Weapon/RangeWeapon.cpp
+        Weapon/RangeWeapon.h
 )
 
 IF (WIN32)
