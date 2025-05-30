@@ -98,12 +98,14 @@ public:
     Engine::ImageButton *continueButton;
     Engine::ImageButton *restartButton;
     Engine::ImageButton *exitButton;
+    Engine::ImageButton *enable2nd;
 
     Engine::Label *continueLabel;
     Engine::Label *exitLabel;
     Engine::Label *restartLabel;
     Engine::Label *BGMSlider;
     Engine::Label *SFXSlider;
+    Engine::Label *enable2ndLabel;
 
     Slider *sliderBGM, *sliderSFX;
     //----
@@ -112,5 +114,10 @@ public:
     void RestartOnClick(int state);
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
+
+    Player *player1;
+    Player *player2;
+    bool enable2ndplayer = false;
+    void Enable2ndPlayer(int stage);
 };
 #endif   // PLAYSCENE_HPP

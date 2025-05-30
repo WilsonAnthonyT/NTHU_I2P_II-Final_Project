@@ -111,16 +111,26 @@ void PlayScene::Update(float deltaTime) {
             players.push_back(player);
         }
     }
-
-    Engine::Point target = (players[0]->Position + players[1]->Position)/2;
-    Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
-    Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
-    // Camera.x = (target.x - screenWidth / 2);
-    // Camera.y = (target.y - screenHeight / 2);
-    if (Camera.x < 0)Camera.x = 0;
-    if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
-    if (Camera.y < 0)Camera.y = 0;
-    if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+    if (player1->Visible == true && player2->Visible == true) {
+        Engine::Point target = (players[0]->Position + players[1]->Position)/2;
+        Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
+        Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
+        // Camera.x = (target.x - screenWidth / 2);
+        // Camera.y = (target.y - screenHeight / 2);
+        if (Camera.x < 0)Camera.x = 0;
+        if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
+        if (Camera.y < 0)Camera.y = 0;
+        if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+    }
+    else {
+        Engine::Point target = players[1]->Position;
+        Camera.x = (target.x - screenWidth / 2);
+        Camera.y = (target.y - screenHeight / 2) * 0.75f;
+        if (Camera.x < 0)Camera.x = 0;
+        if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
+        if (Camera.y < 0)Camera.y = 0;
+        if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+    }
 }
 void PlayScene::Draw() const {
     if (IsPaused) {
@@ -153,7 +163,7 @@ void PlayScene::Draw() const {
             }
         }
     }
-    UIGroup->Draw();
+
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
     IScene::OnMouseDown(button, mx, my);
@@ -197,6 +207,7 @@ void PlayScene::ReadMap() {
             case '0': mapData.push_back('0'); break;
             case '1': mapData.push_back('1'); break;
             case '2': mapData.push_back('2'); break;
+            case 'E': mapData.push_back('E'); break;
             case 'B': mapData.push_back('B'); break;
             case 'A': mapData.push_back('A'); break;
             case '\n':
@@ -267,20 +278,22 @@ void PlayScene::ReadMap() {
                 else if (mapData[idx-1]=='2'||mapData[idx+1]=='2')
                     TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
-            else if (num=='B') {
+            else if (num == 'B') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player1 = new MeleePlayer(SpawnCoordinate.x, SpawnCoordinate.y);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(new MeleePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
+                PlayerGroup->AddNewObject(player1);
             }
-            else if (num=='A') {
+            else if (num == 'A') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player2 = (new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
+                PlayerGroup->AddNewObject(player2);
             }
             else if (num == 'E') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                EnemyGroup->AddNewObject((enemy = new SoldierEnemy((int)EnemySpawnCoordinate.x, (int)EnemySpawnCoordinate.y)));
+                EnemyGroup->AddNewObject(new SoldierEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
         }
     }
@@ -298,8 +311,14 @@ void PlayScene::ReadEnemyWave() {
 
 }
 void PlayScene::ConstructUI() {
+    int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w / 2, halfH = h / 2;
 
 }
+
+
+
 
 void PlayScene::UIBtnClicked(int id) {
 
@@ -398,6 +417,17 @@ void PlayScene::CreatePauseUI() {
     SFXSlider = new Engine::Label("SFX: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 150, 0, 0, 0, 255, 0.5, 0.5);
     SFXSlider->Visible = false;
     UIGroup->AddNewObject(SFXSlider);
+
+    //enable 2nd player
+    enable2nd = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", lblPosX - 200,  lblPosY - 350, 400, 100);
+    UIGroup->AddNewControlObject(enable2nd);
+    enable2nd->SetOnClickCallback(std::bind(&PlayScene::Enable2ndPlayer, this, 1));
+    enable2nd->Visible = false;
+    enable2nd->Enabled = false;
+
+    enable2ndLabel = new Engine::Label("2nd Enabled", "pirulen.ttf", 36, lblPosX - 200 + 24, lblPosY - 336, 0, 0, 0, 255, 0, 0);
+    enable2ndLabel->Visible = false;
+    UIGroup->AddNewObject(enable2ndLabel);
 }
 
 //-------For Exit, restart, and Continue Button------------------
@@ -453,5 +483,22 @@ void PlayScene::UpdatePauseState() {
         sliderSFX->Visible = show;
         sliderSFX->Enabled = show;
         SFXSlider->Visible = show;
+    }
+    if (enable2nd) {
+        enable2nd->Visible = show;
+        enable2nd->Enabled = show;
+        enable2ndLabel->Visible = show;
+    }
+}
+
+void PlayScene::Enable2ndPlayer(int stage) {
+    enable2ndplayer = !enable2ndplayer;
+    if (enable2ndplayer) {
+        player1->Visible = true;
+        enable2ndLabel->Text = "2nd Enabled";
+    }
+    else {
+        player1->Visible = false;
+        enable2ndLabel->Text = "2nd Disabled";
     }
 }

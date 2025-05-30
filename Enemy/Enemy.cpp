@@ -71,6 +71,7 @@ void Enemy::Hit(float damage) {
         AudioHelper::PlayAudio("explosion.wav");
     }
 }
+
 void Enemy::ChasePlayer(const std::vector<Engine::Point>& playerPositions, float deltaTime) {
     if (playerPositions.empty()) return;
 
@@ -209,7 +210,7 @@ void Enemy::Update(float deltaTime) {
     // Get player positions
     std::vector<Engine::Point> playerPositions;
     for (auto& player : scene->PlayerGroup->GetObjects()) {
-        playerPositions.push_back(player->Position);
+        if (player->Visible) playerPositions.push_back(player->Position);
     }
     ChasePlayer(playerPositions, deltaTime);
 
