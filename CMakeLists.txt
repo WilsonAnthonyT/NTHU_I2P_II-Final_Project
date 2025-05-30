@@ -13,10 +13,10 @@ file(COPY Resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY allegro_monolith-5.2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(Final-Project
-#    Bullet/Bullet.cpp
-#    Bullet/Bullet.hpp
-#    Bullet/FireBullet.cpp
-#    Bullet/FireBullet.hpp
+    Bullet/Bullet.cpp
+    Bullet/Bullet.hpp
+    Bullet/FireBullet.cpp
+    Bullet/FireBullet.hpp
 #    Bullet/LaserBullet.cpp
 #    Bullet/LaserBullet.hpp
 #    Bullet/BeamBullet.cpp
@@ -94,10 +94,11 @@ add_executable(Final-Project
     PLayer/RangePlayer.hpp
 
     main.cpp
-        Weapon/MeleeWeapon.cpp
-        Weapon/MeleeWeapon.h
-        Weapon/RangeWeapon.cpp
-        Weapon/RangeWeapon.h
+
+    Weapon/MeleeWeapon.cpp
+    Weapon/MeleeWeapon.h
+    Weapon/RangeWeapon.cpp
+    Weapon/RangeWeapon.h
 )
 
 IF (WIN32)

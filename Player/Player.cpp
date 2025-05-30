@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <allegro5/allegro_primitives.h>
+
+#include "Enemy/Enemy.hpp"
 #include "Engine/IScene.hpp"
 #include "Engine/Collider.hpp"
 

@@ -72,7 +72,9 @@ void PlayScene::Initialize() {
     AddNewObject(DebugIndicatorGroup = new Group());
     AddNewObject(EffectGroup = new Group());
     AddNewObject(PlayerGroup = new Group());
+    AddNewObject(WeaponGroup = new Group());
     AddNewObject(EnemyGroup = new Group());
+    AddNewObject(BulletGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
@@ -101,6 +103,8 @@ void PlayScene::Update(float deltaTime) {
         UIGroup->Update(deltaTime);
         return;
     }
+    BulletGroup->Update(deltaTime);
+    WeaponGroup->Update(deltaTime);
     PlayerGroup->Update(deltaTime);
     EnemyGroup->Update(deltaTime);
 
@@ -143,6 +147,7 @@ void PlayScene::Draw() const {
     al_use_transform(&trans);  // set transform for all following drawing
     IScene::Draw();            // will draw tiles/UI, now offset by camera
     PlayerGroup->Draw();       // players, effects, etc.
+    WeaponGroup->Draw();
     al_identity_transform(&trans);
     al_use_transform(&trans);
     //for map debug

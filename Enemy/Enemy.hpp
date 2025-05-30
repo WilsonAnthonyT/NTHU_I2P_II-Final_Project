@@ -10,7 +10,6 @@
 
 class Bullet;
 class PlayScene;
-class Turret;
 
 class Enemy : public Engine::Sprite {
 protected:
@@ -39,7 +38,6 @@ protected:
 public:
     Engine::Point BFSPathfind(const Engine::Point& target);
     float reachEndTime;
-    std::list<Turret *> lockedTurrets;
     std::list<Bullet *> lockedBullets;
     Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, bool boosted);
     virtual void OnDeath();

@@ -25,18 +25,18 @@ PlayScene *Enemy::getPlayScene() {
 }
 
 void Enemy::OnExplode() {
-    getPlayScene()->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> distId(1, 3);
-    std::uniform_int_distribution<std::mt19937::result_type> dist(1, 20);
-    for (int i = 0; i < 10; i++) {
-        // Random add 10 dirty effects.
-        getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
-    }
+    // getPlayScene()->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
+    // std::random_device dev;
+    // std::mt19937 rng(dev());
+    // std::uniform_int_distribution<std::mt19937::result_type> distId(1, 3);
+    // std::uniform_int_distribution<std::mt19937::result_type> dist(1, 20);
+    // for (int i = 0; i < 10; i++) {
+    //     // Random add 10 dirty effects.
+    //     getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
+    // }
 }
 Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, bool boosted) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money), scores(scores), boosted(boosted) {
-    CollisionRadius = radius;
+    CollisionRadius = Size.x/2;
     reachEndTime = 0;
     boostedsoundplayed = false;
     MaxHp = hp;
@@ -55,7 +55,8 @@ Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float
 
 //trying
 void Enemy::OnDeath() {
-    // Default behavior: do nothing
+    auto *scene = getPlayScene();
+    scene->EnemyGroup->RemoveObject(GetObjectIterator());
 }
 
 void Enemy::Hit(float damage) {
@@ -63,12 +64,6 @@ void Enemy::Hit(float damage) {
     if (hp <= 0) {
         OnExplode();
         OnDeath();
-        // Remove all turret's reference to target.
-        for (auto &it : lockedBullets)
-            it->Target = nullptr;
-        getPlayScene()->EarnMoney(money);
-        getPlayScene()->EnemyGroup->RemoveObject(objectIterator);
-        AudioHelper::PlayAudio("explosion.wav");
     }
 }
 
@@ -258,14 +253,12 @@ void Enemy::Update(float deltaTime) {
 void Enemy::Draw() const {
     Sprite::Draw();
     if (Engine::IScene::DebugMode) {
-        float halfSize_x = abs(Size.x) / 2;
-        //std::cout << "SIZE PLAYER X: " << Size.x / 2 << " FROM TILESIZE " << PlayScene::BlockSize << " to " << PlayScene::BlockSize *0.7 /2<< std::endl;
-
-        float EnemyLeft = Position.x - halfSize_x;
-        float EnemyRight = Position.x + halfSize_x;
-        float EnemyTop = abs(Position.y);
-        float EnemyBottom = Position.y + Size.y - tolerance;
-        al_draw_rectangle(EnemyLeft, EnemyTop, EnemyRight, EnemyBottom, al_map_rgb(255, 0, 0), 2.0);
+        float halfSizeX = abs(Size.x / 2);
+        float left = Position.x - halfSizeX;
+        float right = Position.x + halfSizeX ;
+        float top = Position.y;
+        float bottom = Position.y + abs(Size.y);
+        al_draw_rectangle(left, top, right, bottom, al_map_rgb(255,255,0), 3);
     }
 }
 
