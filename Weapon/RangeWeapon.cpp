@@ -33,6 +33,7 @@ void RangeWeapon::Update(float deltaTime) {
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
     if (al_key_down(&keyState, ALLEGRO_KEY_SPACE) && Cooldown<=0) {
+        AudioHelper::PlaySample("laser.wav");
         Cooldown = FireRate;
         float bulletdir = abs(Size.x/2) * (flipped? -1.0f : 1.0f);
         scene->BulletGroup->AddNewObject(new FireBullet(Engine::Point(Position.x + bulletdir, Position.y + Size.y * 2 / 5), Engine::Point(flipped?-1:1,0),flipped*(ALLEGRO_PI),this, speed));

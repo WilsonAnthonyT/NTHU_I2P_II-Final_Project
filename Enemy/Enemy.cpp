@@ -34,6 +34,8 @@ void Enemy::OnExplode() {
     //     // Random add 10 dirty effects.
     //     getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
     // }
+
+    AudioHelper::PlaySample("coins.mp3");
 }
 Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, bool boosted) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money), scores(scores), boosted(boosted) {
     CollisionRadius = Size.x/2;
@@ -252,6 +254,24 @@ void Enemy::Update(float deltaTime) {
 
 void Enemy::Draw() const {
     Sprite::Draw();
+    const float healthBarWidth = abs(Size.x*3/4);
+    const float healthBarHeight = PlayScene::BlockSize/15; // Height of the health bar
+    const float healthBarOffset = PlayScene::BlockSize/6.4; // Offset above the enemy
+
+    // Position of the health bar (centered above the enemy)
+    float healthBarX = Position.x - healthBarWidth/2;
+    float healthBarY = Position.y - Size.y/2 + healthBarOffset;
+
+    // Background (empty health)
+    al_draw_filled_rectangle(healthBarX, healthBarY,
+                            healthBarX + healthBarWidth, healthBarY + healthBarHeight,
+                            al_map_rgb(0, 0, 0)); // Red background
+
+    // Current health
+    float healthRatio = static_cast<float>(hp) / static_cast<float>(MaxHp);
+    al_draw_filled_rectangle(healthBarX, healthBarY,
+                            healthBarX + healthBarWidth * healthRatio, healthBarY + healthBarHeight,
+                            al_map_rgb(255, 0, 0)); // Green health
     if (Engine::IScene::DebugMode) {
         float halfSizeX = abs(Size.x / 2);
         float left = Position.x - halfSizeX;

@@ -111,7 +111,7 @@ namespace Engine {
         /// <param name="freeMemoryOnSceneChanged">Determines whether to free memory between scenes.</param>
         void Start(const std::string &firstSceneName, int fps = 60, int screenW = 800, int screenH = 600, bool fullscreen = false, int reserveSamples = 1000,
                    const char *title = "Pepek",
-                   const char *icon = "icon.png", bool freeMemoryOnSceneChanged = false,
+                   const char *icon = "play/Demon.png", bool freeMemoryOnSceneChanged = false,
                    float deltaTimeThreshold = 0.05);
         /// <summary>
         /// Add a new scene to the game. Should only be called once for each scene.
