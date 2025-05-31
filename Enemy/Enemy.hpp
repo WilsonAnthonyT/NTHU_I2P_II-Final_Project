@@ -41,7 +41,7 @@ public:
     std::list<Bullet *> lockedBullets;
     Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, bool boosted);
     virtual void OnDeath();
-    void Hit(float damage);
+    void Hit(float damage, float PosX);
 
     void UpdatePath(const std::vector<std::vector<int>> &mapDistance);
     void ChasePlayer(const std::vector<Engine::Point>& playerPositions, float deltaTime);
@@ -61,6 +61,12 @@ public:
     void setBoosted(bool boosted);
     void transform();
     static void getHitbox();
+
+    //for knockback
+    float knockbackVelocityX = 0;
+    float knockbackTimer = 0;
+    const float maxKnockbackTime = 0.2f; // 200 ms knockback duration
+    bool isKnockedback = false;
 
 };
 #endif   // ENEMY_HPP
