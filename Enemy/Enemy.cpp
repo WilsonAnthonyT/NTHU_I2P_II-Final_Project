@@ -68,7 +68,7 @@ void Enemy::Hit(float damage, float PosX) {
         OnDeath();
     }
     else {
-        auto *scene = getPlayScene();
+
         // Apply knockback
         float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
         knockbackVelocityX = direction * 300; // Knockback speed in px/sec
@@ -258,7 +258,15 @@ void Enemy::Update(float deltaTime) {
 
     //knockback
     if (isKnockedback) {
-        Position.x += knockbackVelocityX * deltaTime;
+        float newX = Position.x + knockbackVelocityX * deltaTime;
+
+        // Only move if not colliding with wall
+        if (!IsCollision(newX, Position.y, true)) {
+            Position.x = newX;
+        } else {
+            // If hitting wall, bounce back slightly
+            knockbackVelocityX *= -0.3f;
+        }
         knockbackTimer -= deltaTime;
         Tint = al_map_rgb(255, 0, 0);
         if (knockbackTimer <= 0) {
