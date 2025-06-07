@@ -62,17 +62,30 @@ void Enemy::OnDeath() {
     scene->EnemyGroup->RemoveObject(GetObjectIterator());
 }
 
-void Enemy::Hit(float damage, float PosX) {
+void Enemy::Hit(float damage, float PosX, std::string type) {
     hp -= damage;
-    ALLEGRO_COLOR damageColor = al_map_rgb(255, 165, 0);
-    getPlayScene()->DamageTextGroup->AddNewObject(new DamageText(Position.x, Position.y - 10, std::to_string((int)damage), damageColor));
+    ALLEGRO_COLOR damageColor1 = al_map_rgb(255, 165, 0);
+    ALLEGRO_COLOR damageColor2 = al_map_rgb(0, 0, 0);
+    getPlayScene()->DamageTextGroup->AddNewObject(new DamageText(Position.x+5, Position.y - 10, std::to_string((int)damage), damageColor2));
+    getPlayScene()->DamageTextGroup->AddNewObject(new DamageText(Position.x, Position.y - 10, std::to_string((int)damage), damageColor1));
+
     if (hp <= 0) {
         OnExplode();
         OnDeath();
     }
     else {
-        float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
-        knockbackVelocityX = direction * 300;
+        if (type == "melee") {
+            float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
+            knockbackVelocityX = direction * 700;
+        }
+        else if (type == "range") {
+            float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
+            knockbackVelocityX = direction * 300;
+        }
+        else {
+            float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
+            knockbackVelocityX = direction * 300;
+        }
         knockbackTimer = maxKnockbackTime;
         isKnockedback = true;
     }
