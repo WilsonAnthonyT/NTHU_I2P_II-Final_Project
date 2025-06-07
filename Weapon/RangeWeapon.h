@@ -17,7 +17,6 @@ protected:
     const float FireRate;
     int magazine;
     bool flipped;
-    PlayScene *Play;
     float Cooldown;
     const float speed;
 public:

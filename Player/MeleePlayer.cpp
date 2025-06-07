@@ -5,9 +5,12 @@
 #include "Player.h"
 #include "Engine/GameEngine.hpp"
 #include "Scene/PlayScene.hpp"
+#include "Weapon/MeleeWeapon.h"
 
-
-MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryantilt.png",x,y, PlayScene::BlockSize * 2.25,100) {}
+MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryantilt.png",x,y, PlayScene::BlockSize * 2.25,100) {
+    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    scene->WeaponGroup->AddNewObject(new MeleeWeapon("play/lnksword.png",x,y,.4,this, PlayScene::BlockSize*11));
+}
 
 void MeleePlayer::Update(float deltaTime) {
 
