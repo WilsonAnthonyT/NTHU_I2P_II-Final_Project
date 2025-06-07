@@ -17,6 +17,7 @@
 #include "Engine/IScene.hpp"
 #include "Engine/LOG.hpp"
 #include "Scene/PlayScene.hpp"
+#include "UI/Animation/DamageText.h"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/ExplosionEffect.hpp"
 
@@ -63,15 +64,15 @@ void Enemy::OnDeath() {
 
 void Enemy::Hit(float damage, float PosX) {
     hp -= damage;
+    ALLEGRO_COLOR damageColor = al_map_rgb(255, 64, 64);
+    getPlayScene()->DamageTextGroup->AddNewObject(new DamageText(Position.x, Position.y - 10, std::to_string((int)damage), damageColor));
     if (hp <= 0) {
         OnExplode();
         OnDeath();
     }
     else {
-
-        // Apply knockback
         float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
-        knockbackVelocityX = direction * 300; // Knockback speed in px/sec
+        knockbackVelocityX = direction * 300;
         knockbackTimer = maxKnockbackTime;
         isKnockedback = true;
     }

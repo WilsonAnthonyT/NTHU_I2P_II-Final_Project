@@ -99,6 +99,8 @@ add_executable(Final-Project
     Weapon/MeleeWeapon.h
     Weapon/RangeWeapon.cpp
     Weapon/RangeWeapon.h
+        UI/Animation/DamageText.cpp
+        UI/Animation/DamageText.h
 )
 
 IF (WIN32)

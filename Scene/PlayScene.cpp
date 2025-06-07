@@ -30,6 +30,7 @@
 
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
+#include "UI/Animation/DamageText.h"
 
 namespace Engine {
     class ImageButton;
@@ -75,6 +76,7 @@ void PlayScene::Initialize() {
     AddNewObject(WeaponGroup = new Group());
     AddNewObject(EnemyGroup = new Group());
     AddNewObject(BulletGroup = new Group());
+    AddNewObject(DamageTextGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
@@ -111,7 +113,9 @@ void PlayScene::Update(float deltaTime) {
     WeaponGroup->Update(deltaTime);
     PlayerGroup->Update(deltaTime);
     EnemyGroup->Update(deltaTime);
+    DamageTextGroup->Update(deltaTime);
 
+    //players
     std::vector<Player*> players;
     for (auto& it : PlayerGroup->GetObjects()) {
         Player *player = dynamic_cast<Player *>(it);
@@ -119,6 +123,15 @@ void PlayScene::Update(float deltaTime) {
             players.push_back(player);
         }
     }
+
+    //damage text
+    for (auto& obj : DamageTextGroup->GetObjects()) {
+        DamageText* dt = dynamic_cast<DamageText*>(obj);
+        if (dt && dt->removeDT) {
+            DamageTextGroup->RemoveObject(dt->GetObjectIterator());
+        }
+    }
+
     if (player1->Visible == true && player2->Visible == true) {
         Engine::Point target = (players[0]->Position + players[1]->Position)/2;
         Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
