@@ -26,6 +26,7 @@ public:
     MeleeWeapon(std::string img, float x, float y, float Rr,Player *player, float speed);
     void Update(float deltaTime) override;
     void Draw() const override;
+    virtual void RotateAnimation(float deltaTime);
 };
 
 #endif

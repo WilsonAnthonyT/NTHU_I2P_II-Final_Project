@@ -20,7 +20,6 @@ Player::Player(std::string img, float x, float y, float speed, float hp): Sprite
     goDown = false;
     // Calculate jump force for exactly 1.5 blocks (96 pixels) high
     jumpForce = sqrt(2 * PlayScene::Gravity * ((PlayScene::BlockSize)/2)*3); // 192 pixels/s
-    Size = Engine::Point(PlayScene::BlockSize * 0.7, PlayScene::BlockSize * 0.7);
     Anchor = Engine::Point(0.5, 0);
     tolerance = 1.0 / 64.0 * PlayScene::BlockSize;
 }

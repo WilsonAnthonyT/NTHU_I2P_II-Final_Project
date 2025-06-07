@@ -101,6 +101,8 @@ add_executable(Final-Project
     Weapon/RangeWeapon.h
         UI/Animation/DamageText.cpp
         UI/Animation/DamageText.h
+        Weapon/LinkWeapon.cpp
+        Weapon/LinkWeapon.h
 )
 
 IF (WIN32)

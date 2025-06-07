@@ -11,25 +11,24 @@
 #include "Scene/PlayScene.hpp"
 
 #include "MeleeWeapon.h"
+#include "LinkWeapon.h"
 
 MeleeWeapon::MeleeWeapon(std::string img, float x, float y, float Rr,Player *player, float speed): Sprite(img,x,y),RotationRate(Rr), flipped(false),player(player), speed(speed){
-    Size = Engine::Point(PlayScene::BlockSize * 0.7, PlayScene::BlockSize * 0.7);
-    Anchor = Engine::Point(0, 1);
-
     isRotating = false;
     cooldown = 0;
+
 }
 
 void MeleeWeapon::Update(float deltaTime){
     Play = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    Position.y=player->Position.y + PlayScene::BlockSize*0.7;
+    Position.y=player->Position.y + PlayScene::BlockSize*0.55;
     flipped=player->flipped;
     if (flipped) {
         Size.x = fabs(Size.x);
-        Position.x=player->Position.x-PlayScene::BlockSize*0.02;
+        Position.x=player->Position.x+PlayScene::BlockSize*0.18;
     }else {
         Size.x = -fabs(Size.x);
-        Position.x=player->Position.x+PlayScene::BlockSize*0.02;
+        Position.x=player->Position.x-PlayScene::BlockSize*0.18;
     }
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
@@ -40,25 +39,7 @@ void MeleeWeapon::Update(float deltaTime){
         rotationProgress = 0.0f;
         cooldown = RotationRate;
     }
-
-    if (isRotating) {
-        rotationProgress += deltaTime + deltaTime/speed * speed;
-
-        //Rotate to 180
-        if (rotationProgress <= 1.0f) {
-            this->Rotation = ALLEGRO_PI/2 * rotationProgress;
-        }
-
-        // back to 0
-        else if (rotationProgress <= 2.0f) {
-            this->Rotation = ALLEGRO_PI/2 * (2.0f - rotationProgress);  // π to 0
-        }
-        // Animation complete
-        else {
-            this->Rotation = 0;
-            isRotating = false;
-        }
-    }
+    if (isRotating) RotateAnimation(deltaTime);
 
     if (cooldown > 0) cooldown -= deltaTime;
     else cooldown = 0;
@@ -67,5 +48,26 @@ void MeleeWeapon::Update(float deltaTime){
 void MeleeWeapon::Draw() const {
     Sprite::Draw();
 }
+
+void MeleeWeapon::RotateAnimation(float deltaTime) {
+    rotationProgress += deltaTime * speed/PlayScene::BlockSize;
+    //Rotate to 180
+    if (rotationProgress <= 1.0f) {
+        if (flipped) this->Rotation = -(ALLEGRO_PI/2 * rotationProgress) / (1 - deltaTime);
+        else this->Rotation = ALLEGRO_PI/2 * rotationProgress / (1 + deltaTime);
+    }
+
+    // back to 0
+    else if (rotationProgress <= 2.0f) {
+        if (flipped) this->Rotation = -(ALLEGRO_PI/2 * (2.0f - rotationProgress)) / (1 - deltaTime);
+        else this->Rotation = ALLEGRO_PI/2 * (2.0f - rotationProgress) / (1 + deltaTime);  // π to 0
+    }
+    // Animation complete
+    else {
+        this->Rotation = 0;
+        isRotating = false;
+    }
+}
+
 
 
