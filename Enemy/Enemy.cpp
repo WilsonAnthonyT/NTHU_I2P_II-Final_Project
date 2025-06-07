@@ -64,7 +64,7 @@ void Enemy::OnDeath() {
 
 void Enemy::Hit(float damage, float PosX) {
     hp -= damage;
-    ALLEGRO_COLOR damageColor = al_map_rgb(255, 64, 64);
+    ALLEGRO_COLOR damageColor = al_map_rgb(255, 165, 0);
     getPlayScene()->DamageTextGroup->AddNewObject(new DamageText(Position.x, Position.y - 10, std::to_string((int)damage), damageColor));
     if (hp <= 0) {
         OnExplode();
@@ -286,28 +286,27 @@ void Enemy::Update(float deltaTime) {
 void Enemy::Draw() const {
     Sprite::Draw();
 
-    //health bar
-    const float healthBarWidth = abs(Size.x*3/4);
-    const float healthBarHeight = PlayScene::BlockSize/15; // Height of the health bar
-    const float healthBarOffset = PlayScene::BlockSize/6.4; // Offset above the enemy
-
-    // Position of the health bar (centered above the enemy)
-    float healthBarX = Position.x - healthBarWidth/2;
-    float healthBarY = Position.y - Size.y/2 + healthBarOffset;
-
-    // Background (empty health)
-    al_draw_filled_rectangle(healthBarX, healthBarY,
-                            healthBarX + healthBarWidth, healthBarY + healthBarHeight,
-                            al_map_rgb(0, 0, 0)); // Red background
-
-    // Current health
-    float healthRatio = static_cast<float>(hp) / static_cast<float>(MaxHp);
-    al_draw_filled_rectangle(healthBarX, healthBarY,
-                            healthBarX + healthBarWidth * healthRatio, healthBarY + healthBarHeight,
-                            al_map_rgb(255, 0, 0)); // Green health
-
     //knockback
     if (Engine::IScene::DebugMode) {
+        //health bar
+        const float healthBarWidth = abs(Size.x*3/4);
+        const float healthBarHeight = PlayScene::BlockSize/15; // Height of the health bar
+        const float healthBarOffset = PlayScene::BlockSize/6.4; // Offset above the enemy
+
+        float healthBarX = Position.x - healthBarWidth/2;
+        float healthBarY = Position.y - Size.y/2 + healthBarOffset;
+
+        al_draw_filled_rectangle(healthBarX, healthBarY,
+                                healthBarX + healthBarWidth, healthBarY + healthBarHeight,
+                                al_map_rgb(0, 0, 0)); // Red background
+
+        float healthRatio = static_cast<float>(hp) / static_cast<float>(MaxHp);
+        al_draw_filled_rectangle(healthBarX, healthBarY,
+                                healthBarX + healthBarWidth * healthRatio, healthBarY + healthBarHeight,
+                                al_map_rgb(255, 0, 0)); // Green health
+
+        //HITBOX
+
         float halfSizeX = abs(Size.x / 2);
         float left = Position.x - halfSizeX;
         float right = Position.x + halfSizeX ;
