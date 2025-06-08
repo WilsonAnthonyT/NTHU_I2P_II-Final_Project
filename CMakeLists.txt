@@ -109,6 +109,10 @@ add_executable(Final-Project
         Weapon/LinkShield.h
         Weapon/MeleeShield.cpp
         Weapon/MeleeShield.h
+        Weapon/BasicSword.cpp
+        Weapon/BasicSword.h
+        Weapon/BasicShield.cpp
+        Weapon/BasicShield.h
 
 
 )

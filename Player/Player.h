@@ -30,7 +30,7 @@ public:
     Player(std::string img, float x, float y, float speed, float hp);
     void Update(float deltaTime) override;
     void Draw() const override;
-
+    void Hit(float damage, float PosX);
     bool IsCollision(float x, float y);
 };
 

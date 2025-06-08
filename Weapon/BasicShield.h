@@ -4,11 +4,13 @@
 
 #ifndef BASICSHIELD_H
 #define BASICSHIELD_H
+#include "MeleeShield.h"
+#include "Engine/Sprite.hpp"
 
-
-
-class BasicShield {
-
+class Player;
+class BasicShield : public MeleeShield{
+    public:
+    BasicShield(float x, float y, Player *player);
 };
 
 
