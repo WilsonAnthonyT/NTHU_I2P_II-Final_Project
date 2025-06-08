@@ -128,6 +128,13 @@ void PlayScene::Update(float deltaTime) {
         }
     }
 
+    for (auto& it : players) {
+        if (it->hp <= 0) {
+            PlayerGroup->RemoveObject(it->GetObjectIterator());
+            Engine::GameEngine::GetInstance().ChangeScene("lose");
+        }
+    }
+
     //damage text
     for (auto& obj : DamageTextGroup->GetObjects()) {
         DamageText* dt = dynamic_cast<DamageText*>(obj);

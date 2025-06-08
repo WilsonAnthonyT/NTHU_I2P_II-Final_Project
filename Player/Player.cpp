@@ -26,13 +26,27 @@ Player::Player(std::string img, float x, float y, float speed, float hp): Sprite
     armor = 0.0f;
 }
 
-void Player::Update(float deltaTime) {
-
-}
+void Player::Update(float deltaTime) {}
 
 void Player::Draw() const {
     Sprite::Draw();
     if (Engine::IScene::DebugMode) {
+        const float healthBarWidth = abs(Size.x*3/4);
+        const float healthBarHeight = PlayScene::BlockSize/15; // Height of the health bar
+        const float healthBarOffset = PlayScene::BlockSize/6.4; // Offset above the enemy
+
+        float healthBarX = Position.x - healthBarWidth/2;
+        float healthBarY = Position.y - Size.y/2 + healthBarOffset;
+
+        al_draw_filled_rectangle(healthBarX, healthBarY,
+                                healthBarX + healthBarWidth, healthBarY + healthBarHeight,
+                                al_map_rgb(0, 0, 0)); // Red background
+
+        float healthRatio = static_cast<float>(hp) / static_cast<float>(MaxHp);
+        al_draw_filled_rectangle(healthBarX, healthBarY,
+                                healthBarX + healthBarWidth * healthRatio, healthBarY + healthBarHeight,
+                                al_map_rgb(255, 0, 0)); // Green health
+
         float halfSize_x = abs(Size.x) / 2;
         //std::cout << "SIZE PLAYER X: " << Size.x / 2 << " FROM TILESIZE " << PlayScene::BlockSize << " to " << PlayScene::BlockSize *0.7 /2<< std::endl;
 
@@ -133,3 +147,60 @@ bool Player::IsCollision(float x, float y) {
     }
     return false;
 }
+
+void Player::Hit(Player *player, float time) {
+    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    if (!scene) return;
+
+    float halfSize_x = abs(player->Size.x) / 2;
+    float playerLeft = player->Position.x - halfSize_x + tolerance;
+    float playerRight = player->Position.x + halfSize_x - tolerance;
+    float playerTop = player->Position.y + tolerance;
+    float playerBottom = player->Position.y + player->Size.y - tolerance;
+
+    for (auto &it : scene->EnemyGroup->GetObjects()) {
+        Enemy* enemy = dynamic_cast<Enemy*>(it);
+        if (!enemy) continue;
+
+        int half_enemy = abs(enemy->Size.x) / 2;
+
+        float enemy_Left = enemy->Position.x - half_enemy;
+        float enemy_Right = enemy->Position.x + half_enemy;
+        float enemy_Top = enemy->Position.y;
+        float enemy_Bottom = enemy->Position.y + enemy->Size.y;
+
+        bool overlapX = playerLeft < enemy_Right && playerRight > enemy_Left;
+        bool overlapY = playerTop < enemy_Bottom && playerBottom > enemy_Top;
+
+        if (overlapX && overlapY && !isKnockedback) {
+            float direction = (abs(enemy->Position.x) > abs(player->Position.x)) ? -1 : 1;
+            player->knockbackVelocityX = direction * PlayScene::BlockSize * 2;
+
+            player->hp -= enemy->getDamage();
+            this->Tint = al_map_rgb(155,0,0);
+
+            knockbackTimer = maxKnockbackTime;
+            isKnockedback = true;
+        }
+        else if (isKnockedback){
+            float newX = this->Position.x + knockbackVelocityX * time;
+
+            // Only move if not colliding with wall
+            if (!IsCollision(newX, this->Position.y)) {
+                Position.x = newX;
+            } else {
+                // If hitting wall, bounce back slightly
+                knockbackVelocityX *= -0.3f;
+            }
+            knockbackTimer -= time;
+            if (knockbackTimer <= 0) {
+                isKnockedback = false;
+                knockbackVelocityX = 0;
+                Tint = al_map_rgb(255, 255, 255);
+            }
+
+            knockbackVelocityX -= time * maxKnockbackTime;
+        }
+    }
+}
+

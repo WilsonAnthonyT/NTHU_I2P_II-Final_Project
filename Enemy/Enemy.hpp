@@ -19,7 +19,6 @@ protected:
     int money;
     //for scores
     int scores;
-    bool boosted;
     bool boostedsoundplayed;
     PlayScene *getPlayScene();
     virtual void OnExplode();
@@ -34,12 +33,14 @@ protected:
     float goDownTimer = 0.0f;
     float tolerance;
     float VelocityX;
+    float damage;
 
 public:
+    int getDamage(){return damage;};
     Engine::Point BFSPathfind(const Engine::Point& target);
     float reachEndTime;
     std::list<Bullet *> lockedBullets;
-    Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, bool boosted);
+    Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, float dmg);
     virtual void OnDeath();
     void Hit(float damage, float PosX, std::string type);
 
@@ -55,12 +56,6 @@ public:
     float getHp() const;
     float getSpeed() const;
     void SetSpeed(float speed);
-
-    //for boosterEnemy
-    bool isBoosted() const;
-    void setBoosted(bool boosted);
-    void transform();
-    static void getHitbox();
 
     //for knockback
     float knockbackVelocityX = 0;

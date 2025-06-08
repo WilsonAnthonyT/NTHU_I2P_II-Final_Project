@@ -13,7 +13,6 @@ class PlayScene;
 class Player : public Engine::Sprite{
 protected:
     float MaxHp;
-    float hp;
     float TintTimer;
     PlayScene *Play;
     float jumpForce;
@@ -22,6 +21,7 @@ protected:
     float tolerance;
     float armor;
 public:
+    float hp;
     float speed;
     float verticalVelocity;
     bool isJumping;
@@ -34,7 +34,11 @@ public:
     bool IsCollision(float x, float y);
     bool InteractiveBlockCollision(float x, float y);
 
-    void push();
+    void Hit(Player* player, float time);
+    bool isKnockedback = false;
+    float knockbackVelocityX = 0;
+    float knockbackTimer = 0;
+    const float maxKnockbackTime = 0.5f;
 };
 
 

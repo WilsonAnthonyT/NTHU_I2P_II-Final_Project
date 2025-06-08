@@ -38,7 +38,7 @@ void Enemy::OnExplode() {
 
     AudioHelper::PlaySample("coins.mp3");
 }
-Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, bool boosted) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money), scores(scores), boosted(boosted) {
+Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, float dmg) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money), scores(scores), damage(dmg) {
     CollisionRadius = Size.x/2;
     reachEndTime = 0;
     boostedsoundplayed = false;
@@ -390,18 +390,6 @@ float Enemy::getSpeed() const {
 
 void Enemy::SetSpeed(float speed) {
     this->speed = speed;
-}
-
-bool Enemy::isBoosted() const {
-    return boosted;
-}
-
-void Enemy::setBoosted(bool boosted) {
-    this->boosted = boosted;
-}
-
-void Enemy::transform() {
-    getPlayScene()->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
 }
 
 
