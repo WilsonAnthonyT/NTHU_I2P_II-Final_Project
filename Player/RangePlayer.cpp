@@ -8,10 +8,10 @@
 #include "Scene/PlayScene.hpp"
 #include "Weapon/RangeWeapon.h"
 
-RangePlayer::RangePlayer(float x, float y) : Player("play/1panda.png",x,y, PlayScene::BlockSize * 2.25,100) {
+RangePlayer::RangePlayer(float x, float y) : Player("play/arwen.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    scene->WeaponGroup->AddNewObject(new RangeWeapon("play/guns.png",x,y,.4,30,this, PlayScene::BlockSize*11));
-    Size = Engine::Point(PlayScene::BlockSize * 0.7, PlayScene::BlockSize * 0.7);
+    scene->WeaponGroup->AddNewObject(new RangeWeapon("play/pistol.png",x,y,.4,30,this, PlayScene::BlockSize*11));
+    Size = Engine::Point(PlayScene::BlockSize * 0.4, PlayScene::BlockSize * 0.6);
 }
 
 
