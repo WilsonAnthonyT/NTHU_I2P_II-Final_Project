@@ -62,8 +62,6 @@ namespace Engine {
 
         display = al_create_display(fullwidth, fullheight);
 
-        PlayScene::BlockSize = fullscreen ? fullwidth/16 : screenW/16;
-
         // If we still don't have a display, throw error
         if (!display) {
             throw Allegro5Exception("failed to create display");
@@ -307,7 +305,6 @@ namespace Engine {
         int displayWidth = fullscreen ? (info.x2 - info.x1) : screenW;
         int displayHeight = fullscreen ? (info.y2 - info.y1) : screenH;
 
-        PlayScene::BlockSize = fullscreen ? displayWidth/16 : screenW/16;
         al_set_new_display_flags(fullscreen ? ALLEGRO_FULLSCREEN_WINDOW : ALLEGRO_WINDOWED);
 
         // Create new display
