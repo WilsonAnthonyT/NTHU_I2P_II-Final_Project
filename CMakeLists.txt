@@ -103,6 +103,8 @@ add_executable(Final-Project
         UI/Animation/DamageText.h
         Weapon/LinkWeapon.cpp
         Weapon/LinkWeapon.h
+        InteractiveBlock/Box.h
+        InteractiveBlock/Box.cpp
 )
 
 IF (WIN32)

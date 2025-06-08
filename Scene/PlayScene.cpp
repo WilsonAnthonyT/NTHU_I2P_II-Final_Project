@@ -30,6 +30,7 @@
 
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
+#include "InteractiveBlock/Box.h"
 #include "UI/Animation/DamageText.h"
 
 namespace Engine {
@@ -77,6 +78,7 @@ void PlayScene::Initialize() {
     AddNewObject(EnemyGroup = new Group());
     AddNewObject(BulletGroup = new Group());
     AddNewObject(DamageTextGroup = new Group());
+    AddNewObject(InteractiveBlockGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
@@ -114,6 +116,7 @@ void PlayScene::Update(float deltaTime) {
     PlayerGroup->Update(deltaTime);
     EnemyGroup->Update(deltaTime);
     DamageTextGroup->Update(deltaTime);
+    InteractiveBlockGroup->Update(deltaTime);
 
     //players
     std::vector<Player*> players;
@@ -232,6 +235,7 @@ void PlayScene::ReadMap() {
             case 'E': mapData.push_back('E'); break;
             case 'B': mapData.push_back('B'); break;
             case 'A': mapData.push_back('A'); break;
+            case 'X': mapData.push_back('X'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -267,6 +271,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'E':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'X':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -320,6 +327,11 @@ void PlayScene::ReadMap() {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new SoldierEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }
+            else if (num == 'X') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new Box("play/box.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }
         }
     }

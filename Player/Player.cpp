@@ -9,6 +9,7 @@
 
 #include "Engine/GameEngine.hpp"
 #include "Engine/Sprite.hpp"
+#include "InteractiveBlock/Box.h"
 #include "Scene/PlayScene.hpp"
 
 Player::Player(std::string img, float x, float y, float speed, float hp): Sprite(img,x,y),speed(speed), hp(hp),flipped(false){
@@ -114,6 +115,20 @@ bool Player::IsCollision(float x, float y) {
             }
         }
     }
+
+    for (auto& obj : scene->InteractiveBlockGroup->GetObjects()) {
+        Box* block = dynamic_cast<Box*>(obj);
+        if (block && block->Visible) {
+            float blockLeft = block->Position.x - block->Size.x/2 + PlayScene::BlockSize/16;
+            float blockRight = block->Position.x + block->Size.x/2 - PlayScene::BlockSize/16;
+            float blockTop = block->Position.y;
+            float blockBottom = block->Position.y + block->Size.y;
+
+            bool overlapX = playerLeft < blockRight && playerRight > blockLeft;
+            bool overlapY = playerTop < blockBottom && playerBottom > blockTop;
+
+            if (overlapX && overlapY) return true;
+        }
+    }
     return false;
 }
-
