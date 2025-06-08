@@ -12,7 +12,7 @@
 
 class PlayScene;
 
-class LightEffect : public Engine::Sprite {
+class SlashEffect : public Engine::Sprite {
 protected:
     PlayScene *getPlayScene();
     float timeTicks;
@@ -22,7 +22,7 @@ protected:
     bool flipped;
 
 public:
-    LightEffect(float x, float y, bool flipped);
+    SlashEffect(float x, float y, bool flipped);
     void Update(float deltaTime) override;
     void Draw() const override;
 };

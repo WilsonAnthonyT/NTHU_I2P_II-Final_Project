@@ -13,7 +13,7 @@
 #include "MeleeWeapon.h"
 #include "LinkWeapon.h"
 #include "UI/Animation/DirtyEffect.hpp"
-#include "UI/Animation/LightEffect.hpp"
+#include "UI/Animation/SlashEffect.hpp"
 
 MeleeWeapon::MeleeWeapon(std::string img, float x, float y, float Rr,Player *player, float speed, float damage): Sprite(img,x,y),RotationRate(Rr), flipped(false),player(player), speed(speed), damage(damage){
     isRotating = false;
@@ -107,9 +107,9 @@ void MeleeWeapon::CheckHitEnemies(Player *player) {
     float halfSize_y = abs(player->Size.y) / 2;
     if (!effectPlayed) {
         if (flipped) {
-            scene->EffectGroup->AddNewObject(new LightEffect(player->Position.x - halfSize_x, player->Position.y + halfSize_y, flipped));
+            scene->EffectGroup->AddNewObject(new SlashEffect(player->Position.x - halfSize_x, player->Position.y + halfSize_y, flipped));
         }
-        else scene->EffectGroup->AddNewObject(new LightEffect(player->Position.x + halfSize_x, player->Position.y + halfSize_y, flipped));
+        else scene->EffectGroup->AddNewObject(new SlashEffect(player->Position.x + halfSize_x, player->Position.y + halfSize_y, flipped));
         effectPlayed = true;
     }
     if (scene) {

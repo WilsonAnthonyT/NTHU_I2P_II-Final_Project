@@ -9,19 +9,19 @@
 #include "Engine/Group.hpp"
 #include "Engine/IScene.hpp"
 #include "Engine/Resources.hpp"
-#include "LightEffect.hpp"
+#include "SlashEffect.hpp"
 #include "Scene/PlayScene.hpp"
 
-PlayScene *LightEffect::getPlayScene() {
+PlayScene *SlashEffect::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
-LightEffect::LightEffect(float x, float y, bool flipped) : Sprite("play/slash1.png", x, y), timeTicks(0), flipped(flipped) {
+SlashEffect::SlashEffect(float x, float y, bool flipped) : Sprite("play/slash1.png", x, y), timeTicks(0), flipped(flipped) {
     for (int i = 2; i <= 5; i++) {
         bmps.push_back(Engine::Resources::GetInstance().GetBitmap("play/slash" + std::to_string(i) + ".png"));
     }
     Size = Engine::Point(PlayScene::BlockSize, PlayScene::BlockSize);
 }
-void LightEffect::Update(float deltaTime) {
+void SlashEffect::Update(float deltaTime) {
     timeTicks += deltaTime * 2.0f;
 
     // Smooth scaling
@@ -47,7 +47,7 @@ void LightEffect::Update(float deltaTime) {
 
 
 
-void LightEffect::Draw() const {
+void SlashEffect::Draw() const {
     ALLEGRO_COLOR tintColor = al_map_rgba_f(1.0f, 1.0f, 1.0f, alpha);
     float drawX = Position.x - Anchor.x * Size.x;
     float drawY = Position.y - Anchor.y * Size.y;

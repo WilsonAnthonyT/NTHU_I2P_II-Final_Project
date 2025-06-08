@@ -74,8 +74,8 @@ add_executable(Final-Project
     UI/Animation/DirtyEffect.hpp
     UI/Animation/ExplosionEffect.cpp
     UI/Animation/ExplosionEffect.hpp
-    UI/Animation/LightEffect.cpp
-    UI/Animation/LightEffect.hpp
+        UI/Animation/SlashEffect.cpp
+        UI/Animation/SlashEffect.hpp
     UI/Animation/Plane.cpp
     UI/Animation/Plane.hpp
     UI/Animation/DamageText.cpp
