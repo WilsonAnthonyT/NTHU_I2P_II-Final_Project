@@ -74,8 +74,12 @@ add_executable(Final-Project
     UI/Animation/DirtyEffect.hpp
     UI/Animation/ExplosionEffect.cpp
     UI/Animation/ExplosionEffect.hpp
+    UI/Animation/LightEffect.cpp
+    UI/Animation/LightEffect.hpp
     UI/Animation/Plane.cpp
     UI/Animation/Plane.hpp
+    UI/Animation/DamageText.cpp
+    UI/Animation/DamageText.h
 
     UI/Component/Image.cpp
     UI/Component/Image.hpp
@@ -99,10 +103,10 @@ add_executable(Final-Project
     Weapon/MeleeWeapon.h
     Weapon/RangeWeapon.cpp
     Weapon/RangeWeapon.h
-        UI/Animation/DamageText.cpp
-        UI/Animation/DamageText.h
-        Weapon/LinkWeapon.cpp
-        Weapon/LinkWeapon.h
+    Weapon/LinkWeapon.cpp
+    Weapon/LinkWeapon.h
+
+
 )
 
 IF (WIN32)

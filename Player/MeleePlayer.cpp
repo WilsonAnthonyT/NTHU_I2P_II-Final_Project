@@ -10,11 +10,13 @@
 
 MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryantilt.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    scene->WeaponGroup->AddNewObject(new LinkWeapon(x, y, this));
+    auto *weapon = new LinkWeapon(x, y, this);
+    scene->WeaponGroup->AddNewObject(weapon);
     Size = Engine::Point(PlayScene::BlockSize * 0.45, PlayScene::BlockSize * 0.7);
 }
 
 void MeleePlayer::Update(float deltaTime) {
+    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
 
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
@@ -66,7 +68,6 @@ void MeleePlayer::Update(float deltaTime) {
     }
 
     // Apply gravity and vertical movement
-    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (scene) {
         verticalVelocity += PlayScene::Gravity * deltaTime;
     }

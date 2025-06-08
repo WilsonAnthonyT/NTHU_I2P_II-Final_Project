@@ -12,6 +12,8 @@
 
 #include "MeleeWeapon.h"
 #include "LinkWeapon.h"
+#include "UI/Animation/DirtyEffect.hpp"
+#include "UI/Animation/LightEffect.hpp"
 
 MeleeWeapon::MeleeWeapon(std::string img, float x, float y, float Rr,Player *player, float speed, float damage): Sprite(img,x,y),RotationRate(Rr), flipped(false),player(player), speed(speed), damage(damage){
     isRotating = false;
@@ -33,7 +35,7 @@ void MeleeWeapon::Update(float deltaTime){
     al_get_keyboard_state(&keyState);
 
     if (al_key_down(&keyState, ALLEGRO_KEY_N) && !isRotating && cooldown <= 0) {
-        AudioHelper::PlaySample("shovel-sound.mp3");
+        AudioHelper::PlaySample("slash.mp3");
         isRotating = true;
         rotationProgress = 0.0f;
         cooldown = RotationRate;
@@ -86,6 +88,7 @@ void MeleeWeapon::RotateAnimation(float deltaTime) {
     else {
         this->Rotation = 0;
         isRotating = false;
+        effectPlayed = false;
         PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
         if (scene) {
             for (auto& e : scene->EnemyGroup->GetObjects()) {
@@ -100,11 +103,19 @@ void MeleeWeapon::RotateAnimation(float deltaTime) {
 
 void MeleeWeapon::CheckHitEnemies(Player *player) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    float halfSize_x = abs(player->Size.x) / 2;
+    float halfSize_y = abs(player->Size.y) / 2;
+    if (!effectPlayed) {
+        if (flipped) {
+            scene->EffectGroup->AddNewObject(new LightEffect(player->Position.x - halfSize_x, player->Position.y + halfSize_y, flipped));
+        }
+        else scene->EffectGroup->AddNewObject(new LightEffect(player->Position.x + halfSize_x, player->Position.y + halfSize_y, flipped));
+        effectPlayed = true;
+    }
     if (scene) {
         for (auto& e : scene->EnemyGroup->GetObjects()) {
             Enemy* enemy = dynamic_cast<Enemy*>(e);
             if (enemy && enemy->Visible) {
-                float halfSize_x = abs(player->Size.x) / 2;
                 float distanceX = player->Position.x - enemy->Position.x;
                 float distanceY = player->Position.y - enemy->Position.y;
                 float distance = sqrt(distanceX * distanceX + distanceY * distanceY);

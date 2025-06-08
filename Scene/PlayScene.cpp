@@ -114,6 +114,7 @@ void PlayScene::Update(float deltaTime) {
     PlayerGroup->Update(deltaTime);
     EnemyGroup->Update(deltaTime);
     DamageTextGroup->Update(deltaTime);
+    EffectGroup->Update(deltaTime);
 
     //players
     std::vector<Player*> players;
@@ -165,6 +166,7 @@ void PlayScene::Draw() const {
     IScene::Draw();            // will draw tiles/UI, now offset by camera
     PlayerGroup->Draw();       // players, effects, etc.
     WeaponGroup->Draw();
+    EffectGroup->Draw();
     al_identity_transform(&trans);
     al_use_transform(&trans);
     //for map debug
@@ -342,9 +344,6 @@ void PlayScene::ConstructUI() {
     int halfW = w / 2, halfH = h / 2;
 
 }
-
-
-
 
 void PlayScene::UIBtnClicked(int id) {
 

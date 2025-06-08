@@ -18,10 +18,13 @@ protected:
     float timeTicks;
     std::vector<std::shared_ptr<ALLEGRO_BITMAP>> bmps;
     float timeSpan = 0.5;
+    float alpha = 1.0f; // Full opacity by default
+    bool flipped;
 
 public:
-    LightEffect(float x, float y);
+    LightEffect(float x, float y, bool flipped);
     void Update(float deltaTime) override;
+    void Draw() const override;
 };
 
 

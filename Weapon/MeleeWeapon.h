@@ -19,6 +19,7 @@ protected:
     bool flipped;
     const float speed;
     bool isRotating;
+    bool effectPlayed = false;
 
     float rotationProgress;
     float cooldown;
