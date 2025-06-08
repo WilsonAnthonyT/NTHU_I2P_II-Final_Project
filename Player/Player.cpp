@@ -177,12 +177,6 @@ void Player::Hit(Player *player, float time) {
             player->knockbackVelocityX = direction * PlayScene::BlockSize * 2;
 
             player->hp -= enemy->getDamage();
-
-            if (player->hp <= 0) {
-                //scene->RemoveObject(player->GetObjectIterator());
-                Engine::GameEngine::GetInstance().ChangeScene("lose");
-            }
-
             this->Tint = al_map_rgb(155,0,0);
 
             knockbackTimer = maxKnockbackTime;
