@@ -74,8 +74,8 @@ add_executable(Final-Project
     UI/Animation/DirtyEffect.hpp
     UI/Animation/ExplosionEffect.cpp
     UI/Animation/ExplosionEffect.hpp
-        UI/Animation/SlashEffect.cpp
-        UI/Animation/SlashEffect.hpp
+    UI/Animation/SlashEffect.cpp
+    UI/Animation/SlashEffect.hpp
     UI/Animation/Plane.cpp
     UI/Animation/Plane.hpp
     UI/Animation/DamageText.cpp
@@ -105,16 +105,17 @@ add_executable(Final-Project
     Weapon/RangeWeapon.h
     Weapon/LinkWeapon.cpp
     Weapon/LinkWeapon.h
-        Weapon/LinkShield.cpp
-        Weapon/LinkShield.h
-        Weapon/MeleeShield.cpp
-        Weapon/MeleeShield.h
-        Weapon/BasicSword.cpp
-        Weapon/BasicSword.h
-        Weapon/BasicShield.cpp
-        Weapon/BasicShield.h
+    Weapon/LinkShield.cpp
+    Weapon/LinkShield.h
+    Weapon/MeleeShield.cpp
+    Weapon/MeleeShield.h
+    Weapon/BasicSword.cpp
+    Weapon/BasicSword.h
+    Weapon/BasicShield.cpp
+    Weapon/BasicShield.h
 
-
+    InteractiveBlock/Box.h
+    InteractiveBlock/Box.cpp
 )
 
 IF (WIN32)
