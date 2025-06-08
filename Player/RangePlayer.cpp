@@ -16,6 +16,10 @@ RangePlayer::RangePlayer(float x, float y) : Player("play/1panda.png",x,y, PlayS
 
 
 void RangePlayer::Update(float deltaTime) {
+    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    if (!scene) return;
+
+    Hit(this, deltaTime);
 
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
@@ -67,7 +71,6 @@ void RangePlayer::Update(float deltaTime) {
     }
 
     // Apply gravity and vertical movement
-    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (scene) {
         verticalVelocity += PlayScene::Gravity * deltaTime;
     }
