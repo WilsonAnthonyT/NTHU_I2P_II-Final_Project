@@ -24,6 +24,7 @@ protected:
     bool goDown;
     float goDownTimer = 0.0f;
     float tolerance;
+    float armor;
 public:
     bool flipped;
     Player(std::string img, float x, float y, float speed, float hp);

@@ -22,6 +22,7 @@ Player::Player(std::string img, float x, float y, float speed, float hp): Sprite
     jumpForce = sqrt(2 * PlayScene::Gravity * ((PlayScene::BlockSize)/2)*3); // 192 pixels/s
     Anchor = Engine::Point(0.5, 0);
     tolerance = 1.0 / 64.0 * PlayScene::BlockSize;
+    armor = 0.0f;
 }
 
 void Player::Update(float deltaTime) {

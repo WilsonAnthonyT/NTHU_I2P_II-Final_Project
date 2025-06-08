@@ -5,13 +5,16 @@
 #include "Player.h"
 #include "Engine/GameEngine.hpp"
 #include "Scene/PlayScene.hpp"
+#include "Weapon/LinkShield.h"
 #include "Weapon/LinkWeapon.h"
 #include "Weapon/MeleeWeapon.h"
 
 MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryantilt.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     auto *weapon = new LinkWeapon(x, y, this);
+    auto *shield = new LinkShield(x, y, this);
     scene->WeaponGroup->AddNewObject(weapon);
+    scene->WeaponGroup->AddNewObject(shield);
     Size = Engine::Point(PlayScene::BlockSize * 0.45, PlayScene::BlockSize * 0.7);
 }
 

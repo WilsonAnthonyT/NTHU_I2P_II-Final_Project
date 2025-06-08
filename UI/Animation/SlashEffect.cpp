@@ -22,7 +22,7 @@ SlashEffect::SlashEffect(float x, float y, bool flipped) : Sprite("play/slash1.p
     Size = Engine::Point(PlayScene::BlockSize, PlayScene::BlockSize);
 }
 void SlashEffect::Update(float deltaTime) {
-    timeTicks += deltaTime * 2.0f;
+    timeTicks += deltaTime * 5.0f;
 
     // Smooth scaling
     Size.x = PlayScene::BlockSize + timeTicks * 50.0f;
@@ -60,7 +60,7 @@ void SlashEffect::Draw() const {
         0, 0,
         al_get_bitmap_width(bmp.get()),
         al_get_bitmap_height(bmp.get()),
-        drawX + originOffsetX, // Adjust to keep anchor consistent when flipped
+        drawX + originOffsetX,
         drawY,
         scaleX,
         Size.y,
