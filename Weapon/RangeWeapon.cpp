@@ -14,7 +14,7 @@
 #include "Scene/PlayScene.hpp"
 
 RangeWeapon::RangeWeapon(std::string img, float x, float y, float fr, int magazine,Player *player, float speed): Sprite(img,x,y),FireRate(fr), magazine(magazine),flipped(false),player(player), speed(speed){
-    Size = Engine::Point(PlayScene::BlockSize * 0.7, PlayScene::BlockSize * 0.7);
+    Size = Engine::Point(PlayScene::BlockSize * 0.6, PlayScene::BlockSize * 0.6);
     Anchor = Engine::Point(0.5, 0);
     Cooldown = 0;
 }

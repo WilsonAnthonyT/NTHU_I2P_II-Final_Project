@@ -76,15 +76,15 @@ void Enemy::Hit(float damage, float PosX, std::string type) {
     else {
         if (type == "melee") {
             float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
-            knockbackVelocityX = direction * 700;
+            knockbackVelocityX = direction * PlayScene::BlockSize * 7.0;
         }
         else if (type == "range") {
             float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
-            knockbackVelocityX = direction * 300;
+            knockbackVelocityX = direction * PlayScene::BlockSize * 3.0;
         }
         else {
             float direction = (abs(Position.x) < abs(PosX)) ? -1 : 1;
-            knockbackVelocityX = direction * 300;
+            knockbackVelocityX = direction * PlayScene::BlockSize * 4.5;
         }
         knockbackTimer = maxKnockbackTime;
         isKnockedback = true;

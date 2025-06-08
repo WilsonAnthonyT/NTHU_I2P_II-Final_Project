@@ -20,6 +20,9 @@
 #include "Scene/PlayScene.hpp"
 
 
+//fullsreen
+bool Engine::GameEngine::fullscreen = true;
+
 //quit
 bool Engine::GameEngine::shouldQuit = false;
 //---------------------------------------
@@ -53,38 +56,25 @@ namespace Engine {
         al_get_monitor_info(0, &info);
 
         // Compute width and height
-        if (fullscreen) {
-            screenW = info.x2 - info.x1;
-            screenH = info.y2 - info.y1;
-        }
-        display = al_create_display(screenW, screenH);
 
-        // If fullscreen failed, try falling back to windowed mode
-        if (!display && fullscreen) {
-            LOG(WARN) << "Fullscreen mode failed, falling back to windowed mode";
-            al_set_new_display_flags(ALLEGRO_WINDOWED);
-            display = al_create_display(screenW, screenH);
-            this->fullscreen = false;
-        }
-        else {
-            LOG(WARN) << "Fullscreen successful";
-        }
-//=====================================================================================
+        fullwidth = info.x2 - info.x1;
+        fullheight = info.y2 - info.y1;
+
+        display = al_create_display(fullwidth, fullheight);
+
+        PlayScene::BlockSize = fullscreen ? fullwidth/16 : screenW/16;
+
         // If we still don't have a display, throw error
         if (!display) {
             throw Allegro5Exception("failed to create display");
         }
 
         al_set_window_title(display, title);
+
         // Set alpha blending mode.
         al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
 
-        // Load and set window icon.
-        if (icon) {
-            static std::shared_ptr<ALLEGRO_BITMAP> iconReference = Resources::GetInstance().GetBitmap(icon);
-            al_set_display_icon(display, iconReference.get());
-            LOG(INFO) << "Loaded window icon from: " << icon;
-        }
+//=====================================================================================
 
         // Setup update timer.
         update_timer = al_create_timer(1.0f / fps);
@@ -280,13 +270,13 @@ namespace Engine {
         return scenes[name];
     }
     Point GameEngine::GetScreenSize() const {
-        return Point(screenW, screenH);
+        return fullscreen? Point(fullwidth, fullheight) : Point(screenW, screenH);
     }
     int GameEngine::GetScreenWidth() const {
-        return screenW;
+        return fullscreen? fullwidth : screenW;
     }
     int GameEngine::GetScreenHeight() const {
-        return screenH;
+        return fullscreen? fullheight : screenH;
     }
     Point GameEngine::GetMousePosition() const {
         ALLEGRO_MOUSE_STATE state;
@@ -302,5 +292,48 @@ namespace Engine {
         // The classic way to lazy initialize a Singleton.
         static GameEngine instance;
         return instance;
+    }
+
+    void GameEngine::ToggleFullscreen() {
+        GameEngine& engine = GetInstance();
+        al_destroy_display(engine.display);
+
+        fullscreen = !fullscreen;
+
+        ALLEGRO_MONITOR_INFO info;
+        al_get_monitor_info(0, &info);
+
+        // Calculate centered position for windowed mode
+        int displayWidth = fullscreen ? (info.x2 - info.x1) : screenW;
+        int displayHeight = fullscreen ? (info.y2 - info.y1) : screenH;
+
+        PlayScene::BlockSize = fullscreen ? displayWidth/16 : screenW/16;
+        al_set_new_display_flags(fullscreen ? ALLEGRO_FULLSCREEN_WINDOW : ALLEGRO_WINDOWED);
+
+        // Create new display
+        engine.display = al_create_display(displayWidth, displayHeight);
+        if (!engine.display) {
+            // If failed, revert to previous state
+            fullscreen = !fullscreen;
+            al_set_new_display_flags(fullscreen ? ALLEGRO_FULLSCREEN_WINDOW : ALLEGRO_WINDOWED);
+            engine.display = al_create_display(engine.screenW, engine.screenH);
+            if (!engine.display) {
+                throw Allegro5Exception("Failed to recreate display");
+            }
+        }
+
+        // Restore window properties
+        al_set_window_title(engine.display, engine.title);
+
+        if (!fullscreen) {
+            // Center the window
+            int windowX = info.x1 + (info.x2 - info.x1 - screenW) / 2;
+            int windowY = info.y1 + (info.y2 - info.y1 - screenH) / 2;
+            al_set_new_window_position(windowX, windowY);
+        }
+        else al_set_window_position(engine.display, 0, 0);
+
+        al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+        al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
     }
 }

@@ -27,7 +27,7 @@ void StartScene::Initialize() {
     int halfH = h / 2;
     Engine::ImageButton *btn;
 
-    AddNewObject(new Engine::Label("Tower Defense", "pirulen.ttf", 120, halfW, halfH / 3 + 50, 10, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Way to Heaven", "pirulen.ttf", 120, halfW, halfH / 3 + 50, 10, 255, 255, 255, 0.5, 0.5));
 
     //AddNewObject(new Engine::Image("trophy.png", 60, h - 150, 85, 85));
     btn = new Engine::ImageButton("trophy.png", "play/floor.png", 60, h - 150, 85, 85);
@@ -47,13 +47,24 @@ void StartScene::Initialize() {
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", 48, halfW, halfH / 2 *2.5 + 50, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 *3, 400, 100);
-    btn->SetOnClickCallback(std::bind(&StartScene::EXITonClick, this, 0));
+    btn->SetOnClickCallback(std::bind(&StartScene::DISPLAYonClick, this, 0));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Quit Game", "pirulen.ttf", 48, halfW, halfH / 2 *3 + 50, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("play/target-invalid.png", "play/invalid-pressed.png", w - 100, 0, 100, 100);
-    btn->SetOnClickCallback(std::bind(&StartScene::EXITonClick, this, 1));
+    btn->SetOnClickCallback(std::bind(&StartScene::DISPLAYonClick, this, 1));
     AddNewControlObject(btn);
+
+    if (Engine::GameEngine::fullscreen) {
+        btn = new Engine::ImageButton("play/minimise.png", "play/minimise-pressed.png", w - 200, 0, 100, 100);
+        btn->SetOnClickCallback(std::bind(&StartScene::DISPLAYonClick, this, 2));
+        AddNewControlObject(btn);
+    }
+    else {
+        btn = new Engine::ImageButton("play/maximise.png", "play/maximise-pressed.png", w - 200, 0, 100, 100);
+        btn->SetOnClickCallback(std::bind(&StartScene::DISPLAYonClick, this, 3));
+        AddNewControlObject(btn);
+    }
 }
 void StartScene::Terminate() {
     IScene::Terminate();
@@ -67,7 +78,23 @@ void StartScene::SettingsOnClick(int stage) {
 void StartScene::TrophyOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
 }
-void StartScene::EXITonClick(int stage) {
-    Engine::GameEngine::shouldQuit = true;
+void StartScene::DISPLAYonClick(int stage) {
+    switch (stage) {
+        case 0:
+        case 1:
+            Engine::GameEngine::shouldQuit = true;
+            return;
+        case 2:
+            Engine::GameEngine::GetInstance().ToggleFullscreen();
+            Engine::GameEngine::GetInstance().ChangeScene("start");
+            return;
+        case 3:
+            Engine::GameEngine::GetInstance().ToggleFullscreen();
+            Engine::GameEngine::GetInstance().ChangeScene("start");
+            return;
+        Default: return;
+    }
+
+
 }
 

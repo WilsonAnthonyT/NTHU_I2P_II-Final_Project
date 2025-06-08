@@ -16,6 +16,7 @@ namespace Engine {
     /// </summary>
     class GameEngine final {
     private:
+        int fullwidth, fullheight;
         // Allegro5 settings, frames per second, screen width, screen height, maximum simultaneous audio samples.
         int fps{}, screenW{}, screenH{}, reserveSamples{};
         // Determines whether to free memory between scenes.
@@ -76,18 +77,14 @@ namespace Engine {
         /// <param name="name">The name of the scene you want to change to.</param>
         void changeScene(const std::string &name);
 
-        bool fullscreen;  // Track fullscreen state
-        // ... other members ...
-
     public:
-        // Modify Start() to accept fullscreen parameter
-        //void Start(const std::string& firstScene, int fps, int width, int height, bool fullscreen = false);
+        static bool fullscreen;  // Track fullscreen state
 
         //for close button
         static bool shouldQuit;
 
         // Optional: Toggle fullscreen at runtime
-        void ToggleFullscreen(bool enable);
+        void ToggleFullscreen();
 
         // Note: We'll ignore C++11's move constructor, move assignment operator in this project for simplicity.
         /// <summary>
