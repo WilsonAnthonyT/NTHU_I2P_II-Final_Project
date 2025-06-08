@@ -61,6 +61,7 @@ public:
     Group *EffectGroup;
     Group *UIGroup;
     Group *DamageTextGroup;
+    Group *InteractiveBlockGroup;
     Engine::Label *UIMoney;
     Engine::Label *UILives;
     Engine::Image *imgTarget;

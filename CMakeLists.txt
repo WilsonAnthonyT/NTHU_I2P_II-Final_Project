@@ -105,12 +105,14 @@ add_executable(Final-Project
     Weapon/RangeWeapon.h
     Weapon/LinkWeapon.cpp
     Weapon/LinkWeapon.h
-        Weapon/LinkShield.cpp
-        Weapon/LinkShield.h
-        Weapon/MeleeShield.cpp
-        Weapon/MeleeShield.h
-
-
+    Weapon/LinkShield.cpp
+    Weapon/LinkShield.h
+    Weapon/MeleeShield.cpp
+    Weapon/MeleeShield.h
+    UI/Animation/DamageText.cpp
+    UI/Animation/DamageText.h
+    InteractiveBlock/Box.h
+    InteractiveBlock/Box.cpp
 )
 
 IF (WIN32)
