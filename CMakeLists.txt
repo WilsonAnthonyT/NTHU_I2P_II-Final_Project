@@ -126,6 +126,10 @@ add_executable(Final-Project
         Enemy/FlyingEnemy.h
         InteractiveBlock/Sensor.cpp
         InteractiveBlock/Sensor.h
+        Player/MazePlayerA.cpp
+        Player/MazePlayerA.h
+        Player/MazePlayerB.cpp
+        Player/MazePlayerB.h
 )
 
 IF (WIN32)

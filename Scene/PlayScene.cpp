@@ -7,7 +7,14 @@
 #include <queue>
 #include <string>
 #include <vector>
-
+#include <fstream>
+#include <string>
+#include <vector>
+#include <stack>
+#include <utility>
+#include <random>
+#include <ctime>
+#include <algorithm>
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
@@ -33,6 +40,8 @@
 #include "Enemy/SoldierEnemy.hpp"
 #include "InteractiveBlock/Box.h"
 #include "InteractiveBlock/Sensor.h"
+#include "Player/MazePlayerA.h"
+#include "Player/MazePlayerB.h"
 #include "Player/TankPlayerA.h"
 #include "Player/TankPlayerB.h"
 #include "UI/Animation/DamageText.h"
@@ -106,9 +115,10 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
-    if (enemyWaveData.empty() && EnemyGroup->GetObjects().empty()) {
-            Engine::GameEngine::GetInstance().ChangeScene("win");
-    }
+    // if (enemyWaveData.empty() && EnemyGroup->GetObjects().empty()) {
+    //     MapId++;
+    //     Engine::GameEngine::GetInstance().ChangeScene("play");
+    // }
 
     UpdatePauseState();
     if (IsPaused) {
@@ -161,7 +171,7 @@ void PlayScene::Update(float deltaTime) {
     else {
         Engine::Point target = players[1]->Position;
         Camera.x = (target.x - screenWidth / 2);
-        Camera.y = (target.y - screenHeight / 2) * 0.75f;
+        Camera.y = (target.y - screenHeight / 2);
         if (Camera.x < 0)Camera.x = 0;
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
@@ -233,6 +243,7 @@ void PlayScene::EarnMoney(int money) {
     UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
 void PlayScene::ReadMap() {
+    if (MapId==3)MazeCreator();
     std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
     // Read map file.
     char c;
@@ -253,6 +264,12 @@ void PlayScene::ReadMap() {
             case 'R': mapData.push_back('R'); break;
             case 'M': mapData.push_back('M'); break;
             case 'S': mapData.push_back('S'); break;
+            case 'N': mapData.push_back('N'); break;
+            case 'T': mapData.push_back('T'); break;
+            case '3': mapData.push_back('3'); break;
+            case '4': mapData.push_back('4'); break;
+            case '5': mapData.push_back('5'); break;
+            case '6': mapData.push_back('6'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -303,6 +320,24 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'S':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'N':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'T':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case '3':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case '4':
+                    mapState[i][j]=TILE_DIRT;
+                    break;
+                case '5':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case '6':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -379,6 +414,25 @@ void PlayScene::ReadMap() {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y,2));
+            }else if (num == 'N') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player1);
+            }
+            else if (num == 'T') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player2 = (new MazePlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player2);
+            } else if (num=='3'){
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            } else if (num=='4') {
+                TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }else if (num=='5'){
+                TileMapGroup->AddNewObject(new Engine::Image("play/tower-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            } else if (num=='6') {
+                TileMapGroup->AddNewObject(new Engine::Image("play/explosion-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
         }
     }
@@ -583,4 +637,95 @@ void PlayScene::Enable2ndPlayer(int stage) {
         player1->Visible = false;
         enable2ndLabel->Text = "2nd Disabled";
     }
+}
+
+void PlayScene::MazeCreator() {
+    std::string filename = "Resource/map3.txt";
+    const int width = 25;
+    const int height = 25;
+    std::vector<std::string> map(height, std::string(width, '4'));
+
+    // Random engine
+    std::mt19937 rng(static_cast<unsigned>(time(0)));
+
+    // Maze grid generation (Perfect Maze using DFS)
+    std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, false));
+    std::function<void(int, int)> dfs = [&](int x, int y) {
+        visited[y][x] = true;
+        map[y][x] = '3'; // Mark path
+
+        std::vector<std::pair<int, int>> directions = {{0, -2}, {-2, 0}, {0, 2}, {2, 0}};
+        std::shuffle(directions.begin(), directions.end(), rng);
+
+        for (auto [dx, dy] : directions) {
+            int nx = x + dx, ny = y + dy;
+            if (nx > 0 && ny > 0 && nx < width - 1 && ny < height - 1 && !visited[ny][nx]) {
+                map[y + dy / 2][x + dx / 2] = '3'; // Remove wall between
+                dfs(nx, ny);
+            }
+        }
+    };
+
+    dfs(1, 1); // Start maze generation from (1, 1)
+
+    // Set wall borders
+    for (int i = 0; i < width; ++i) {
+        map[0][i] = '4';
+        map[height - 1][i] = '4';
+    }
+    for (int i = 0; i < height; ++i) {
+        map[i][0] = '4';
+        map[i][width - 1] = '4';
+    }
+
+    // Place players at top-left
+    map[1][1] = 'N';
+    map[1][2] = 'T';
+
+    // Collect all open path positions
+    std::vector<std::pair<int, int>> openTiles;
+    for (int y = 1; y < height - 1; ++y) {
+        for (int x = 1; x < width - 1; ++x) {
+            if (map[y][x] == '3')
+                openTiles.emplace_back(y, x);
+        }
+    }
+
+    std::shuffle(openTiles.begin(), openTiles.end(), rng);
+
+    if (openTiles.size() < 3) {
+        throw std::runtime_error("Not enough open tiles to place buttons and portal.");
+    }
+
+    // Place two distinct pressure plates
+    auto [b1y, b1x] = openTiles[0];
+    auto [b2y, b2x] = openTiles[1];
+    map[b1y][b1x] = '5';
+    map[b2y][b2x] = '5';
+
+    // Place portal as far from start as possible (bottom-right bias)
+    bool portalPlaced = false;
+    for (const auto& [y, x] : openTiles) {
+        if (map[y][x] == '3' && y > height / 2 && x > width / 2) {
+            map[y][x] = '6';
+            portalPlaced = true;
+            break;
+        }
+    }
+
+    if (!portalPlaced) {
+        for (const auto& [y, x] : openTiles) {
+            if (map[y][x] == '3') {
+                map[y][x] = '6';
+                break;
+            }
+        }
+    }
+
+    // Write to file
+    std::ofstream outFile(filename);
+    outFile << width << " " << height << "\n";
+    for (const auto& row : map)
+        outFile << row << "\n";
+    outFile.close();
 }

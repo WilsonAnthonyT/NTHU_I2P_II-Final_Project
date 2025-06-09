@@ -118,6 +118,8 @@ public:
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
 
+    void MazeCreator();
+
     Player *player1;
     Player *player2;
     bool enable2ndplayer = false;

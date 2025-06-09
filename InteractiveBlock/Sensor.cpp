@@ -28,6 +28,7 @@ void Sensor::Update(float deltaTime) {
     if (Engine::IScene::DebugMode && active) {
         this->Tint=al_map_rgb(255,0,0);
     } else if (Engine::IScene::DebugMode && !active) this->Tint=al_map_rgb(255,255,255);
+    else if (!Engine::IScene::DebugMode) this->Tint=al_map_rgb(255,255,255);
 }
 
 void Sensor::Draw() const{
