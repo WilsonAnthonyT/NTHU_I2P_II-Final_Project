@@ -21,6 +21,7 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
+    ALLEGRO_BITMAP* mask;
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
@@ -90,6 +91,7 @@ public:
     void UIBtnClicked(int id);
     void HomeOnClick(int id);
     void MiniMap() const;
+    void FlashLight() const;
     // void ModifyReadMapTiles();
 
     //----Pause-----

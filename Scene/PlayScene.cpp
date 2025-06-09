@@ -188,19 +188,26 @@ void PlayScene::Draw() const {
         UIGroup->Draw();
         return;
     }
+
     ALLEGRO_TRANSFORM trans;
     al_identity_transform(&trans);
     al_translate_transform(&trans, -Camera.x, -Camera.y);  // apply camera offset
     al_use_transform(&trans);  // set transform for all following drawing
+
     IScene::Draw();            // will draw tiles/UI, now offset by camera
-    PlayerGroup->Draw();       // players, effects, etc.
+
+    if (MapId == 3) FlashLight();
+
+    PlayerGroup->Draw();
     WeaponGroup->Draw();
     EffectGroup->Draw();
     //EnemyBulletGroup->Draw();
     al_identity_transform(&trans);
     al_use_transform(&trans);
+
     //for map debug
     MiniMap();
+
     if (DebugMode) {
         for (int i = 0; i < MapHeight; i++) {
             for (int j = 0; j < MapWidth; j++) {
@@ -451,14 +458,8 @@ void PlayScene::ReadMap() {
             }
         }
     }
-    // for (int i = 0; i < MapHeight; i++) {
-    //     for (int j = 0; j < MapWidth; j++) {
-    //         if (num)
-    //             TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-    //         else
-    //             TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-    //     }
-    // }
+    //for flashlight
+    if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
 }
 
 void PlayScene::MiniMap() const {
@@ -523,6 +524,41 @@ void PlayScene::MiniMap() const {
     al_draw_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);
 }
 
+
+// void PlayScene::FlashLight() const {
+//     //al_clear_to_color(al_map_rgb(0, 0, 0));
+//     al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
+//     al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
+//
+//     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+// }
+
+void PlayScene::FlashLight() const {
+    // Set the target to our mask bitmap
+    al_set_target_bitmap(mask);
+    const float radius = BlockSize * 2.5f;
+
+    // Clear to completely black (transparent)
+    al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
+    // Draw white circles where we want light (opaque)
+    for (int i = radius; i > 0; i--) {
+        al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2),
+                             i, al_map_rgba(255, 255, 255, 255/i));
+        al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2),
+                             i, al_map_rgba(255, 255, 255, 255/i));
+    }
+
+    // Switch back to main display
+    al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
+
+    // Use the mask to determine what's visible
+    al_set_blender(ALLEGRO_ADD, ALLEGRO_DEST_COLOR, ALLEGRO_ZERO);
+    al_draw_bitmap(mask, 0, 0, 0);
+
+    // Set normal blending for other drawings
+    al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+}
 
 void PlayScene::ReadEnemyWave() {
 

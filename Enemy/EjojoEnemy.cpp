@@ -79,7 +79,7 @@ void EjojoEnemy::SpawnMiniEjojo() {
 void EjojoEnemy::ShootRandomPattern() {
     if (!scene || scene->PlayerGroup->GetObjects().empty()) return;
 
-    std::uniform_int_distribution<int> patternDist(0, 3);
+    std::uniform_int_distribution<int> patternDist(0, 2);
     int pattern = patternDist(rng);
 
     switch(pattern) {

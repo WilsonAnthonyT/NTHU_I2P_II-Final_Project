@@ -3,6 +3,9 @@
 //
 
 #include "MazePlayerA.h"
+
+#include <allegro5/allegro_primitives.h>
+
 #include "Engine/GameEngine.hpp"
 #include "Scene/PlayScene.hpp"
 
@@ -13,6 +16,7 @@ void MazePlayerA::Update(float deltaTime) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (!scene) return;
     PlayerEnemyCollision(this, deltaTime);
+    visibilityRadius = std::min(150.0f, visibilityRadius + 30.0f * deltaTime);
 
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
@@ -70,3 +74,42 @@ void MazePlayerA::Update(float deltaTime) {
         }
     }
 }
+
+// void MazePlayerA::Draw() const {
+//     // Draw the player
+//     Player::Draw();
+//
+//     // Create the "fog of war" effect
+//     ALLEGRO_BITMAP* target = al_get_target_bitmap(); // Get the current rendering target
+//     ALLEGRO_BITMAP* mask = al_create_bitmap(al_get_bitmap_width(target), al_get_bitmap_height(target)); // Create a bitmap for the fog
+//
+//     // Set the mask as the drawing target
+//     al_set_target_bitmap(mask);
+//
+//     // Fill with black
+//     al_clear_to_color(al_map_rgb(0, 0, 0));
+//
+//     // Draw a transparent circle where the player is
+//     al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA); // Set blending mode
+//     al_draw_filled_circle(
+//         Position.x,
+//         Position.y,
+//         150.0f, // Radius of visibility
+//         al_map_rgba(0, 0, 0, 0) // Fully transparent
+//     );
+//
+//     // Restore the original target
+//     al_set_target_bitmap(target);
+//
+//     // Draw the mask over the screen
+//     al_draw_bitmap(mask, 0, 0, 0);
+//
+//     // Clean up
+//     al_destroy_bitmap(mask);
+//     al_draw_filled_circle(
+//     Position.x,
+//     Position.y,
+//     visibilityRadius, // Use dynamic radius
+//     al_map_rgba(0, 0, 0, 0)
+// );
+// }

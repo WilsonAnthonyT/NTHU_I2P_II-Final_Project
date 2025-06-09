@@ -4,6 +4,8 @@
 
 #include "MazePlayerB.h"
 
+#include <allegro5/allegro_primitives.h>
+
 #include "Engine/GameEngine.hpp"
 #include "Scene/PlayScene.hpp"
 
@@ -72,3 +74,32 @@ void MazePlayerB::Update(float deltaTime) {
         }
     }
 }
+
+// void MazePlayerB::Draw() const {
+//     ALLEGRO_BITMAP* target = al_get_target_bitmap(); // Get the current rendering target
+//     ALLEGRO_BITMAP* mask = al_create_bitmap(al_get_bitmap_width(target), al_get_bitmap_height(target)); // Create a bitmap for the fog
+//
+//     // Set the mask as the drawing target
+//     al_set_target_bitmap(mask);
+//
+//     // Fill with black
+//     al_clear_to_color(al_map_rgb(0, 0, 0));
+//
+//     // Draw a transparent circle where the player is
+//     al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_INVERSE_ALPHA); // Set blending mode
+//     al_draw_filled_circle(
+//         Position.x,
+//         Position.y,
+//         150.0f, // Radius of visibility
+//         al_map_rgba(0, 0, 0, 0) // Fully transparent
+//     );
+//
+//     // Restore the original target
+//     al_set_target_bitmap(target);
+//
+//     // Draw the mask over the screen
+//     al_draw_bitmap(mask, 0, 0, 0);
+//
+//     // Clean up
+//     al_destroy_bitmap(mask);
+// }
