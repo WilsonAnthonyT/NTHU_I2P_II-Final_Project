@@ -35,7 +35,7 @@ void MeleeWeapon::Update(float deltaTime){
     al_get_keyboard_state(&keyState);
 
     if (al_key_down(&keyState, ALLEGRO_KEY_N) && !isRotating && cooldown <= 0) {
-        AudioHelper::PlaySample("slash.mp3");
+        AudioHelper::PlayAudio("slash.mp3");
         isRotating = true;
         rotationProgress = 0.0f;
         cooldown = RotationRate;

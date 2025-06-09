@@ -116,6 +116,14 @@ add_executable(Final-Project
 
     InteractiveBlock/Box.h
     InteractiveBlock/Box.cpp
+        Player/TankPlayerB.cpp
+        Player/TankPlayerB.h
+        Player/TankPlayerA.cpp
+        Player/TankPlayerA.h
+        Enemy/EjojoEnemy.h
+        Enemy/EjojoEnemy.cpp
+        Enemy/FlyingEnemy.cpp
+        Enemy/FlyingEnemy.h
 )
 
 IF (WIN32)

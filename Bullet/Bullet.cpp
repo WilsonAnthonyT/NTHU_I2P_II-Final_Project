@@ -18,7 +18,7 @@ PlayScene *Bullet::getPlayScene() {
 }
 void Bullet::OnExplode(Enemy *enemy) {
 }
-Bullet::Bullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, RangeWeapon *parent) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
+Bullet::Bullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Sprite *parent) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
     Velocity = forwardDirection * speed;
     Rotation = rotation;
     CollisionRadius = 6;

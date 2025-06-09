@@ -42,14 +42,14 @@ public:
     std::list<Bullet *> lockedBullets;
     Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, float dmg);
     virtual void OnDeath();
-    void Hit(float damage, float PosX, std::string type);
+    virtual void Hit(float damage, float PosX, std::string type);
 
     void UpdatePath(const std::vector<std::vector<int>> &mapDistance);
-    void ChasePlayer(const std::vector<Engine::Point>& playerPositions, float deltaTime);
+    virtual void ChasePlayer(const std::vector<Engine::Point>& playerPositions, float deltaTime);
 
     void Update(float deltaTime) override;
     void Draw() const override;
-    bool IsCollision(float x, float y, bool checkWallsOnly);
+    virtual bool IsCollision(float x, float y, bool checkWallsOnly);
 
 
     //I add this

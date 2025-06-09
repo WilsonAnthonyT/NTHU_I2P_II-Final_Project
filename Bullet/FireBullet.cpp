@@ -13,7 +13,7 @@
 
 class Player;
 
-FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, RangeWeapon *parent, float speed) : Bullet("play/bullet-1.png", speed, 2, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
+FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Sprite *parent, float speed) : Bullet("play/bullet-1.png", speed, 2, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
 }
 void FireBullet::OnExplode(Enemy *enemy) {
     // std::random_device dev;
@@ -21,3 +21,4 @@ void FireBullet::OnExplode(Enemy *enemy) {
     // std::uniform_int_distribution<std::mt19937::result_type> dist(2, 5);
     // getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-1.png", dist(rng), enemy->Position.x, enemy->Position.y));
 }
+

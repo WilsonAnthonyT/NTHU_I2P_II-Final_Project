@@ -11,7 +11,7 @@ namespace Engine {
 
 class FireBullet : public Bullet {
 public:
-    explicit FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, RangeWeapon *parent,float speed);
+    explicit FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Sprite *parent,float speed);
     void OnExplode(Enemy *enemy) override;
 };
 #endif   // FIREBULLET_HPP

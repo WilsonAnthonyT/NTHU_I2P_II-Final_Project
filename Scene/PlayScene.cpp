@@ -21,6 +21,7 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "Enemy/EjojoEnemy.h"
 #include "Player/MeleePlayer.hpp"
 #include "Player/Player.h"
 #include "Player/RangePlayer.hpp"
@@ -31,6 +32,8 @@
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "InteractiveBlock/Box.h"
+#include "Player/TankPlayerA.h"
+#include "Player/TankPlayerB.h"
 #include "UI/Animation/DamageText.h"
 
 namespace Engine {
@@ -245,6 +248,9 @@ void PlayScene::ReadMap() {
             case 'B': mapData.push_back('B'); break;
             case 'A': mapData.push_back('A'); break;
             case 'X': mapData.push_back('X'); break;
+            case 'G': mapData.push_back('G'); break;
+            case 'R': mapData.push_back('R'); break;
+            case 'M': mapData.push_back('M'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -283,6 +289,15 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'X':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'G':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'R':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'M':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -341,6 +356,20 @@ void PlayScene::ReadMap() {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Box("play/box.png",SpawnCoordinate.x, SpawnCoordinate.y));
+            }else if (num == 'G') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player1 = (new TankPlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player1);
+            }else if (num == 'R') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player2 = (new TankPlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player2);
+            }else if (num == 'M') {
+                Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                EnemyGroup->AddNewObject(new EjojoEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
         }
     }
