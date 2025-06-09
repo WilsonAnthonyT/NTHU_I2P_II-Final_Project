@@ -55,6 +55,7 @@ public:
     Group *GroundEffectGroup;
     Group *DebugIndicatorGroup;
     Group *BulletGroup;
+    Group *EnemyBulletGroup;
     Group *PlayerGroup;
     Group *WeaponGroup;
     Group *EnemyGroup;
@@ -118,6 +119,8 @@ public:
     void RestartOnClick(int state);
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
+
+    void MazeCreator();
 
     Player *player1;
     Player *player2;

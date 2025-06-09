@@ -124,6 +124,22 @@ add_executable(Final-Project
         Enemy/EjojoEnemy.cpp
         Enemy/FlyingEnemy.cpp
         Enemy/FlyingEnemy.h
+        Enemy/FlyingDemon.cpp
+        Enemy/FlyingDemon.h
+        Enemy/MiniEjojo.cpp
+        Enemy/MiniEjojo.h
+        EnemyBullet/EnemyBullet.cpp
+        EnemyBullet/EnemyBullet.h
+        EnemyBullet/EnemyFireBullet.cpp
+        EnemyBullet/EnemyFireBullet.h
+        UI/Animation/LightEffect.cpp
+        UI/Animation/LightEffect.h
+        InteractiveBlock/Sensor.cpp
+        InteractiveBlock/Sensor.h
+        Player/MazePlayerA.cpp
+        Player/MazePlayerA.h
+        Player/MazePlayerB.cpp
+        Player/MazePlayerB.h
 )
 
 IF (WIN32)
