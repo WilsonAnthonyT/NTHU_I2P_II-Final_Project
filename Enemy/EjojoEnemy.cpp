@@ -31,6 +31,9 @@ EjojoEnemy::EjojoEnemy(int x, int y) : FlyingEnemy("play/ejojo.png", x, y, 500, 
 }
 
 void EjojoEnemy::Update(float deltaTime) {
+    scene = getPlayScene();
+    if (!scene || scene->PlayerGroup->GetObjects().empty()) return;
+
     timeSinceLastShot += deltaTime;
     patternTimer += deltaTime;
 
@@ -74,7 +77,6 @@ void EjojoEnemy::SpawnMiniEjojo() {
 }
 
 void EjojoEnemy::ShootRandomPattern() {
-    auto scene = getPlayScene();
     if (!scene || scene->PlayerGroup->GetObjects().empty()) return;
 
     std::uniform_int_distribution<int> patternDist(0, 3);
