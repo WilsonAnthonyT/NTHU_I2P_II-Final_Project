@@ -50,7 +50,7 @@ bool Bullet::IsCollision(float x, float y) {
         float EnemyLeft = enemy->Position.x - EnemyHalfSizeX;
         float EnemyRight = enemy->Position.x + EnemyHalfSizeX ;
         float EnemyTop = enemy->Position.y;
-        float EnemyBottom = enemy->Position.y + abs(enemy->Size.y);
+        float EnemyBottom = enemy->Position.y + abs(enemy->Size.y/2);
 
         if (!enemy->Visible)
             continue;
