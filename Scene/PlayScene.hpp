@@ -88,6 +88,7 @@ public:
     void ConstructUI();
     void UIBtnClicked(int id);
     void HomeOnClick(int id);
+    void MiniMap() const;
     // void ModifyReadMapTiles();
 
     //----Pause-----

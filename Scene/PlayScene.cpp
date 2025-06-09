@@ -160,7 +160,7 @@ void PlayScene::Update(float deltaTime) {
     else {
         Engine::Point target = players[1]->Position;
         Camera.x = (target.x - screenWidth / 2);
-        Camera.y = (target.y - screenHeight / 2) * 0.75f;
+        Camera.y = (target.y - screenHeight / 2);
         if (Camera.x < 0)Camera.x = 0;
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
@@ -183,6 +183,7 @@ void PlayScene::Draw() const {
     al_identity_transform(&trans);
     al_use_transform(&trans);
     //for map debug
+    MiniMap();
     if (DebugMode) {
         for (int i = 0; i < MapHeight; i++) {
             for (int j = 0; j < MapWidth; j++) {
@@ -382,6 +383,69 @@ void PlayScene::ReadMap() {
     //     }
     // }
 }
+
+void PlayScene::MiniMap() const {
+    // Fixed minimap size (15% of screen)
+    const float scale = 0.15f;
+    const int border = BlockSize / 8;
+    const float miniWidth = screenWidth * scale;
+    const float miniHeight = screenHeight * scale;
+    const float miniX = screenWidth - miniWidth - border;
+    const float miniY = border;
+
+    // Colors
+    const ALLEGRO_COLOR bgColor = al_map_rgba(0, 0, 0, 200);
+    const ALLEGRO_COLOR p1_color = al_map_rgb(255, 0, 0);
+    const ALLEGRO_COLOR p2_color = al_map_rgb(0, 255, 0);
+    const ALLEGRO_COLOR tile_color = al_map_rgb(100, 100, 100);
+
+    al_draw_filled_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, bgColor);
+
+    // Set clipping to restrict all further drawing to the minimap bounds
+    al_set_clipping_rectangle(miniX, miniY, miniWidth, miniHeight);
+
+    // Calculate scaling (screen to minimap)
+    const float xScale = miniWidth / screenWidth;
+    const float yScale = miniHeight / screenHeight;
+
+    // Calculate visible area
+    const int start_x = std::max(0, static_cast<int>(Camera.x / BlockSize));
+    const int end_x = std::min(MapWidth, static_cast<int>((Camera.x + screenWidth) / BlockSize + 1));
+    const int start_y = std::max(0, static_cast<int>(Camera.y / BlockSize));
+    const int end_y = std::min(MapHeight, static_cast<int>((Camera.y + screenHeight) / BlockSize + 1));
+
+    // Draw visible tiles
+    for (int y = start_y; y < end_y; y++) {
+        for (int x = start_x; x < end_x; x++) {
+            if (mapState[y][x] != TILE_AIR) {
+                float mx = miniX + (x * BlockSize - Camera.x) * xScale;
+                float my = miniY + (y * BlockSize - Camera.y) * yScale;
+                float mw = BlockSize * xScale;
+                float mh = BlockSize * yScale;
+
+                al_draw_filled_rectangle(mx, my, mx + mw, my + mh, tile_color);
+            }
+        }
+    }
+
+    // Draw players
+    for (auto& obj : PlayerGroup->GetObjects()) {
+        Player* player = dynamic_cast<Player*>(obj);
+        if (player && player->Visible) {
+            float px = miniX + (player->Position.x - Camera.x) * xScale;
+            float py = miniY + (player->Position.y - Camera.y) * yScale;
+
+            al_draw_filled_circle(px, py, 3.0f, (player == player1) ? p1_color : p2_color);
+        }
+    }
+
+    // Reset clipping to full screen
+    al_set_clipping_rectangle(0, 0, screenWidth, screenHeight);
+
+    // Border on top (over the clipped content)
+    al_draw_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);
+}
+
 
 void PlayScene::ReadEnemyWave() {
 
