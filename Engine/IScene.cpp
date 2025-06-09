@@ -9,6 +9,7 @@
 #include "GameEngine.hpp"
 #include "Scene/PlayScene.hpp"
 
+
 namespace Engine {
 
     void IScene::Terminate() {
@@ -16,6 +17,28 @@ namespace Engine {
     }
     void IScene::Draw() const {
         al_clear_to_color(al_map_rgb(0, 0, 0));
+
+        if (backgroundIMG) {
+            const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
+            const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
+
+            // Get background dimensions
+            const int bgWidth = al_get_bitmap_width(backgroundIMG.get());
+            const int bgHeight = al_get_bitmap_height(backgroundIMG.get());
+
+            // Draw the background (stretched vertically, looped horizontally)
+            for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += bgWidth) {
+                al_draw_scaled_bitmap(
+                    backgroundIMG.get(),    // Source bitmap
+                    0, 0,                  // Source X, Y
+                    bgWidth, bgHeight,      // Source width, height
+                    x, PlayScene::Camera.y,                  // Destination X, Y
+                    bgWidth, screenH,      // Destination width, height (stretch vertically)
+                    0                      // Flags (0 = no blending)
+                );
+            }
+        }
+
         if (DebugMode) {
             const int block = Engine::GameEngine::GetInstance().GetScreenWidth() / 16;
             const int w = Engine::GameEngine::GetInstance().GetScreenWidth();

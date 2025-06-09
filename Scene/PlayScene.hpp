@@ -39,6 +39,7 @@ public:
         TILE_DIRT,
         TILE_WPLATFORM,
     };
+
     static Engine::Point Camera;
     static float Gravity;
     static bool Pause;

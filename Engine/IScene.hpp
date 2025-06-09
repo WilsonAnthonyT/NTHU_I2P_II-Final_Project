@@ -1,6 +1,8 @@
 #ifndef ISCENE_HPP
 #define ISCENE_HPP
 
+#include <allegro5/bitmap.h>
+
 #include "Group.hpp"
 
 namespace Engine {
@@ -45,6 +47,7 @@ namespace Engine {
         void Draw() const override;
         void OnKeyDown(int keyCode) override;
         static bool DebugMode;
+        std::shared_ptr<ALLEGRO_BITMAP> backgroundIMG;
     };
 }
 #endif   // ISCENE_HPP

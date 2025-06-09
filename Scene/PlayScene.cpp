@@ -101,6 +101,7 @@ void PlayScene::Initialize() {
     ReadMap();
     ReadEnemyWave();
     ConstructUI();
+    if (MapId == 1) backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/forestbg.png");
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
     preview = nullptr;
@@ -194,14 +195,14 @@ void PlayScene::Draw() const {
     al_translate_transform(&trans, -Camera.x, -Camera.y);  // apply camera offset
     al_use_transform(&trans);  // set transform for all following drawing
 
-    IScene::Draw();            // will draw tiles/UI, now offset by camera
+    IScene::Draw(); // will draw tiles/UI, now offset by camera
 
     if (MapId == 3) FlashLight();
 
     PlayerGroup->Draw();
     WeaponGroup->Draw();
     EffectGroup->Draw();
-    //EnemyBulletGroup->Draw();
+
     al_identity_transform(&trans);
     al_use_transform(&trans);
 
@@ -364,7 +365,7 @@ void PlayScene::ReadMap() {
 
             }
             if (num=='0')
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             else if (num=='1') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if (mapData[idx-MapWidth] != '1')
@@ -383,7 +384,7 @@ void PlayScene::ReadMap() {
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num=='2') {
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if ((mapData[idx-1]=='1'&&mapData[idx+1]=='1')&&idx%MapWidth!=(MapWidth-1)&&idx%MapWidth!=0)
                     TileMapGroup->AddNewObject(new Engine::Image("play/platform-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 else if (mapData[idx-1]=='1')
@@ -396,59 +397,59 @@ void PlayScene::ReadMap() {
             else if (num == 'B') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = new MeleePlayer(SpawnCoordinate.x, SpawnCoordinate.y);
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player1);
             }
             else if (num == 'A') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player2 = (new RangePlayer(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
             }
             else if (num == 'E') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new SoldierEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
             else if (num == 'X') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Box("play/box.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }else if (num == 'G') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new TankPlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player1);
             }else if (num == 'R') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player2 = (new TankPlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
             }else if (num == 'M') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new EjojoEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }else if (num == 'F') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new MiniEjojo(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }else if (num == 'S') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y,2));
             }else if (num == 'N') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player1);
             }
             else if (num == 'T') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player2 = (new MazePlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
             } else if (num=='3'){
-                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             } else if (num=='4') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }else if (num=='5'){
@@ -536,17 +537,17 @@ void PlayScene::MiniMap() const {
 void PlayScene::FlashLight() const {
     // Set the target to our mask bitmap
     al_set_target_bitmap(mask);
-    const float radius = BlockSize * 2.5f;
+    const float radius = BlockSize * 2.f;
 
     // Clear to completely black (transparent)
     al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
     // Draw white circles where we want light (opaque)
-    for (int i = radius; i > 0; i--) {
+    for (float i = radius; i > 0; i-=2.f) {
         al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2),
-                             i, al_map_rgba(255, 255, 255, 255/i));
+                             i, al_map_rgba(255, 255, 255, 255/i * 2.f));
         al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2),
-                             i, al_map_rgba(255, 255, 255, 255/i));
+                             i, al_map_rgba(255, 255, 255, 255/i * 2.f));
     }
 
     // Switch back to main display
