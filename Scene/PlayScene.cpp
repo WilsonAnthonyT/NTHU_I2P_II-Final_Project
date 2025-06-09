@@ -32,6 +32,7 @@
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "InteractiveBlock/Box.h"
+#include "InteractiveBlock/Sensor.h"
 #include "Player/TankPlayerA.h"
 #include "Player/TankPlayerB.h"
 #include "UI/Animation/DamageText.h"
@@ -251,6 +252,7 @@ void PlayScene::ReadMap() {
             case 'G': mapData.push_back('G'); break;
             case 'R': mapData.push_back('R'); break;
             case 'M': mapData.push_back('M'); break;
+            case 'S': mapData.push_back('S'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -298,6 +300,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'M':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'S':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -370,6 +375,10 @@ void PlayScene::ReadMap() {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new EjojoEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }else if (num == 'S') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y,2));
             }
         }
     }

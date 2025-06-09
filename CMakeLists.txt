@@ -124,6 +124,8 @@ add_executable(Final-Project
         Enemy/EjojoEnemy.cpp
         Enemy/FlyingEnemy.cpp
         Enemy/FlyingEnemy.h
+        InteractiveBlock/Sensor.cpp
+        InteractiveBlock/Sensor.h
 )
 
 IF (WIN32)
