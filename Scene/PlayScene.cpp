@@ -31,6 +31,9 @@
 
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
+#include "Enemy/FlyingEnemy.h"
+#include "Enemy/FlyingDemon.h"
+#include "Enemy/MiniEjojo.h"
 #include "InteractiveBlock/Box.h"
 #include "Player/TankPlayerA.h"
 #include "Player/TankPlayerB.h"
@@ -80,6 +83,7 @@ void PlayScene::Initialize() {
     AddNewObject(WeaponGroup = new Group());
     AddNewObject(EnemyGroup = new Group());
     AddNewObject(BulletGroup = new Group());
+    AddNewObject(EnemyBulletGroup = new Group());
     AddNewObject(DamageTextGroup = new Group());
     AddNewObject(InteractiveBlockGroup = new Group());
     // Should support buttons.
@@ -115,6 +119,7 @@ void PlayScene::Update(float deltaTime) {
         return;
     }
     BulletGroup->Update(deltaTime);
+    EnemyBulletGroup->Update(deltaTime);
     WeaponGroup->Update(deltaTime);
     PlayerGroup->Update(deltaTime);
     EnemyGroup->Update(deltaTime);
@@ -180,6 +185,7 @@ void PlayScene::Draw() const {
     PlayerGroup->Draw();       // players, effects, etc.
     WeaponGroup->Draw();
     EffectGroup->Draw();
+    //EnemyBulletGroup->Draw();
     al_identity_transform(&trans);
     al_use_transform(&trans);
     //for map debug
@@ -251,6 +257,7 @@ void PlayScene::ReadMap() {
             case 'G': mapData.push_back('G'); break;
             case 'R': mapData.push_back('R'); break;
             case 'M': mapData.push_back('M'); break;
+            case 'F': mapData.push_back('F'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -298,6 +305,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'M':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'F':
                     mapState[i][j]=TILE_AIR;
                     break;
                 default:
@@ -370,6 +380,10 @@ void PlayScene::ReadMap() {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new EjojoEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }else if (num == 'F') {
+                Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                EnemyGroup->AddNewObject(new MiniEjojo(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
         }
     }

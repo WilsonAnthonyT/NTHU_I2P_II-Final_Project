@@ -55,6 +55,7 @@ public:
     Group *GroundEffectGroup;
     Group *DebugIndicatorGroup;
     Group *BulletGroup;
+    Group *EnemyBulletGroup;
     Group *PlayerGroup;
     Group *WeaponGroup;
     Group *EnemyGroup;

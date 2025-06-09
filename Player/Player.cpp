@@ -148,7 +148,7 @@ bool Player::IsCollision(float x, float y) {
     return false;
 }
 
-void Player::Hit(Player *player, float time) {
+void Player::PlayerEnemyCollision(Player *player, float time) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (!scene) return;
 
@@ -176,7 +176,7 @@ void Player::Hit(Player *player, float time) {
             float direction = (abs(enemy->Position.x) > abs(player->Position.x)) ? -1 : 1;
             player->knockbackVelocityX = direction * PlayScene::BlockSize * 2;
 
-            player->hp -= enemy->getDamage();
+            Hit(enemy->getDamage());
             this->Tint = al_map_rgb(155,0,0);
 
             knockbackTimer = maxKnockbackTime;
@@ -184,12 +184,9 @@ void Player::Hit(Player *player, float time) {
         }
         else if (isKnockedback){
             float newX = this->Position.x + knockbackVelocityX * time;
-
-            // Only move if not colliding with wall
             if (!IsCollision(newX, this->Position.y)) {
                 Position.x = newX;
             } else {
-                // If hitting wall, bounce back slightly
                 knockbackVelocityX *= -0.3f;
             }
             knockbackTimer -= time;
@@ -202,5 +199,9 @@ void Player::Hit(Player *player, float time) {
             knockbackVelocityX -= time * maxKnockbackTime;
         }
     }
+}
+
+void Player::Hit(float damage) {
+    this->hp -= damage;
 }
 
