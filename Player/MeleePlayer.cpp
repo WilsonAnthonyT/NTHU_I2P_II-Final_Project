@@ -24,7 +24,7 @@ void MeleePlayer::Update(float deltaTime) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (!scene) return;
 
-    Hit(this, deltaTime);
+    PlayerEnemyCollision(this, deltaTime);
 
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
