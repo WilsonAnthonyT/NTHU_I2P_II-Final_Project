@@ -136,6 +136,10 @@ add_executable(Final-Project
         UI/Animation/LightEffect.h
         InteractiveBlock/Sensor.cpp
         InteractiveBlock/Sensor.h
+        Player/MazePlayerA.cpp
+        Player/MazePlayerA.h
+        Player/MazePlayerB.cpp
+        Player/MazePlayerB.h
 )
 
 IF (WIN32)

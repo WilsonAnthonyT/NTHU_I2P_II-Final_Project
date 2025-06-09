@@ -40,7 +40,7 @@ void ScoreboardScene::Initialize() {
     int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
     int halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
 
-    AddNewObject(new Engine::Label("SCOREBOARD", "pirulen.ttf", 60, halfW, halfH / 4 - 20, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("LEADERBOARD", "pirulen.ttf", 60, halfW, halfH / 4 - 20, 255, 255, 255, 255, 0.5, 0.5));
     AddNewObject(new Engine::Label("Sort By:", "pirulen.ttf", 20, 40, 40, 240, 240, 240, 225, 0.0, 0.0));
     AddNewObject(new Engine::Label("Name", "pirulen.ttf", 25, halfW - 500 - 10, halfH / 4 + 70, 215, 215, 215, 255, 0.5, 0.5));
     AddNewObject(new Engine::Label("Score", "pirulen.ttf", 25, halfW - 30, halfH / 4 + 70, 215, 215, 215, 255, 0.5, 0.5));

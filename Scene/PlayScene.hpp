@@ -89,6 +89,7 @@ public:
     void ConstructUI();
     void UIBtnClicked(int id);
     void HomeOnClick(int id);
+    void MiniMap() const;
     // void ModifyReadMapTiles();
 
     //----Pause-----
@@ -118,6 +119,8 @@ public:
     void RestartOnClick(int state);
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
+
+    void MazeCreator();
 
     Player *player1;
     Player *player2;
