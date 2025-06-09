@@ -134,6 +134,8 @@ add_executable(Final-Project
         EnemyBullet/EnemyFireBullet.h
         UI/Animation/LightEffect.cpp
         UI/Animation/LightEffect.h
+        InteractiveBlock/Sensor.cpp
+        InteractiveBlock/Sensor.h
 )
 
 IF (WIN32)
