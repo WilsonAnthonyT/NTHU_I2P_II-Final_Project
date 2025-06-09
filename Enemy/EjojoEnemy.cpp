@@ -107,7 +107,7 @@ void EjojoEnemy::ShootRandomPattern() {
                 scene->EnemyBulletGroup->AddNewObject(
                     new EnemyFireBullet(
                         Engine::Point(Position.x, Position.y + Size.y/2),
-                        Engine::Point(i * 0.3f, 1), // Angled bullets
+                        Engine::Point(i * 0.5f, 1), // Angled bullets
                         ALLEGRO_PI/2 - (i * 0.15f),
                         this,
                         bulletSpeed * 0.8f
@@ -161,14 +161,7 @@ void EjojoEnemy::UpdateMovementPattern(float deltaTime) {
             hoverOffset = std::sin(patternTimer * 8.0f) * 15.0f;
             break;
 
-        case 2: // Charge toward player
-            if (auto scene = getPlayScene(); scene && !scene->PlayerGroup->GetObjects().empty()) {
-                auto player = scene->PlayerGroup->GetObjects().front();
-                VelocityX = speed * 2.5f * (player->Position.x > Position.x ? 1 : -1);
-            }
-            break;
-
-        case 3: // Circular movement
+        case 2: // Circular movement
             VelocityX = speed * 1.8f * std::cos(patternTimer * 1.2f);
             hoverOffset = std::sin(patternTimer * 1.2f) * 50.0f;
             break;
@@ -176,7 +169,7 @@ void EjojoEnemy::UpdateMovementPattern(float deltaTime) {
 }
 
 void EjojoEnemy::SetNextPattern() {
-    std::uniform_int_distribution<int> patternDist(0, 3);
+    std::uniform_int_distribution<int> patternDist(0, 2);
     currentPattern = patternDist(rng);
 }
 
