@@ -7,6 +7,7 @@
 #include "EnemyBullet/EnemyFireBullet.h"
 #include "Engine/GameEngine.hpp"
 #include "Scene/PlayScene.hpp"
+#include "UI/Animation/ExplosionEffect.hpp"
 #include "UI/Animation/LightEffect.h"
 
 MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy("play/EjojoMini.png",x, y) {
@@ -126,4 +127,15 @@ void MiniEjojo::ShootRandomPattern() {
 
     }
 }
+
+void MiniEjojo::OnDeath() {
+    getPlayScene()->EffectGroup->AddNewObject(
+                new ExplosionEffect(
+                    Position.x ,
+                    Position.y
+                )
+            );
+    Enemy::OnDeath();
+}
+
 

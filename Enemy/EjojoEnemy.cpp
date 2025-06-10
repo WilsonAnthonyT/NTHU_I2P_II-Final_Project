@@ -8,9 +8,11 @@
 #include "EnemyBullet/EnemyFireBullet.h"
 #include "EnemyBullet/EnemyBullet.h"
 #include "Engine/GameEngine.hpp"
+#include "UI/Animation/DirtyEffect.hpp"
+#include "UI/Animation/ExplosionEffect.hpp"
 #include "UI/Animation/LightEffect.h"
 
-EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 100, 5, 5, 10),
+EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 10, 5, 5, 10),
                                        rng(std::random_device{}()) {
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
     fixedAltitude = PlayScene::BlockSize * 8;
@@ -30,44 +32,100 @@ EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 5
 }
 
 void EjojoEnemy::Update(float deltaTime) {
-    auto scene = getPlayScene();
-    if (!scene) return;
+    if (isFalling) {
+        crashProgress = crashShakeTimer > 0 ? 1.0f :
+                            std::max(0.5f, 1.0f - ((Position.y) / (getPlayScene()->MapHeight * PlayScene::BlockSize)));
 
-    timeSinceLastShot += deltaTime;
-    patternTimer += deltaTime;
+        fallVelocity += PlayScene::Gravity * deltaTime;
+        Position.y += fallVelocity * deltaTime;
 
-    // Update movement first
-    UpdateMovementPattern(deltaTime);
+        smokeTimer -= deltaTime;
+        if (smokeTimer <= 0) {
+            smokeTimer = 0.05f + (rand() % 100) * 0.001f;
+        }
 
-    // Apply movement
-    Position.x += VelocityX * deltaTime * 2.0f;
-    Position.y = PlayScene::GetClientSize().y - fixedAltitude + hoverOffset;
+        explosionTimer -= deltaTime;
+        if (explosionTimer <= 0) {
+            getPlayScene()->EffectGroup->AddNewObject(
+                new ExplosionEffect(
+                    Position.x + (rand() % 100 - 50),
+                    Position.y + (rand() % 100)
+                )
+            );
+            explosionTimer = 0.15f + (rand() % 100) * 0.001f;
+        }
 
-    // Check if HP has dropped by 1/4
-    if (hp == spawnThreshold) {
-        SpawnMiniEjojo();
+        float groundY = getPlayScene()->MapHeight * PlayScene::BlockSize - Size.y * 1.25f;
+        if (Position.y >= groundY) {
+            Position.y = groundY;
+
+            // Final crash effects
+            if (crashShakeTimer == 0) { // Only trigger once
+                crashShakeTimer = crashDelay;
+
+                // Big explosion
+                getPlayScene()->EffectGroup->AddNewObject(
+                    new ExplosionEffect(Position.x, Position.y)
+                );
+
+                // Screen shake
+
+
+                // Ground debris
+                for (int i = 0; i < 15; i++) {
+                    getPlayScene()->GroundEffectGroup->AddNewObject(
+                        new DirtyEffect("play/dirty-1.png",
+                                       0.5f + (rand() % 100)*0.01f,
+                                       Position.x + (rand() % 200 - 100),
+                                       groundY)
+                    );
+                }
+
+                // Fire effect
+                for (int i = 0; i < 5; i++) {
+                    getPlayScene()->EffectGroup->AddNewObject(
+                        new LightEffect(Position.x + (rand() % 100 - 50),
+                                       groundY - 20)
+                    );
+                }
+            }
+
+            // Countdown to removal
+            crashShakeTimer -= deltaTime;
+            if (crashShakeTimer <= 0) {
+                getPlayScene()->EnemyGroup->RemoveObject(GetObjectIterator());
+                return;
+            }
+        }
+    }
+    else {
+        // Original flying behavior
+        timeSinceLastShot += deltaTime;
+        patternTimer += deltaTime;
+        UpdateMovementPattern(deltaTime);
+        Position.x += VelocityX * deltaTime * 2.0f;
+        Position.y = PlayScene::GetClientSize().y - fixedAltitude + hoverOffset;
+
+        if (hp <= spawnThreshold) {
+            SpawnMiniEjojo();
+        }
+
+        if (timeSinceLastShot >= nextFireCooldown) {
+            ShootRandomPattern();
+            timeSinceLastShot = 0.0f;
+            std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
+            nextFireCooldown = cooldownDist(rng);
+        }
     }
 
-    // Shooting logic
-    if (timeSinceLastShot >= nextFireCooldown) {
-        ShootRandomPattern();
-        timeSinceLastShot = 0.0f;
-        std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
-        nextFireCooldown = cooldownDist(rng);
-    }
-
-    //rain attack pattern
-
-    // Screen bounds
-    Engine::Point screenSize = PlayScene::GetClientSize();
-    Position.x = std::max(Size.x/2, std::min(Position.x, screenSize.x - Size.x/2));
+    Sprite::Update(deltaTime);
 }
 
 void EjojoEnemy::SpawnMiniEjojo() {
     auto scene = getPlayScene();
     if (!scene) return;
 
-    while (currentMiniEjojo < maxMiniEjojo) {
+    if (currentMiniEjojo < maxMiniEjojo) {
         float x = Position.x * currentMiniEjojo;
         float y = Position.y - PlayScene::BlockSize * 7;
 
@@ -176,7 +234,25 @@ void EjojoEnemy::SetNextPattern() {
 }
 
 void EjojoEnemy::Draw() const {
-    FlyingEnemy::Draw();
+    if (isFalling) {
+        // Darken and redden the ship as it falls
+
+
+        ALLEGRO_COLOR crashTint = al_map_rgba_f(
+            crashProgress * 0.7f,  // R
+            crashProgress * 0.5f,  // G
+            crashProgress * 0.5f,  // B
+            1.0f                  // A
+        );
+
+        al_draw_tinted_scaled_bitmap(bmp.get(), crashTint, 0, 0,
+            al_get_bitmap_width(bmp.get()), al_get_bitmap_height(bmp.get()),
+            Position.x - Size.x/2,Position.y - Size.y/2, Size.x, Size.y, 0);
+    }
+    else {
+        // Normal drawing
+        FlyingEnemy::Draw();
+    }
     if (Engine::IScene::DebugMode) {
         al_draw_line(Position.x, Position.y,
                     Position.x + VelocityX, Position.y + hoverOffset,
@@ -185,8 +261,29 @@ void EjojoEnemy::Draw() const {
 }
 
 void EjojoEnemy::OnDeath() {
-    maxMiniEjojo += 2;
-    SpawnMiniEjojo();
-    Enemy::OnDeath();
+    if (!isFalling) {
+        isFalling = true;
+        fallVelocity = 0.0f;
+
+        // Disable all normal behaviors
+        currentPattern = -1;
+        VelocityX = 0;
+        hoverOffset = 0;
+
+        // Initial explosion
+        getPlayScene()->EffectGroup->AddNewObject(
+            new ExplosionEffect(Position.x, Position.y)
+        );
+
+        // Start smoke trail
+        smokeTimer = 0.05f;
+        explosionTimer = 0.15f;
+
+        // Darken the ship color
+        damageTint = al_map_rgb(150, 150, 150);
+
+        // Play crash sound
+        //AudioHelper::PlayAudio("spaceship-crash.ogg");
+    }
 }
 

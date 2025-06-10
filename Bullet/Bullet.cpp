@@ -39,10 +39,11 @@ bool Bullet::IsCollision(float x, float y) {
     if (!scene) return true;
 
     // Calculate bullet's square hitbox with tolerance
-    float bulletLeft = Position.x - abs(Size.x) / 5;
-    float bulletRight = Position.x + abs(Size.x) / 5;
-    float bulletTop = Position.y;
-    float bulletBottom = Position.y;
+    float halfSize_x = abs(Size.x)/2;
+    float bulletLeft = Position.x - halfSize_x/ 2;
+    float bulletRight = Position.x + halfSize_x / 2;
+    float bulletTop = Position.y - abs(Size.y)/4;
+    float bulletBottom = Position.y + abs(Size.y)/4;
 
     for (auto &it : scene->EnemyGroup->GetObjects()) {
         auto *enemy = dynamic_cast<Enemy *>(it);
@@ -98,10 +99,11 @@ void Bullet::Draw() const {
     Sprite::Draw();
     if (Engine::IScene::DebugMode) {
 
-        float bulletLeft = Position.x - abs(Size.x) / 5;
-        float bulletRight = Position.x + abs(Size.x) / 5;
-        float bulletTop = Position.y;
-        float bulletBottom = Position.y;
+        float halfSize_x = abs(Size.x)/2;
+        float bulletLeft = Position.x - halfSize_x/ 2;
+        float bulletRight = Position.x + halfSize_x / 2;
+        float bulletTop = Position.y - abs(Size.y)/4;
+        float bulletBottom = Position.y + abs(Size.y)/4;
         al_draw_rectangle(bulletLeft, bulletTop, bulletRight, bulletBottom, al_map_rgb(0,0,0), 4);
         //al_draw_circle(Position.x, Position.y, CollisionRadius, al_map_rgb(255,155,0), 3);
     }

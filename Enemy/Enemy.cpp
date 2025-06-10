@@ -70,6 +70,7 @@ void Enemy::Hit(float damage, float PosX, std::string type) {
     getPlayScene()->DamageTextGroup->AddNewObject(new DamageText(Position.x, Position.y - 10, std::to_string((int)damage), damageColor1));
 
     if (hp <= 0) {
+        hp = 0;
         OnExplode();
         OnDeath();
     }
