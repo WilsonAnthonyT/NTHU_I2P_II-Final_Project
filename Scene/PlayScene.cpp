@@ -155,17 +155,26 @@ void PlayScene::Initialize() {
     bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
     CreatePauseUI();
 
-    //dialogue
-    // dialogFont = al_load_font("Resource/fonts/pirulen.ttf", 36, 0);
-    // if (!dialogFont) {
-    //     throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
-    // }
-    // std::vector<Dialog> dialogs = {
-    //     {"Quick! The enemy is attacking!", 3.0f},
-    //     {"Prepare your defenses!", 3.0f},
-    //     {"Good luck, soldier!", 3.0f}
-    // };
-    // StartDialog(dialogs);
+    //dialogue=======================================================================
+    dialogFont = al_load_font("Resource/fonts/pirulen.ttf", 36, 0);
+    if (!dialogFont) {
+        throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
+    }
+    std::vector<PlayScene::Dialog> dialogs;
+    dialogs.push_back({
+        "Hello, adventurer!",
+        3.0f,
+        "Resource/images/play/arwen.png",
+        "Arwen"
+    });
+    dialogs.push_back({
+        "The castle is dangerous!",
+        3.0f,
+        "Resources/images/play/bryan.png",
+        "Bryan"
+    });
+    StartDialog(dialogs, true);
+    //================================================================================
 }
 void PlayScene::Terminate() {
     if (dialogFont) {
@@ -182,34 +191,46 @@ void PlayScene::Update(float deltaTime) {
     //     MapId++;
     //     Engine::GameEngine::GetInstance().ChangeScene("play");
     // }
-
     UpdatePauseState();
     if (IsPaused) {
         UIGroup->Update(deltaTime);
         return;
     }
+    //DIALOG STATE+++++++++++++++++++++++++++++++++++++++++++
     if (currentState == GameState::Dialog) {
         UpdateDialog(deltaTime);
         UIGroup->Update(deltaTime);
-        return; // Skip other updates while in dialog
+
+        // Disable player movement but keep them visible
+        for (auto& it : PlayerGroup->GetObjects()) {
+            Player* player = dynamic_cast<Player*>(it);
+            if (player) {
+                player->EnableMovement(false);
+            }
+        }
+    } else {
+        // Enable player movement when not in dialog
+        for (auto& it : PlayerGroup->GetObjects()) {
+            Player* player = dynamic_cast<Player*>(it);
+            if (player) {
+                player->EnableMovement(true);
+            }
+        }
     }
-
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     for (auto& p : rainParticles) {
-        p.y += p.speed * deltaTime * BlockSize; // Multiply by deltaTime for smooth speed
-        p.x += 0.5f * deltaTime;    // Optional: slight wind effect
-
-        // Reset particles that go off-screen
+        p.y += p.speed * deltaTime * BlockSize * 2; // Animates properly with deltaTime
         if (p.y > PlayScene::MapHeight * PlayScene::BlockSize) {
-            p.y = -10.0f; // Start above the screen
+            p.y = -p.length; // Reset above the screen
             p.x = rand() % (PlayScene::MapWidth * PlayScene::BlockSize);
         }
     }
 
     BulletGroup->Update(deltaTime);
-    EnemyBulletGroup->Update(deltaTime);
+    if (currentState != GameState::Dialog)EnemyBulletGroup->Update(deltaTime);
     WeaponGroup->Update(deltaTime);
     PlayerGroup->Update(deltaTime);
-    EnemyGroup->Update(deltaTime);
+    if (currentState!=GameState::Dialog) EnemyGroup->Update(deltaTime);
     DamageTextGroup->Update(deltaTime);
     EffectGroup->Update(deltaTime);
     InteractiveBlockGroup->Update(deltaTime);
@@ -309,6 +330,9 @@ void PlayScene::Draw() const {
 }
 void PlayScene::OnMouseDown(int button, int mx, int my) {
     IScene::OnMouseDown(button, mx, my);
+    if (currentState == GameState::Dialog && dialogSkippable) {
+        dialogSkipRequested = true;
+    }
 }
 void PlayScene::OnMouseMove(int mx, int my) {
     IScene::OnMouseMove(mx, my);
@@ -327,6 +351,12 @@ void PlayScene::OnKeyDown(int keyCode) {
     }
     if (keyCode == ALLEGRO_KEY_ESCAPE) {
         IsPaused = !IsPaused;
+    }
+
+    if (currentState == GameState::Dialog && dialogSkippable) {
+        if (keyCode == ALLEGRO_KEY_SPACE || keyCode == ALLEGRO_KEY_ENTER) {
+            dialogSkipRequested = true;
+        }
     }
 }
 int PlayScene::GetMoney() const {
@@ -660,6 +690,8 @@ void PlayScene::HomeOnClick(int stage) {
 }
 
 
+
+
 //-----------For Pause UI-------------------------
 
 void PlayScene::CreatePauseUI() {
@@ -925,7 +957,12 @@ void PlayScene::MazeCreator() {
 }
 
 
+
+
+//DIALOGUE FUNCTION====================================================================================================
 void PlayScene::RenderDialog() const {
+    if (currentDialogText.empty()) return;
+
     const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
     const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
 
@@ -933,47 +970,106 @@ void PlayScene::RenderDialog() const {
     al_draw_filled_rectangle(screenW * 0.1, screenH * 0.8, screenW * 0.9, screenH * 0.95, al_map_rgba(0, 0, 0, 200));
     al_draw_rectangle(screenW * 0.1, screenH * 0.8, screenW * 0.9, screenH * 0.95, al_map_rgb(255, 255, 255), 2);
 
-    // Draw dialog text
-    ALLEGRO_FONT* dialogFont = al_load_font("Resource/fonts/pirulen.ttf", 24, 0); // Load font with size 24
-    if (!dialogFont) {
-        throw std::runtime_error("Failed to load font: pirulen.ttf");
+    // Draw speaker image (left side of dialog box)
+    if (!currentSpeakerImagePath.empty()) {
+        ALLEGRO_BITMAP* speakerImg = al_load_bitmap(currentSpeakerImagePath.c_str());
+        if (speakerImg) {
+            // Calculate position and size (adjust these values as needed)
+            const float imgWidth = BlockSize;
+            const float imgHeight = BlockSize;
+            const float imgX = screenW * 0.1f - imgWidth - 10; // Left of dialog box
+            const float imgY = screenH * 0.8f;
+
+            al_draw_scaled_bitmap(speakerImg,
+                                0, 0, al_get_bitmap_width(speakerImg), al_get_bitmap_height(speakerImg),
+                                imgX, imgY, imgWidth, imgHeight, 0);
+            al_destroy_bitmap(speakerImg);
+        }
     }
+
+    // Draw speaker name (optional)
+    if (!currentSpeakerName.empty() && dialogFont) {
+        al_draw_text(dialogFont, al_map_rgb(255, 255, 255),
+                    screenW * 0.15, screenH * 0.81,
+                    ALLEGRO_ALIGN_LEFT, currentSpeakerName.c_str());
+    }
+
+    // Draw dialog text
     if (dialogFont) {
-        al_draw_text(
-            dialogFont,
-            al_map_rgb(255, 255, 255),
-            screenW * 0.5,
-            screenH * 0.825,
-            ALLEGRO_ALIGN_CENTER,
-            currentDialogText.c_str()
-        );
+        al_draw_text(dialogFont, al_map_rgb(255, 255, 255),
+                    screenW * 0.5, screenH * 0.825,
+                    ALLEGRO_ALIGN_CENTER, currentDialogText.c_str());
+    }
+    if (dialogSkippable && dialogFont) {
+        std::string hint = dialogFastForward ?
+            "Press to skip >>" : "Press to continue...";
+
+        al_draw_text(dialogFont, al_map_rgba(200, 200, 200, 200),
+                    screenW * 0.88, screenH * 0.92,
+                    ALLEGRO_ALIGN_RIGHT, hint.c_str());
     }
 }
 
-void PlayScene::StartDialog(const std::vector<Dialog> &dialogs) {
-    while (!dialogQueue.empty()) dialogQueue.pop(); // Clear old dialogs
-    for (const auto& d : dialogs) {
-        dialogQueue.push(d);
-    }
+void PlayScene::StartDialog(const std::vector<Dialog>& dialogs, bool skippable = true) {
+    dialogQueue = std::queue<Dialog>(); // Clear existing
+    for (const auto& d : dialogs) dialogQueue.push(d);
+
     currentState = GameState::Dialog;
+    dialogSkippable = skippable;
+    dialogSkipRequested = false;
+    dialogFastForward = false;
+
     if (!dialogQueue.empty()) {
-        currentDialogText = dialogQueue.front().text;
-        dialogTimer = dialogQueue.front().duration;
+        const Dialog& first = dialogQueue.front();
+        currentDialogText = first.text;
+        currentSpeakerImagePath = first.speakerImagePath;
+        currentSpeakerName = first.speakerName;
+        dialogTimer = first.duration;
         dialogQueue.pop();
     }
 }
 
 void PlayScene::UpdateDialog(float deltaTime) {
-    if (currentState == GameState::Dialog) {
+    if (currentState != GameState::Dialog) return;
+
+    // Handle skip input
+    if (dialogSkipRequested) {
+        if (dialogFastForward) {
+            // Second press - skip entire dialog
+            dialogQueue = std::queue<Dialog>(); // Clear remaining dialogs
+            dialogTimer = 0;
+        } else {
+            // First press - show full text immediately
+            dialogFastForward = true;
+            dialogTimer = 0;
+        }
+        dialogSkipRequested = false;
+    }
+
+    // Update normally or fast-forward
+    if (!dialogFastForward) {
         dialogTimer -= deltaTime;
-        if (dialogTimer <= 0) {
-            if (!dialogQueue.empty()) {
-                currentDialogText = dialogQueue.front().text;
-                dialogTimer = dialogQueue.front().duration;
-                dialogQueue.pop();
-            } else {
-                currentState = GameState::Normal; // Exit dialog state
-            }
+    } else {
+        dialogTimer = 0;
+    }
+
+    // Advance dialog
+    if (dialogTimer <= 0) {
+        dialogFastForward = false; // Reset fast-forward for next dialog
+
+        if (!dialogQueue.empty()) {
+            const Dialog& next = dialogQueue.front();
+            currentDialogText = next.text;
+            currentSpeakerImagePath = next.speakerImagePath;
+            currentSpeakerName = next.speakerName;
+            dialogTimer = next.duration;
+            dialogQueue.pop();
+        } else {
+            // Dialog ended
+            currentState = GameState::Normal;
+            currentDialogText.clear();
+            currentSpeakerImagePath.clear();
+            currentSpeakerName.clear();
         }
     }
 }

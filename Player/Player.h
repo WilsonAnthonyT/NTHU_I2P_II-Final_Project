@@ -11,6 +11,7 @@
 class PlayScene;
 
 class Player : public Engine::Sprite{
+
 protected:
     float MaxHp;
     float TintTimer;
@@ -20,6 +21,7 @@ protected:
     float goDownTimer = 0.0f;
     float tolerance;
     float armor;
+    bool movementEnabled = true;
 public:
     float hp;
     float speed;
@@ -39,6 +41,10 @@ public:
     float knockbackVelocityX = 0;
     float knockbackTimer = 0;
     const float maxKnockbackTime = 0.5f;
+
+    //for movement during dialogue
+    void EnableMovement(bool enable) { movementEnabled = enable; }
+    bool IsMovementEnabled() const { return movementEnabled; }
 };
 
 

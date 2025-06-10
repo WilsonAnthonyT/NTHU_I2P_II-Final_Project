@@ -27,44 +27,46 @@ void RangePlayer::Update(float deltaTime) {
     Engine::Point inputVelocity(0, 0);
 
     // Jump only when pressing W and not already jumping
-    if (al_key_down(&keyState, ALLEGRO_KEY_W)) {
-        if (!isJumping && !isFalling) {  // Can only jump when grounded
-            verticalVelocity = -jumpForce;
-            isJumping = true;
-            isFalling = false;
+    if (movementEnabled) {
+        if (al_key_down(&keyState, ALLEGRO_KEY_W)) {
+            if (!isJumping && !isFalling) {  // Can only jump when grounded
+                verticalVelocity = -jumpForce;
+                isJumping = true;
+                isFalling = false;
+            }
         }
-    }
-    if (al_key_down(&keyState, ALLEGRO_KEY_S)) {
-        goDown = true;
-        goDownTimer = 0.2f; // Reset timer to 0.5 seconds
-    }
-    else if (goDownTimer > 0) {
-        goDownTimer -= deltaTime;
-        if (goDownTimer <= 0) {
+        if (al_key_down(&keyState, ALLEGRO_KEY_S)) {
+            goDown = true;
+            goDownTimer = 0.2f; // Reset timer to 0.5 seconds
+        }
+        else if (goDownTimer > 0) {
+            goDownTimer -= deltaTime;
+            if (goDownTimer <= 0) {
+                goDown = false;
+                goDownTimer = 0;
+            }
+        }
+        else {
             goDown = false;
-            goDownTimer = 0;
         }
-    }
-    else {
-        goDown = false;
-    }
-    if (al_key_down(&keyState, ALLEGRO_KEY_A)) inputVelocity.x -= 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_D)) inputVelocity.x += 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_A)) inputVelocity.x -= 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_D)) inputVelocity.x += 1;
 
-    // Apply horizontal movement
-    if (inputVelocity.x != 0) {
-        inputVelocity = inputVelocity.Normalize() * speed;
-        float newX = Position.x + inputVelocity.x * deltaTime;
+        // Apply horizontal movement
+        if (inputVelocity.x != 0) {
+            inputVelocity = inputVelocity.Normalize() * speed;
+            float newX = Position.x + inputVelocity.x * deltaTime;
 
-        if (!IsCollision(newX, Position.y)) {
-            Position.x = newX;
-        } else {
-            // Try nudging vertically to slide through gaps
-            for (float offset = -5.0f; offset <= 5.0f; offset += 5.0f) {
-                if (!IsCollision(newX, Position.y + offset)) {
-                    Position.x = newX;
-                    Position.y += offset;
-                    break;
+            if (!IsCollision(newX, Position.y)) {
+                Position.x = newX;
+            } else {
+                // Try nudging vertically to slide through gaps
+                for (float offset = -5.0f; offset <= 5.0f; offset += 5.0f) {
+                    if (!IsCollision(newX, Position.y + offset)) {
+                        Position.x = newX;
+                        Position.y += offset;
+                        break;
+                    }
                 }
             }
         }
