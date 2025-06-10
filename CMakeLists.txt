@@ -52,7 +52,6 @@ add_executable(Final-Project
     Engine/Sprite.cpp
     Engine/Sprite.hpp
     
-    # TODO HACKATHON-2 (3/3): Add the new scene source files here
     Scene/LoseScene.cpp
     Scene/LoseScene.hpp
     Scene/PlayScene.cpp
@@ -116,6 +115,7 @@ add_executable(Final-Project
 
     InteractiveBlock/Box.h
     InteractiveBlock/Box.cpp
+
     Player/TankPlayerB.cpp
     Player/TankPlayerB.h
     Player/TankPlayerA.cpp
@@ -144,6 +144,8 @@ add_executable(Final-Project
     InteractiveBlock/Door.h
     InteractiveBlock/Buton.cpp
     InteractiveBlock/Buton.h
+    InteractiveBlock/Portal.cpp
+    InteractiveBlock/Portal.h
 )
 
 IF (WIN32)

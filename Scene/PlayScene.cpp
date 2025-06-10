@@ -43,6 +43,7 @@
 #include "Enemy/MiniEjojo.h"
 #include "InteractiveBlock/Box.h"
 #include "InteractiveBlock/Buton.h"
+#include "InteractiveBlock/Portal.h"
 #include "InteractiveBlock/Door.h"
 #include "InteractiveBlock/Sensor.h"
 #include "Player/MazePlayerA.h"
@@ -600,7 +601,9 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Buton("play/button.png",SpawnCoordinate.x, SpawnCoordinate.y));
             } else if (num=='6') {
-                TileMapGroup->AddNewObject(new Engine::Image("play/explosion-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new Portal("play/portal.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }
         }
     }

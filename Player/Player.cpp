@@ -11,6 +11,7 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/Sprite.hpp"
 #include "InteractiveBlock/Box.h"
+#include "InteractiveBlock/Portal.h"
 #include "Scene/PlayScene.hpp"
 
 Player::Player(std::string img, float x, float y, float speed, float hp): Sprite(img,x,y),speed(speed), hp(hp),flipped(false){
