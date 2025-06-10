@@ -693,7 +693,7 @@ void PlayScene::MiniMap() const {
             float sx = sensor->Size.x * xScale;
             float sy = sensor->Size.y * yScale;
             px -= sx / 2;
-            
+            py += sy;
             if (bmp) {
                 al_draw_scaled_bitmap(
                 bmp,
