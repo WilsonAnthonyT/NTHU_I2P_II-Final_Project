@@ -13,7 +13,9 @@
 #include "InteractiveBlock/Box.h"
 #include "InteractiveBlock/Portal.h"
 #include "Scene/PlayScene.hpp"
-
+PlayScene *Player::getPlayScene() {
+    return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
+}
 Player::Player(std::string img, float x, float y, float speed, float hp): Sprite(img,x,y),speed(speed), hp(hp),flipped(false){
     MaxHp = hp;
     TintTimer = 0.0f;
@@ -219,4 +221,9 @@ void Player::PlayerBulletCollision(Player *player, float time) {
 void Player::Hit(float damage) {
     this->hp -= damage;
 }
+void Player::remove() {
+    auto *scene = getPlayScene();
+    scene->PlayerGroup->RemoveObject(GetObjectIterator());
+}
+
 

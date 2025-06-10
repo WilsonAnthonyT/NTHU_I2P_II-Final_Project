@@ -148,7 +148,6 @@ void PlayScene::Initialize() {
 
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
-    preview = nullptr;
     UIGroup->AddNewObject(imgTarget);
     // Preload Lose Scene
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
@@ -242,7 +241,7 @@ void PlayScene::Update(float deltaTime) {
     std::vector<Player*> players;
     for (auto& it : PlayerGroup->GetObjects()) {
         Player *player = dynamic_cast<Player *>(it);
-        if (player) {
+        if (player && player->Visible) {
             players.push_back(player);
         }
     }
@@ -262,7 +261,7 @@ void PlayScene::Update(float deltaTime) {
         }
     }
 
-    if (player1->Visible == true && player2->Visible == true) {
+    if (players.size() == 2) {
         Engine::Point target = (players[0]->Position + players[1]->Position)/2;
         Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
         Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
@@ -273,14 +272,25 @@ void PlayScene::Update(float deltaTime) {
         if (Camera.y < 0)Camera.y = 0;
         if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
     }
-    else {
-        Engine::Point target = players[1]->Position;
+    else if (players.size() == 1) {
+        Engine::Point target = players[0]->Position;
         Camera.x = (target.x - screenWidth / 2);
         Camera.y = (target.y - screenHeight / 2);
         if (Camera.x < 0)Camera.x = 0;
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
         if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+        lastPlayerPosition = target;
+    }
+    else {
+        Camera.x = lastPlayerPosition.x - screenWidth / 2;
+        Camera.y = lastPlayerPosition.y - screenHeight / 2;
+        if (Camera.x < 0)Camera.x = 0;
+        if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
+        if (Camera.y < 0)Camera.y = 0;
+        if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+        //Engine::GameEngine::GetInstance().ChangeScene("win");
+        return;
     }
 }
 void PlayScene::Draw() const {
@@ -755,16 +765,9 @@ void PlayScene::MiniMap() const {
     al_draw_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);
 }
 
-
-// void PlayScene::FlashLight() const {
-//     //al_clear_to_color(al_map_rgb(0, 0, 0));
-//     al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
-//     al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
-//
-//     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
-// }
-
 void PlayScene::FlashLight() const {
+    if (!player1 || !player2) return;
+
     // Set the target to our mask bitmap
     al_set_target_bitmap(mask);
     const float radius = BlockSize * 2.f;
@@ -973,6 +976,7 @@ void PlayScene::UpdatePauseState() {
 }
 
 void PlayScene::Enable2ndPlayer(int stage) {
+    if (!player1) return;
     enable2ndplayer = !enable2ndplayer;
     if (enable2ndplayer) {
         player1->Visible = true;
@@ -1191,4 +1195,15 @@ void PlayScene::UpdateDialog(float deltaTime) {
             currentSpeakerName.clear();
         }
     }
+}
+
+
+//for player removal
+void PlayScene::RemovePlayer(Player* player) {
+    if (!player) return;
+
+    PlayerGroup->RemoveObject(player->GetObjectIterator());
+    if (player == player1) player1 = nullptr;
+    if (player == player2) player2 = nullptr;
+    delete player;
 }

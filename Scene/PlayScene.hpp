@@ -18,7 +18,6 @@
 #include "InteractiveBlock/Door.h"
 #include "InteractiveBlock/Sensor.h"
 
-class Turret;
 namespace Engine {
     class Group;
     class Image;
@@ -54,6 +53,9 @@ private:
     int screenWidth;
     int screenHeight;
     void sensorAssign();
+
+    //==================================
+    Engine::Point lastPlayerPosition;
 
 protected:
     int lives;
@@ -96,7 +98,6 @@ public:
     Engine::Label *UILives;
     Engine::Image *imgTarget;
     Engine::Sprite *dangerIndicator;
-    Turret *preview;
     std::vector<std::vector<TileType>> mapState;
     std::vector<std::vector<int>> mapDistance;
     std::list<std::pair<int, float>> enemyWaveData;
@@ -168,5 +169,8 @@ public:
     void StartDialog(const std::vector<Dialog>& dialogs, bool skippable);
     void UpdateDialog(float deltaTime);
     void RenderDialog() const;
+
+    //remove player
+    void RemovePlayer(Player *player);
 };
 #endif   // PLAYSCENE_HPP

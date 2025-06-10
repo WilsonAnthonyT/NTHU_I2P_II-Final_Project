@@ -7,6 +7,7 @@
 #include "Buton.h"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Resources.hpp"
+#include <iostream>
 
 PlayScene *Portal::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
@@ -32,6 +33,7 @@ void Portal::Update(float deltaTime) {
         active=true;
         bmp = Engine::Resources::GetInstance().GetBitmap("play/portal-active.png");
     }
+    if (active)IsCollision(Position.x,Position.y);
 }
 void Portal::IsCollision(float x, float y) {
     PlayScene* scene = getPlayScene();
@@ -58,7 +60,7 @@ void Portal::IsCollision(float x, float y) {
         bool overlapY = top < p_Bottom && bottom > p_Top;
 
         if (overlapX && overlapY) {
-            scene->PlayerGroup->RemoveObject(it->GetObjectIterator());
+            player->Visible = false;
         }
     }
 }

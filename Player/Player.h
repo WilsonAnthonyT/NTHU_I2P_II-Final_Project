@@ -30,11 +30,15 @@ public:
     bool isJumping;
     bool isFalling;
     bool flipped;
+
+    PlayScene *getPlayScene();
+
     Player(std::string img, float x, float y, float speed, float hp);
     void Update(float deltaTime) override;
     void Draw() const override;
     bool IsCollision(float x, float y);
     bool InteractiveBlockCollision(float x, float y);
+    void remove();
 
     void PlayerEnemyCollision(Player* player, float time);
     void PlayerBulletCollision(Player* player, float time);

@@ -39,7 +39,7 @@ void StageSelectScene::Initialize() {
 
     //back button
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 550, 400, 100);
-    btn->SetOnClickCallback(std::bind(&StageSelectScene::BackOnClick, this, 4));
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::BackOnClick, this));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("back", "pirulen.ttf", 48, halfW, halfH / 2 + 600, 0, 0, 0, 255, 0.5, 0.5));
 
@@ -65,7 +65,7 @@ void StageSelectScene::Terminate() {
     bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }
-void StageSelectScene::BackOnClick(int stage) {
+void StageSelectScene::BackOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
 void StageSelectScene::PlayOnClick(int stage) {

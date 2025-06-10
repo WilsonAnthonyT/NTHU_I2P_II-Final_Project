@@ -146,6 +146,10 @@ add_executable(Final-Project
     InteractiveBlock/Buton.h
     InteractiveBlock/Portal.cpp
     InteractiveBlock/Portal.h
+        Scene/CutScene.cpp
+        Scene/CutScene.h
+        Scene/SelectProfileScene.cpp
+        Scene/SelectProfileScene.h
 )
 
 IF (WIN32)

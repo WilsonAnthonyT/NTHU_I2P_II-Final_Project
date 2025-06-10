@@ -3,6 +3,7 @@
 // You can register your scenes here, and start the game.
 #include "Engine/GameEngine.hpp"
 #include "Engine/LOG.hpp"
+#include "Scene/CutScene.h"
 #include "Scene/LoseScene.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Scene/StageSelectScene.hpp"
@@ -20,6 +21,7 @@ int main(int argc, char **argv) {
     // TODO HACKATHON-2 (2/3): Register Scenes here
 	game.AddNewScene("start", new StartScene());	//ADDED
     game.AddNewScene("stage-select", new StageSelectScene());
+	game.AddNewScene("story", new CutScene());
 	game.AddNewScene("play", new PlayScene());
 	game.AddNewScene("lose", new LoseScene());
 	game.AddNewScene("win", new WinScene());
