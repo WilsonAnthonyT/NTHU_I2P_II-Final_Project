@@ -534,7 +534,7 @@ void PlayScene::ReadMap() {
             }else if (num == 'M') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                EnemyGroup->AddNewObject(new EjojoEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+                EnemyGroup->AddNewObject(new EjojoEnemy("play/ejojo.png",EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }else if (num == 'F') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));

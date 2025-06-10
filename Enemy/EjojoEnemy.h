@@ -35,7 +35,7 @@ private:
     float lastHP;
 
 public:
-    EjojoEnemy(int x, int y);
+    EjojoEnemy(std::string img, int x, int y);
     void Update(float deltaTime) override;
     void Draw() const override;
     virtual void ShootRandomPattern();

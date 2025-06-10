@@ -9,8 +9,8 @@
 #include "Scene/PlayScene.hpp"
 #include "UI/Animation/LightEffect.h"
 
-MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy(x, y) {
-    Size = Engine::Point(PlayScene::BlockSize*2, PlayScene::BlockSize*1);
+MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy("play/EjojoMini.png",x, y) {
+    Size = Engine::Point(PlayScene::BlockSize*1, PlayScene::BlockSize*1);
     fixedAltitude = PlayScene::BlockSize * 6;
     Position.y = PlayScene::GetClientSize().y - fixedAltitude;
     currentPattern = 0;
@@ -20,7 +20,6 @@ MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy(x, y) {
     std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
     nextFireCooldown = cooldownDist(rng);
     getPlayScene()->EffectGroup->AddNewObject(new LightEffect(Position.x, Position.y));
-    Tint = al_map_rgba(0, 255, 0, 255);
 }
 
 void MiniEjojo::Update(float deltaTime) {
