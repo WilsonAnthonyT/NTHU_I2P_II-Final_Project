@@ -107,7 +107,6 @@ void PlayScene::Initialize() {
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
 
-
     if (MapId == 3) {
         //for flashlight
         if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
@@ -144,6 +143,28 @@ void PlayScene::Initialize() {
             rainParticles.push_back(p);
         }
     }
+
+
+    const float scale = 0.15f;
+    const int border = BlockSize / 8;
+
+    float mWidth = screenWidth * scale;;
+    float mHeight = screenHeight * scale;
+    float mX = screenWidth - mWidth - border;
+    float mY = border;
+
+    Map_btn = new Engine::ImageButton(
+        "play/floor.png",
+        "play/floor.png",
+        mX,
+        mY,
+        mWidth,
+        mHeight
+    );
+
+    Map_btn->Visible = false;
+    Map_btn->SetOnClickCallback(std::bind(&PlayScene::MiniMapOnClick, this, 0));
+    AddNewControlObject(Map_btn);
 
 
     imgTarget = new Engine::Image("play/target.png", 0, 0);
@@ -198,6 +219,7 @@ void PlayScene::Update(float deltaTime) {
         UIGroup->Update(deltaTime);
         return;
     }
+
     //DIALOG STATE+++++++++++++++++++++++++++++++++++++++++++
     if (currentState == GameState::Dialog) {
         UpdateDialog(deltaTime);
@@ -306,7 +328,7 @@ void PlayScene::Draw() const {
 
     IScene::Draw(); // will draw tiles/UI, now offset by camera
 
-    if (MapId == 3) FlashLight();
+    if (MapId == 3 && !DebugMode) FlashLight();
 
     PlayerGroup->Draw();
     WeaponGroup->Draw();
@@ -317,7 +339,12 @@ void PlayScene::Draw() const {
     al_use_transform(&trans);
 
     //for map debug
-    MiniMap();
+    if((MapId == 3 && DebugMode) || (MapId != 3)) {
+        Map_btn->Enabled = true;
+        if (isMap_clicked) FullMap();
+        else MiniMap();
+    }
+
     if (currentState == GameState::Dialog) {
         RenderDialog();
     }
@@ -699,6 +726,9 @@ void PlayScene::MiniMap() const {
         auto* sensor = dynamic_cast<Sensor*>(obj);
         auto* box = dynamic_cast<Box*>(obj);
         auto* buton = dynamic_cast<Buton*>(obj);
+        auto* portal = dynamic_cast<Portal*>(obj);
+        auto* door = dynamic_cast<Door*>(obj);
+
         if (sensor && sensor->Visible) {
             auto bmp = sensor->Bitmap.get();
             float px = miniX + (sensor->Position.x - Camera.x) * xScale;
@@ -756,14 +786,238 @@ void PlayScene::MiniMap() const {
                 );
             }
         }
+        if (portal && portal->Visible) {
+            auto bmp = portal->Bitmap.get();
+            float px = miniX + (portal->Position.x - Camera.x) * xScale;
+            float py = miniY + (portal->Position.y - Camera.y) * yScale;
+            float sx = portal->Size.x * xScale;
+            float sy = portal->Size.y * yScale;
+            px -= sx / 2;
+            py += sy;
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
+        if (door && door->Visible) {
+            auto bmp = door->Bitmap.get();
+            float px = miniX + (door->Position.x - Camera.x) * xScale;
+            float py = miniY + (door->Position.y - Camera.y) * yScale;
+            float sx = door->Size.x * xScale;
+            float sy = door->Size.y * yScale;
+            px -= sx / 2;
+            py += sy;
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
     }
 
     // Reset clipping to full screen
     al_set_clipping_rectangle(0, 0, screenWidth, screenHeight);
 
     // Border on top (over the clipped content)
-    al_draw_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);
+    al_draw_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);Engine::ImageButton *btn;
+
+    Map_btn->Position.x = miniX;
+    Map_btn->Position.y = miniY;
+    Map_btn->Size.x = miniX + miniWidth;
+    Map_btn->Size.y = miniY + miniHeight;
 }
+
+void PlayScene::FullMap() const {
+    // Calculate map dimensions in pixels
+    const float mapPixelWidth = MapWidth * BlockSize;
+    const float mapPixelHeight = MapHeight * BlockSize;
+
+    // Determine maximum size that fits within 75% of screen while maintaining aspect ratio
+    const float maxWidth = screenWidth * 0.75f;
+    const float maxHeight = screenHeight * 0.75f;
+
+    // Calculate scale factor while maintaining aspect ratio
+    float scale = std::min(maxWidth / mapPixelWidth, maxHeight / mapPixelHeight);
+    float scaledWidth = mapPixelWidth * scale;
+    float scaledHeight = mapPixelHeight * scale;
+
+    // Center the map on screen
+    const float mapX = (screenWidth - scaledWidth) / 2;
+    const float mapY = (screenHeight - scaledHeight) / 2;
+    const int border = BlockSize / 8;
+
+    // Colors
+    const ALLEGRO_COLOR bgColor = al_map_rgba(0, 0, 0, 200);
+    const ALLEGRO_COLOR p1_color = al_map_rgb(255, 0, 0);
+    const ALLEGRO_COLOR p2_color = al_map_rgb(0, 255, 0);
+    const ALLEGRO_COLOR tile_color = al_map_rgb(100, 100, 100);
+
+    // Draw background
+    al_draw_filled_rounded_rectangle(mapX, mapY, mapX + scaledWidth, mapY + scaledHeight, 5, 5, bgColor);
+
+    // Set clipping to restrict drawing to the map area
+    al_set_clipping_rectangle(mapX, mapY, scaledWidth, scaledHeight);
+
+    // Draw all tiles (entire map)
+    for (int y = 0; y < MapHeight; y++) {
+        for (int x = 0; x < MapWidth; x++) {
+            if (mapState[y][x] != TILE_AIR) {
+                float fx = mapX + x * BlockSize * scale;
+                float fy = mapY + y * BlockSize * scale;
+                float fw = BlockSize * scale;
+                float fh = BlockSize * scale;
+
+                al_draw_filled_rectangle(fx, fy, fx + fw, fy + fh, tile_color);
+            }
+        }
+    }
+
+    // Draw players
+    for (auto& obj : PlayerGroup->GetObjects()) {
+        Player* player = dynamic_cast<Player*>(obj);
+        if (player && player->Visible) {
+            float px = mapX + player->Position.x * scale;
+            float py = mapY + player->Position.y * scale;
+            float radius = 20.0f * scale;
+
+            al_draw_filled_circle(px, py, radius, (player == player1) ? p1_color : p2_color);
+        }
+    }
+
+    // Draw interactive objects
+    for (auto& obj : InteractiveBlockGroup->GetObjects()) {
+        auto* sensor = dynamic_cast<Sensor*>(obj);
+        auto* box = dynamic_cast<Box*>(obj);
+        auto* buton = dynamic_cast<Buton*>(obj);
+        auto* portal = dynamic_cast<Portal*>(obj);
+        auto* door = dynamic_cast<Door*>(obj);
+
+        // if (sensor && sensor->Visible) {
+        //     auto bmp = sensor->Bitmap.get();
+        //     if (bmp) {
+        //         float px = mapX + (sensor->Position.x - sensor->Size.x / 2) * scale;
+        //         float py = mapY + sensor->Position.y * scale;
+        //         float sx = sensor->Size.x * scale;
+        //         float sy = sensor->Size.y * scale;
+        //
+        //         al_draw_scaled_bitmap(
+        //             bmp,
+        //             0, 0,
+        //             al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+        //             px, py,
+        //             sx, sy,
+        //             0
+        //         );
+        //     }
+        // }
+        //
+        // if (box && box->Visible) {
+        //     auto bmp = box->Bitmap.get();
+        //     if (bmp) {
+        //         float px = mapX + (box->Position.x - box->Size.x / 2) * scale;
+        //         float py = mapY + (box->Position.y - box->Size.y / 2) * scale;
+        //         float sx = box->Size.x * scale;
+        //         float sy = box->Size.y * scale;
+        //
+        //         al_draw_scaled_bitmap(
+        //             bmp,
+        //             0, 0,
+        //             al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+        //             px, py,
+        //             sx, sy,
+        //             0
+        //         );
+        //     }
+        // }
+
+        if (buton && buton->Visible) {
+            auto bmp = buton->Bitmap.get();
+            if (bmp) {
+                float px = mapX + (buton->Position.x - buton->Size.x / 2) * scale;
+                float py = mapY + (buton->Position.y - buton->Size.y / 2) * scale;
+                float sx = buton->Size.x * scale;
+                float sy = buton->Size.y * scale;
+
+                al_draw_scaled_bitmap(
+                    bmp,
+                    0, 0,
+                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                    px, py,
+                    sx, sy,
+                    0
+                );
+            }
+        }
+        if (portal && portal->Visible) {
+            auto bmp = portal->Bitmap.get();
+            if (bmp) {
+                float px = mapX + (portal->Position.x - portal->Size.x / 2) * scale;
+                float py = mapY + (portal->Position.y - portal->Size.y / 2) * scale;
+                float sx = portal->Size.x * scale;
+                float sy = portal->Size.y * scale;
+
+                al_draw_scaled_bitmap(
+                    bmp,
+                    0, 0,
+                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                    px, py,
+                    sx, sy,
+                    0
+                );
+            }
+        }
+        if (door && door->Visible) {
+            auto bmp = door->Bitmap.get();
+            if (bmp) {
+                float px = mapX + (door->Position.x - door->Size.x / 2) * scale;
+                float py = mapY + (door->Position.y - door->Size.y / 2) * scale;
+                float sx = door->Size.x * scale;
+                float sy = door->Size.y * scale;
+
+                al_draw_scaled_bitmap(
+                    bmp,
+                    0, 0,
+                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                    px, py,
+                    sx, sy,
+                    0
+                );
+            }
+        }
+
+    }
+
+    // Reset clipping to full screen
+    al_set_clipping_rectangle(0, 0, screenWidth, screenHeight);
+
+    // Draw border
+    al_draw_rounded_rectangle(mapX, mapY, mapX + scaledWidth, mapY + scaledHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);
+
+    // Position the button at the top-left corner of the map
+    Map_btn->Position.x = mapX + border;
+    Map_btn->Position.y = mapY + border;
+    Map_btn->Size.x = scaledWidth;
+    Map_btn->Size.y = scaledHeight;
+}
+
+// void PlayScene::FlashLight() const {
+//     //al_clear_to_color(al_map_rgb(0, 0, 0));
+//     al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
+//     al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
+//
+//     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+// }
 
 void PlayScene::FlashLight() const {
     if (!player1 || !player2) return;
@@ -792,6 +1046,10 @@ void PlayScene::FlashLight() const {
 
     // Set normal blending for other drawings
     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+}
+
+void PlayScene::MiniMapOnClick(int stage) {
+    isMap_clicked = !isMap_clicked;
 }
 
 void PlayScene::ReadEnemyWave() {

@@ -140,14 +140,27 @@ bool Player::IsCollision(float x, float y) {
 
     for (auto& obj : scene->InteractiveBlockGroup->GetObjects()) {
         Box* block = dynamic_cast<Box*>(obj);
-        if (block && block->Visible) {
-            float blockLeft = block->Position.x - block->Size.x/2 + PlayScene::BlockSize/16;
-            float blockRight = block->Position.x + block->Size.x/2 - PlayScene::BlockSize/16;
-            float blockTop = block->Position.y;
-            float blockBottom = block->Position.y + block->Size.y;
+        Door* dor = dynamic_cast<Door*>(obj);
+        if ((block && block->Visible) || (dor && dor->Visible && !dor->isOpen)) {
+            float objleft;
+            float objright;
+            float objtop;
+            float objbottom;
+            if (block) {
+                objleft = block->Position.x - block->Size.x/2 + PlayScene::BlockSize/16;
+                objright = block->Position.x + block->Size.x/2 - PlayScene::BlockSize/16;
+                objtop = block->Position.y;
+                objbottom = block->Position.y + block->Size.y;
+            } else if (dor) {
+                objleft = dor->Position.x - dor->Size.x/2 + PlayScene::BlockSize/16;
+                objright = dor->Position.x + dor->Size.x/2 - PlayScene::BlockSize/16;
+                objtop = dor->Position.y;
+                objbottom = dor->Position.y + dor->Size.y;
+            }
 
-            bool overlapX = playerLeft < blockRight && playerRight > blockLeft;
-            bool overlapY = playerTop < blockBottom && playerBottom > blockTop;
+
+            bool overlapX = playerLeft < objright && playerRight > objleft;
+            bool overlapY = playerTop < objbottom && playerBottom > objtop;
 
             if (overlapX && overlapY) return true;
         }

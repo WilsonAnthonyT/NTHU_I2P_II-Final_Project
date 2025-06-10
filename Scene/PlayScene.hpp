@@ -52,6 +52,10 @@ private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
     int screenWidth;
     int screenHeight;
+
+    Engine::ImageButton* Map_btn;
+    bool isMap_clicked = false;
+
     void sensorAssign();
 
     //==================================
@@ -120,8 +124,9 @@ public:
     void UIBtnClicked(int id);
     void HomeOnClick(int id);
     void MiniMap() const;
+    void FullMap() const;
     void FlashLight() const;
-    // void ModifyReadMapTiles();
+    void MiniMapOnClick(int stage);
 
     //----Pause-----
     bool IsPaused = false;

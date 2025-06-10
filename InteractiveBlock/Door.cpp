@@ -1,5 +1,6 @@
 #include "Door.h"
 #include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
 #include "Scene/PlayScene.hpp"
 
 PlayScene *Door::getPlayScene() {
@@ -9,6 +10,7 @@ PlayScene *Door::getPlayScene() {
 Door::Door(std::string img, float x, float y) : Engine::Sprite(img, x, y){
     Anchor = Engine::Point(0.5, 0);
     Size.x = PlayScene::BlockSize/2,Size.y=PlayScene::BlockSize/2;
+    Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
 }
 
 void Door::Update(float deltaTime) {

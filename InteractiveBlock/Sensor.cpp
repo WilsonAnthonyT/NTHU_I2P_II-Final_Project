@@ -25,17 +25,20 @@ void Sensor::Update(float deltaTime) {
     auto scene = getPlayScene();
     if (!scene) return;
 
-    std::cout << "MIN WEIGHT:" << this->Weight << std::endl;
+    IObject* sensorObj = this->GetObjectIterator()->second;
+
+    //std::cout << "MIN WEIGHT:" << this->Weight << std::endl;
     if (IsCollision(Position.x, Position.y)>=Weight) {
         active=true;
 
-        IObject* sensorObj = this->GetObjectIterator()->second;
+
         auto& doorList = scene->DoorSensorAssignments[sensorObj];
 
-        std::cout << "BANYAK PINTU: " << doorList.size() << std::endl;
+        //std::cout << "BANYAK PINTU: " << doorList.size() << std::endl;
 
         for (auto door : doorList){
             door->Tint = al_map_rgb(85, 55, 0);
+            door->isOpen = true;
         }
 
         bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor-active.png");
@@ -45,6 +48,13 @@ void Sensor::Update(float deltaTime) {
     else{
         active = false;
         bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");
+
+        auto& doorList = scene->DoorSensorAssignments[sensorObj];
+
+        for (auto door : doorList){
+            door->Tint = al_map_rgb(255, 255, 255);
+            door->isOpen = false;
+        }
     }
 
 
