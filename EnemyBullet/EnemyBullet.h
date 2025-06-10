@@ -26,5 +26,6 @@ public:
     void Update(float deltaTime) override;
     bool IsCollision(float x, float y);
     void Draw() const override;
+    float getDamage();
 };
 #endif   //ENEMY_BULLET_HPP

@@ -22,6 +22,7 @@ protected:
     float tolerance;
     float armor;
     bool movementEnabled = true;
+    int TintCounter = 0;
 public:
     float hp;
     float speed;
@@ -36,11 +37,19 @@ public:
     bool InteractiveBlockCollision(float x, float y);
 
     void PlayerEnemyCollision(Player* player, float time);
+    void PlayerBulletCollision(Player* player, float time);
     void Hit(float damage);
+
     bool isKnockedback = false;
     float knockbackVelocityX = 0;
     float knockbackTimer = 0;
     const float maxKnockbackTime = 0.5f;
+
+    bool isBulletKnockback = false;
+    float bulletKnockbackVelocityX = 0;
+    float bulletKnockbackVelocityY = 0;
+    float bulletKnockbackTimer = 0;
+    const float maxBulletKnockbackTime = 0.5f;
 
     //for movement during dialogue
     void EnableMovement(bool enable) { movementEnabled = enable; }

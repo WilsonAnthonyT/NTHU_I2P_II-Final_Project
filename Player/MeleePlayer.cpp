@@ -25,6 +25,7 @@ void MeleePlayer::Update(float deltaTime) {
     if (!scene) return;
 
     PlayerEnemyCollision(this, deltaTime);
+    PlayerBulletCollision(this, deltaTime);
 
     ALLEGRO_KEYBOARD_STATE keyState;
     al_get_keyboard_state(&keyState);
