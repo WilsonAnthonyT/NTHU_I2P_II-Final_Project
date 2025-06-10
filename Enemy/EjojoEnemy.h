@@ -24,7 +24,7 @@ private:
 
     // Enemy CHILD
     int currentMiniEjojo = 0;
-    const int maxMiniEjojo = 1;
+    int maxMiniEjojo = 1;
 
     // Random engine
     std::mt19937 rng;
@@ -44,6 +44,7 @@ public:
 
     // New method to spawn MiniEjojo
     void SpawnMiniEjojo();
+    void OnDeath() override;
 
 };
 

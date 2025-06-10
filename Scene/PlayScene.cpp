@@ -716,6 +716,9 @@ void PlayScene::MiniMap() const {
         auto* sensor = dynamic_cast<Sensor*>(obj);
         auto* box = dynamic_cast<Box*>(obj);
         auto* buton = dynamic_cast<Buton*>(obj);
+        auto* portal = dynamic_cast<Portal*>(obj);
+        auto* door = dynamic_cast<Door*>(obj);
+
         if (sensor && sensor->Visible) {
             auto bmp = sensor->Bitmap.get();
             float px = miniX + (sensor->Position.x - Camera.x) * xScale;
@@ -762,6 +765,44 @@ void PlayScene::MiniMap() const {
             float sy = buton->Size.y * yScale;
             px -= sx / 2;
             py -= sy / 2;
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
+        if (portal && portal->Visible) {
+            auto bmp = portal->Bitmap.get();
+            float px = miniX + (portal->Position.x - Camera.x) * xScale;
+            float py = miniY + (portal->Position.y - Camera.y) * yScale;
+            float sx = portal->Size.x * xScale;
+            float sy = portal->Size.y * yScale;
+            px -= sx / 2;
+            py += sy;
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
+        if (door && door->Visible) {
+            auto bmp = door->Bitmap.get();
+            float px = miniX + (door->Position.x - Camera.x) * xScale;
+            float py = miniY + (door->Position.y - Camera.y) * yScale;
+            float sx = door->Size.x * xScale;
+            float sy = door->Size.y * yScale;
+            px -= sx / 2;
+            py += sy;
             if (bmp) {
                 al_draw_scaled_bitmap(
                 bmp,
@@ -838,7 +879,7 @@ void PlayScene::FullMap() const {
         if (player && player->Visible) {
             float px = mapX + player->Position.x * scale;
             float py = mapY + player->Position.y * scale;
-            float radius = 6.0f * scale;
+            float radius = 20.0f * scale;
 
             al_draw_filled_circle(px, py, radius, (player == player1) ? p1_color : p2_color);
         }
@@ -849,44 +890,46 @@ void PlayScene::FullMap() const {
         auto* sensor = dynamic_cast<Sensor*>(obj);
         auto* box = dynamic_cast<Box*>(obj);
         auto* buton = dynamic_cast<Buton*>(obj);
+        auto* portal = dynamic_cast<Portal*>(obj);
+        auto* door = dynamic_cast<Door*>(obj);
 
-        if (sensor && sensor->Visible) {
-            auto bmp = sensor->Bitmap.get();
-            if (bmp) {
-                float px = mapX + (sensor->Position.x - sensor->Size.x / 2) * scale;
-                float py = mapY + sensor->Position.y * scale;
-                float sx = sensor->Size.x * scale;
-                float sy = sensor->Size.y * scale;
-
-                al_draw_scaled_bitmap(
-                    bmp,
-                    0, 0,
-                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
-                    px, py,
-                    sx, sy,
-                    0
-                );
-            }
-        }
-
-        if (box && box->Visible) {
-            auto bmp = box->Bitmap.get();
-            if (bmp) {
-                float px = mapX + (box->Position.x - box->Size.x / 2) * scale;
-                float py = mapY + (box->Position.y - box->Size.y / 2) * scale;
-                float sx = box->Size.x * scale;
-                float sy = box->Size.y * scale;
-
-                al_draw_scaled_bitmap(
-                    bmp,
-                    0, 0,
-                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
-                    px, py,
-                    sx, sy,
-                    0
-                );
-            }
-        }
+        // if (sensor && sensor->Visible) {
+        //     auto bmp = sensor->Bitmap.get();
+        //     if (bmp) {
+        //         float px = mapX + (sensor->Position.x - sensor->Size.x / 2) * scale;
+        //         float py = mapY + sensor->Position.y * scale;
+        //         float sx = sensor->Size.x * scale;
+        //         float sy = sensor->Size.y * scale;
+        //
+        //         al_draw_scaled_bitmap(
+        //             bmp,
+        //             0, 0,
+        //             al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+        //             px, py,
+        //             sx, sy,
+        //             0
+        //         );
+        //     }
+        // }
+        //
+        // if (box && box->Visible) {
+        //     auto bmp = box->Bitmap.get();
+        //     if (bmp) {
+        //         float px = mapX + (box->Position.x - box->Size.x / 2) * scale;
+        //         float py = mapY + (box->Position.y - box->Size.y / 2) * scale;
+        //         float sx = box->Size.x * scale;
+        //         float sy = box->Size.y * scale;
+        //
+        //         al_draw_scaled_bitmap(
+        //             bmp,
+        //             0, 0,
+        //             al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+        //             px, py,
+        //             sx, sy,
+        //             0
+        //         );
+        //     }
+        // }
 
         if (buton && buton->Visible) {
             auto bmp = buton->Bitmap.get();
@@ -906,6 +949,43 @@ void PlayScene::FullMap() const {
                 );
             }
         }
+        if (portal && portal->Visible) {
+            auto bmp = portal->Bitmap.get();
+            if (bmp) {
+                float px = mapX + (portal->Position.x - portal->Size.x / 2) * scale;
+                float py = mapY + (portal->Position.y - portal->Size.y / 2) * scale;
+                float sx = portal->Size.x * scale;
+                float sy = portal->Size.y * scale;
+
+                al_draw_scaled_bitmap(
+                    bmp,
+                    0, 0,
+                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                    px, py,
+                    sx, sy,
+                    0
+                );
+            }
+        }
+        if (door && door->Visible) {
+            auto bmp = door->Bitmap.get();
+            if (bmp) {
+                float px = mapX + (door->Position.x - door->Size.x / 2) * scale;
+                float py = mapY + (door->Position.y - door->Size.y / 2) * scale;
+                float sx = door->Size.x * scale;
+                float sy = door->Size.y * scale;
+
+                al_draw_scaled_bitmap(
+                    bmp,
+                    0, 0,
+                    al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                    px, py,
+                    sx, sy,
+                    0
+                );
+            }
+        }
+
     }
 
     // Reset clipping to full screen

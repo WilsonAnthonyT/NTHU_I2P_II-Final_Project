@@ -12,7 +12,6 @@
 
 EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 100, 5, 5, 10),
                                        rng(std::random_device{}()) {
-
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
     fixedAltitude = PlayScene::BlockSize * 8;
     Position.y = PlayScene::GetClientSize().y - fixedAltitude;
@@ -47,7 +46,6 @@ void EjojoEnemy::Update(float deltaTime) {
     // Check if HP has dropped by 1/4
     if (hp == spawnThreshold) {
         SpawnMiniEjojo();
-        lastHP = hp;  // Update lastHP to prevent multiple spawns
     }
 
     // Shooting logic
@@ -69,8 +67,8 @@ void EjojoEnemy::SpawnMiniEjojo() {
     auto scene = getPlayScene();
     if (!scene) return;
 
-    if (currentMiniEjojo < maxMiniEjojo) {
-        float x = Position.x;
+    while (currentMiniEjojo < maxMiniEjojo) {
+        float x = Position.x * currentMiniEjojo;
         float y = Position.y - PlayScene::BlockSize * 7;
 
         auto mini = new MiniEjojo(x, y);
@@ -185,3 +183,10 @@ void EjojoEnemy::Draw() const {
                     al_map_rgb(255, 0, 0), 2.0f);
     }
 }
+
+void EjojoEnemy::OnDeath() {
+    maxMiniEjojo += 2;
+    SpawnMiniEjojo();
+    Enemy::OnDeath();
+}
+
