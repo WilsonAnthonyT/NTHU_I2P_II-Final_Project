@@ -60,7 +60,12 @@ bool EnemyBullet::IsCollision(float x, float y) {
 
         if (!player->Visible)
             continue;
-        if (PlayerLeft < bulletLeft && PlayerRight > bulletLeft && PlayerTop < bulletBottom && PlayerBottom > bulletTop) {
+        if (PlayerLeft < bulletRight && PlayerRight > bulletLeft && PlayerTop < bulletBottom && PlayerBottom > bulletTop) {
+            if (!player->isBulletKnockback) {
+                player->bulletKnockbackTimer= 0.3f;
+                player->isBulletKnockback = true;
+                player->Tint = al_map_rgb(255, 0, 0);
+            }
             player->Hit(damage);
             return true;
         }
@@ -110,4 +115,8 @@ void EnemyBullet::Draw() const {
         al_draw_rectangle(bulletLeft, bulletTop, bulletRight, bulletBottom, al_map_rgb(0,0,0), 4);
         //al_draw_circle(Position.x, Position.y, CollisionRadius, al_map_rgb(255,155,0), 3);
     }
+}
+
+float EnemyBullet::getDamage() {
+    return damage;
 }

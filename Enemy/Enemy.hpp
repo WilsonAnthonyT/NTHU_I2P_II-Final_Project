@@ -64,5 +64,8 @@ public:
     bool isKnockedback = false;
     bool HasBeenHitThisSwing = false;
 
+    //so that the enemy only attack the player when in frame
+    bool IsInCameraView(float x, float y);
+
 };
 #endif   // ENEMY_HPP

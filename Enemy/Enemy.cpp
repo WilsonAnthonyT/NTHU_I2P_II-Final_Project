@@ -227,11 +227,24 @@ void Enemy::Update(float deltaTime) {
     }
 
     // Get player positions
+    bool enemyInView = IsInCameraView(Position.x, Position.y);
+
+    // Get player positions and check if any are in view
     std::vector<Engine::Point> playerPositions;
+    bool anyPlayerInView = false;
+
     for (auto& player : scene->PlayerGroup->GetObjects()) {
-        if (player->Visible) playerPositions.push_back(player->Position);
+        if (player->Visible) {
+            bool playerInView = IsInCameraView(player->Position.x, player->Position.y);
+            anyPlayerInView = anyPlayerInView || playerInView;
+            playerPositions.push_back(player->Position);
+        }
     }
-    ChasePlayer(playerPositions, deltaTime);
+
+    // Only chase if both enemy and at least one player are in view
+    if (enemyInView && anyPlayerInView) {
+        ChasePlayer(playerPositions, deltaTime);
+    }
 
     // Vertical physics
     verticalVelocity += PlayScene::Gravity * deltaTime;
@@ -376,6 +389,23 @@ bool Enemy::IsCollision(float x, float y, bool checkWallsOnly) {
     return false;
 }
 
+//in camera view
+bool Enemy::IsInCameraView(float x, float y) {
+    PlayScene* scene = getPlayScene();
+    if (!scene) return false;
+
+    // Get camera position and screen dimensions
+    float cameraX = scene->Camera.x;
+    float cameraY = scene->Camera.y;
+    float screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
+    float screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
+
+    // Check if point is within camera view with some padding// Optional padding around screen edges
+    return (x >= cameraX &&
+            x <= cameraX + screenW &&
+            y >= cameraY &&
+            y <= cameraY + screenH);
+}
 
 
 //return HP (for missile)

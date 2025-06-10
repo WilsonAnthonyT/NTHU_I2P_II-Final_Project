@@ -4,6 +4,7 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "Enemy/Enemy.hpp"
+#include "EnemyBullet/EnemyBullet.h"
 #include "Engine/IScene.hpp"
 #include "Engine/Collider.hpp"
 
@@ -90,14 +91,17 @@ bool Player::IsCollision(float x, float y) {
 
     // Screen boundaries
     Engine::Point MapBound = PlayScene::GetClientSize();
-    float ScreenBound = PlayScene::Camera.x + Engine::GameEngine::GetInstance().GetScreenWidth();
+    Engine::Point ScreenBound{PlayScene::Camera.x + Engine::GameEngine::GetInstance().GetScreenWidth(), PlayScene::Camera.y + Engine::GameEngine::GetInstance().GetScreenHeight()};
 
     if (playerLeft < 0 || playerRight > MapBound.x ||
         playerTop < 0 || playerBottom > MapBound.y) {
         return true;
     }
 
-    if (playerLeft < PlayScene::Camera.x || playerRight > ScreenBound) {
+    if (playerLeft < PlayScene::Camera.x ||
+        playerRight > ScreenBound.x ||
+        playerTop < PlayScene::Camera.y ||
+        playerBottom > ScreenBound.y) {
         return true;
     }
 
@@ -172,34 +176,44 @@ void Player::PlayerEnemyCollision(Player *player, float time) {
         bool overlapX = playerLeft < enemy_Right && playerRight > enemy_Left;
         bool overlapY = playerTop < enemy_Bottom && playerBottom > enemy_Top;
 
-        if (overlapX && overlapY && !isKnockedback) {
+        if (overlapX && overlapY && !player->isKnockedback) {
             float direction = (abs(enemy->Position.x) > abs(player->Position.x)) ? -1 : 1;
             player->knockbackVelocityX = direction * PlayScene::BlockSize * 2;
+            player->Hit(enemy->getDamage());
 
-            Hit(enemy->getDamage());
-            this->Tint = al_map_rgb(155,0,0);
-
-            knockbackTimer = maxKnockbackTime;
-            isKnockedback = true;
+            player->knockbackTimer = player->maxKnockbackTime;
+            player->isKnockedback = true;
+            player->Tint = al_map_rgb(255, 0, 0); // Explicitly set tint here
         }
-        else if (isKnockedback){
-            float newX = this->Position.x + knockbackVelocityX * time;
-            if (!IsCollision(newX, this->Position.y)) {
-                Position.x = newX;
+        else if (player->isKnockedback) {
+            float newX = player->Position.x + player->knockbackVelocityX * time;
+            if (!player->IsCollision(newX, player->Position.y)) {
+                player->Position.x = newX;
             } else {
-                knockbackVelocityX *= -0.3f;
+                player->knockbackVelocityX *= -0.3f;
             }
-            knockbackTimer -= time;
-            if (knockbackTimer <= 0) {
-                isKnockedback = false;
-                knockbackVelocityX = 0;
-                Tint = al_map_rgb(255, 255, 255);
+            player->knockbackTimer -= time;
+            if (player->knockbackTimer <= 0) {
+                player->isKnockedback = false;
+                player->knockbackVelocityX = 0;
+                player->Tint = al_map_rgb(255, 255, 255);
             }
+        }
+    }
 
-            knockbackVelocityX -= time * maxKnockbackTime;
+}
+
+void Player::PlayerBulletCollision(Player *player, float time) {
+    if (player->isBulletKnockback) {
+        player->bulletKnockbackTimer -= time;
+        if (player->bulletKnockbackTimer <= 0) {
+            player->isBulletKnockback = false;
+            player->bulletKnockbackVelocityX = 0;
+            player->Tint = al_map_rgb(255, 255, 255);
         }
     }
 }
+
 
 void Player::Hit(float damage) {
     this->hp -= damage;

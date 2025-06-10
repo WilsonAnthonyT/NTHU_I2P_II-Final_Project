@@ -42,6 +42,7 @@
 #include "Enemy/FlyingDemon.h"
 #include "Enemy/MiniEjojo.h"
 #include "InteractiveBlock/Box.h"
+#include "InteractiveBlock/Buton.h"
 #include "InteractiveBlock/Door.h"
 #include "InteractiveBlock/Sensor.h"
 #include "Player/MazePlayerA.h"
@@ -539,7 +540,7 @@ void PlayScene::ReadMap() {
             }else if (num == 'M') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                EnemyGroup->AddNewObject(new EjojoEnemy(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+                EnemyGroup->AddNewObject(new EjojoEnemy("play/ejojo.png",EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }else if (num == 'F') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
@@ -568,7 +569,9 @@ void PlayScene::ReadMap() {
             } else if (num=='4') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }else if (num=='5'){
-                TileMapGroup->AddNewObject(new Engine::Image("play/tower-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new Buton("play/button.png",SpawnCoordinate.x, SpawnCoordinate.y));
             } else if (num=='6') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/explosion-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }

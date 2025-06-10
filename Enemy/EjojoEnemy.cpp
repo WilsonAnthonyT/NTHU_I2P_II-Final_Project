@@ -10,7 +10,7 @@
 #include "Engine/GameEngine.hpp"
 #include "UI/Animation/LightEffect.h"
 
-EjojoEnemy::EjojoEnemy(int x, int y) : FlyingEnemy("play/ejojo.png", x, y, 500, 100.0f, 100, 5, 5, 10),
+EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 100, 5, 5, 10),
                                        rng(std::random_device{}()) {
 
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
