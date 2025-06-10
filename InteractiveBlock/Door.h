@@ -20,6 +20,7 @@ protected:
     PlayScene *getPlayScene();
     float verticalVelocity = 0;
 public:
+    bool isOpen = false;
     Door(std::string img, float x, float y);
     void Update(float deltaTime) override;
     bool IsCollision(float x, float y);
