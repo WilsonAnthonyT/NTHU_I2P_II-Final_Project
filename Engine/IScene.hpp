@@ -6,6 +6,12 @@
 #include "Group.hpp"
 
 namespace Engine {
+    struct RainParticle {
+        float x, y;
+        float speed;
+        float length;
+    };
+
     /// <summary>
     /// This class should be inherited whenever you want to define a new scene.
     /// Responsible for delegating draw, update, events to the objects and controls in scene.
@@ -17,6 +23,18 @@ namespace Engine {
         /// The interface cannot be instantiated directly, must be inherited.
         /// </summary>
         explicit IScene() = default;
+
+        struct RainParticle {
+            float x, y;
+            float speed;
+            float length;
+        };
+        std::vector<RainParticle> rainParticles;
+        bool rainEnabled = false;
+        int count = 500;
+        std::shared_ptr<ALLEGRO_BITMAP> rainSplashSprite; // Optional for splashes
+        void InitRain(int count);
+        void UpdateRain();
 
     public:
         /// <summary>

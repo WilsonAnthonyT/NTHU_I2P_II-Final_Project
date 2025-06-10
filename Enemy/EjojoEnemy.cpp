@@ -14,7 +14,7 @@ EjojoEnemy::EjojoEnemy(int x, int y) : FlyingEnemy("play/ejojo.png", x, y, 500, 
                                        rng(std::random_device{}()) {
 
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
-    fixedAltitude = PlayScene::BlockSize * 7;
+    fixedAltitude = PlayScene::BlockSize * 8;
     Position.y = PlayScene::GetClientSize().y - fixedAltitude;
     currentPattern = 0;
     speed = PlayScene::BlockSize * 1.8f;
@@ -31,8 +31,8 @@ EjojoEnemy::EjojoEnemy(int x, int y) : FlyingEnemy("play/ejojo.png", x, y, 500, 
 }
 
 void EjojoEnemy::Update(float deltaTime) {
-    scene = getPlayScene();
-    if (!scene || scene->PlayerGroup->GetObjects().empty()) return;
+    auto scene = getPlayScene();
+    if (!scene) return;
 
     timeSinceLastShot += deltaTime;
     patternTimer += deltaTime;
@@ -66,18 +66,22 @@ void EjojoEnemy::Update(float deltaTime) {
 }
 
 void EjojoEnemy::SpawnMiniEjojo() {
+    auto scene = getPlayScene();
+    if (!scene) return;
+
     if (currentMiniEjojo < maxMiniEjojo) {
         float x = Position.x;
         float y = Position.y - PlayScene::BlockSize * 7;
 
         auto mini = new MiniEjojo(x, y);
-        getPlayScene()->EnemyGroup->AddNewObject(mini);
+        scene->EnemyGroup->AddNewObject(mini);
         currentMiniEjojo++;
     }
 }
 
 void EjojoEnemy::ShootRandomPattern() {
-    if (!scene || scene->PlayerGroup->GetObjects().empty()) return;
+    auto scene = getPlayScene();
+    if (!scene) return;
 
     std::uniform_int_distribution<int> patternDist(0, 2);
     int pattern = patternDist(rng);

@@ -27,14 +27,25 @@ namespace Engine {
             const int bgHeight = al_get_bitmap_height(backgroundIMG.get());
 
             // Draw the background (stretched vertically, looped horizontally)
-            for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += bgWidth) {
+            for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += PlayScene::BlockSize*16) {
                 al_draw_scaled_bitmap(
                     backgroundIMG.get(),    // Source bitmap
                     0, 0,                  // Source X, Y
                     bgWidth, bgHeight,      // Source width, height
                     x, PlayScene::Camera.y,                  // Destination X, Y
-                    bgWidth, screenH,      // Destination width, height (stretch vertically)
+                    PlayScene::BlockSize*16, PlayScene::BlockSize*9,      // Destination width, height (stretch vertically)
                     0                      // Flags (0 = no blending)
+                );
+            }
+            //al_draw_filled_rectangle(0, 0, PlayScene::MapWidth * PlayScene::BlockSize, PlayScene::MapHeight * PlayScene::BlockSize, al_map_rgba(0, 0, 0, 100));
+
+            //for rain
+            for (const auto& p : rainParticles) {
+                al_draw_line(
+                    p.x, p.y - PlayScene::Camera.y,  // Adjusted for camera
+                    p.x, p.y + p.length - PlayScene::Camera.y,
+                    al_map_rgba(100, 100, 255, 150), // Semi-transparent blue
+                    1.5f
                 );
             }
         }

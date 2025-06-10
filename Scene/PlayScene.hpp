@@ -1,10 +1,14 @@
 #ifndef PLAYSCENE_HPP
 #define PLAYSCENE_HPP
 #include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+
 #include <list>
 #include <memory>
 #include <utility>
 #include <vector>
+#include <queue>
 
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
@@ -19,8 +23,18 @@ namespace Engine {
     class Sprite;
 }   // namespace Engine
 
+
+
 class PlayScene final : public Engine::IScene {
 private:
+    ALLEGRO_FONT* dialogFont = nullptr;
+    struct Dialog {
+        std::string text;
+        float duration;
+    };
+    std::queue<Dialog> dialogQueue;
+    std::string currentDialogText;
+    float dialogTimer = 0.0f;
     ALLEGRO_BITMAP* mask;
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
@@ -129,5 +143,17 @@ public:
     Player *player2;
     bool enable2ndplayer = false;
     void Enable2ndPlayer(int stage);
+
+    //dialog system
+    enum class GameState {
+        Normal,
+        Dialog
+    };
+    GameState currentState = GameState::Normal;
+
+
+    void StartDialog(const std::vector<Dialog>& dialogs);
+    void UpdateDialog(float deltaTime);
+    void RenderDialog() const;
 };
 #endif   // PLAYSCENE_HPP
