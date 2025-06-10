@@ -140,8 +140,10 @@ add_executable(Final-Project
         Player/MazePlayerA.h
         Player/MazePlayerB.cpp
         Player/MazePlayerB.h
-        InteractiveBlock/buton.cpp
-        InteractiveBlock/buton.h
+        InteractiveBlock/Buton.cpp
+        InteractiveBlock/Buton.h
+        InteractiveBlock/Portal.cpp
+        InteractiveBlock/Portal.h
 )
 
 IF (WIN32)

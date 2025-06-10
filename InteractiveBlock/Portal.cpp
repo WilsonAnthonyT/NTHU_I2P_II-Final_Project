@@ -2,35 +2,40 @@
 // Created by MiHu on 6/10/2025.
 //
 
+#include "Portal.h"
+
 #include "Buton.h"
-#include "Box.h"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Resources.hpp"
 
-PlayScene *Buton::getPlayScene() {
+PlayScene *Portal::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
 
-Buton::Buton(std::string img, float x, float y) : Engine::Sprite(img, x, y){
+Portal::Portal(std::string img, float x, float y) : Engine::Sprite(img, x, y){
     active = false;
     Anchor = Engine::Point(0.5,0.5);
     Size.x=PlayScene::BlockSize,Size.y=PlayScene::BlockSize;
 }
 
-void Buton::Update(float deltaTime) {
-    if (IsCollision(Position.x, Position.y)) {
-        active=true;
-        bmp = Engine::Resources::GetInstance().GetBitmap("play/button-active.png");
-    }
-    if (Engine::IScene::DebugMode && active) {
-        this->Tint=al_map_rgb(255,0,0);
-    } else if (Engine::IScene::DebugMode && !active) this->Tint=al_map_rgb(255,255,255);
-    else if (!Engine::IScene::DebugMode) this->Tint=al_map_rgb(255,255,255);
-}
-
-bool Buton::IsCollision(float x, float y) {
+void Portal::Update(float deltaTime) {
+    int total = 0,count = 0;
     PlayScene* scene = getPlayScene();
-    if (!scene) return false;
+    for (auto& it : scene->InteractiveBlockGroup->GetObjects()) {
+        Buton* buton = dynamic_cast<Buton*>(it);
+        // Skip if enemy is not visible, is the healer itself, or invalid
+        if (!buton || !buton->Visible) continue;
+        total++;
+        if (buton->active)count++;
+    }
+    if (total == count && count != 0 && total != 0) {
+        active=true;
+        bmp = Engine::Resources::GetInstance().GetBitmap("play/portal-active.png");
+    }
+}
+void Portal::IsCollision(float x, float y) {
+    PlayScene* scene = getPlayScene();
+    if (!scene) return;
 
     // Calculate hitbox based on object size
     float left = x - Size.x/2;
@@ -53,8 +58,7 @@ bool Buton::IsCollision(float x, float y) {
         bool overlapY = top < p_Bottom && bottom > p_Top;
 
         if (overlapX && overlapY) {
-            return true;
+            scene->PlayerGroup->RemoveObject(it->GetObjectIterator());
         }
     }
-    return false;
 }
