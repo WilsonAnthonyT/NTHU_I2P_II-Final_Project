@@ -4,6 +4,8 @@
 
 #include "Sensor.h"
 
+#include <iostream>
+
 #include "Box.h"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Resources.hpp"
@@ -12,18 +14,39 @@ PlayScene *Sensor::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
 
-Sensor::Sensor(std::string img, float x, float y, int weight) : Engine::Sprite(img, x, y){
-    Weight = weight;
+Sensor::Sensor(std::string img, float x, float y) : Engine::Sprite(img, x, y){
     active = false;
     Anchor = Engine::Point(0.5, -1);
     Size.x=PlayScene::BlockSize,Size.y=PlayScene::BlockSize;
+    Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
 }
 
 void Sensor::Update(float deltaTime) {
+    auto scene = getPlayScene();
+    if (!scene) return;
+
+    std::cout << "MIN WEIGHT:" << this->Weight << std::endl;
     if (IsCollision(Position.x, Position.y)>=Weight) {
         active=true;
+
+        IObject* sensorObj = this->GetObjectIterator()->second;
+        auto& doorList = scene->DoorSensorAssignments[sensorObj];
+
+        std::cout << "BANYAK PINTU: " << doorList.size() << std::endl;
+
+        for (auto door : doorList){
+            door->Tint = al_map_rgb(85, 55, 0);
+        }
+
         bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor-active.png");
-    }else active=false,bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");;
+
+        //std::cout << "SUCESSSSSSSSS" << std::endl;
+    }
+    else{
+        active = false;
+        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");
+    }
+
 
     if (Engine::IScene::DebugMode && active) {
         this->Tint=al_map_rgb(255,0,0);
@@ -59,21 +82,21 @@ int Sensor::IsCollision(float x, float y) {
         bool overlapX = left + PlayScene::BlockSize/15 < p_Right && right - PlayScene::BlockSize/15 > p_Left;
         bool overlapY = top < p_Bottom && bottom > p_Top;
 
-        if (overlapX && overlapY) {
+        if (overlapX && overlapY && !player->isFalling && !player->isJumping) {
             count++;
         }
     }
 
     for (auto& it : scene->InteractiveBlockGroup->GetObjects()) {
-        Box* friends = dynamic_cast<Box*>(it);
+        Box* others = dynamic_cast<Box*>(it);
         // Skip if enemy is not visible, is the healer itself, or invalid
-        if (!friends || !friends->Visible) continue;
-        int half_P2 = abs(friends->Size.x) / 2;
+        if (!others || !others->Visible) continue;
+        int half_P2 = abs(others->Size.x) / 2;
 
-        float p2_Left = friends->Position.x - half_P2;
-        float p2_Right = friends->Position.x + half_P2;
-        float p2_Top = friends->Position.y;
-        float p2_Bottom = friends->Position.y + friends->Size.y;
+        float p2_Left = others->Position.x - half_P2;
+        float p2_Right = others->Position.x + half_P2;
+        float p2_Top = others->Position.y;
+        float p2_Bottom = others->Position.y + others->Size.y;
 
         bool overlapX = left < p2_Right && right > p2_Left;
         bool overlapY = top < p2_Bottom && bottom > p2_Top;

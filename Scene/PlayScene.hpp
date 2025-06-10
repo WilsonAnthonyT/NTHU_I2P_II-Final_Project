@@ -15,6 +15,9 @@
 #include "Player/Player.h"
 #include "UI/Component/Slider.hpp"
 
+#include "InteractiveBlock/Door.h"
+#include "InteractiveBlock/Sensor.h"
+
 class Turret;
 namespace Engine {
     class Group;
@@ -27,7 +30,6 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
-    //dialogue==============================
     ALLEGRO_FONT* dialogFont = nullptr;
     struct Dialog {
         std::string text;
@@ -51,6 +53,7 @@ private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
     int screenWidth;
     int screenHeight;
+    void sensorAssign();
 
 protected:
     int lives;
@@ -63,7 +66,7 @@ public:
         TILE_DIRT,
         TILE_WPLATFORM,
     };
-
+    std::unordered_map<IObject*, std::vector<Door*>> DoorSensorAssignments;
     static Engine::Point Camera;
     static float Gravity;
     static bool Pause;

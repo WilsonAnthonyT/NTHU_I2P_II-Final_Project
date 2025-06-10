@@ -15,6 +15,7 @@ Buton::Buton(std::string img, float x, float y) : Engine::Sprite(img, x, y){
     active = false;
     Anchor = Engine::Point(0.5,0.5);
     Size.x=PlayScene::BlockSize,Size.y=PlayScene::BlockSize;
+    Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
 }
 
 void Buton::Update(float deltaTime) {

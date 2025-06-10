@@ -17,4 +17,5 @@ namespace Engine {
         Position.x += Velocity.x * deltaTime;
         Position.y += Velocity.y * deltaTime;
     }
+
 };
