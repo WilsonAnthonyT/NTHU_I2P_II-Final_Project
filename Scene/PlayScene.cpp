@@ -459,9 +459,14 @@ void PlayScene::ReadMap() {
             }
         }
     }
-    //for flashlight
-    if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
+    // //for flashlight
+    // if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
 }
+
+void PlayScene::sensorAssign(){
+
+}
+
 
 void PlayScene::MiniMap() const {
     // Fixed minimap size (15% of screen)

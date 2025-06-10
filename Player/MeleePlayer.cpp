@@ -11,7 +11,7 @@
 #include "Weapon/LinkWeapon.h"
 #include "Weapon/MeleeWeapon.h"
 
-MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryantilt.png",x,y, PlayScene::BlockSize * 2.25,100) {
+MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryan.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     auto *weapon = new BasicSword(x, y, this);
     auto *shield = new BasicShield(x, y, this);
