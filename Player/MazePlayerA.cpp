@@ -22,12 +22,13 @@ void MazePlayerA::Update(float deltaTime) {
     al_get_keyboard_state(&keyState);
 
     Engine::Point inputVelocity(0, 0);
-
-    // Collect input
-    if (al_key_down(&keyState, ALLEGRO_KEY_A)) inputVelocity.x -= 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_D)) inputVelocity.x += 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_W)) inputVelocity.y -= 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_S)) inputVelocity.y += 1;
+    if (movementEnabled) {
+        // Collect input
+        if (al_key_down(&keyState, ALLEGRO_KEY_A)) inputVelocity.x -= 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_D)) inputVelocity.x += 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_W)) inputVelocity.y -= 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_S)) inputVelocity.y += 1;
+    }
 
     // Normalize combined direction to ensure consistent speed
     if (inputVelocity.x != 0 || inputVelocity.y != 0)
@@ -50,6 +51,7 @@ void MazePlayerA::Update(float deltaTime) {
             }
         }
     }
+
 
     // Vertical collision
     if (!IsCollision(Position.x, newY)) {

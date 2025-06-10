@@ -23,11 +23,13 @@ void MazePlayerB::Update(float deltaTime) {
 
     Engine::Point inputVelocity(0, 0);
 
-    // Collect input
-    if (al_key_down(&keyState, ALLEGRO_KEY_J)) inputVelocity.x -= 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_L)) inputVelocity.x += 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_I)) inputVelocity.y -= 1;
-    if (al_key_down(&keyState, ALLEGRO_KEY_K)) inputVelocity.y += 1;
+    if (movementEnabled) {
+        // Collect input
+        if (al_key_down(&keyState, ALLEGRO_KEY_J)) inputVelocity.x -= 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_L)) inputVelocity.x += 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_I)) inputVelocity.y -= 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_K)) inputVelocity.y += 1;
+    }
 
     // Normalize combined direction to ensure consistent speed
     if (inputVelocity.x != 0 || inputVelocity.y != 0)
