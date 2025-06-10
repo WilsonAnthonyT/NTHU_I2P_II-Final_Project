@@ -8,8 +8,6 @@ class EjojoEnemy : public FlyingEnemy {
 private:
     // Attack pattern variables
 
-    PlayScene* scene;
-
     float timeSinceLastShot;
     float minFireCooldown = 1.0f;
     float maxFireCooldown = 3.0f;

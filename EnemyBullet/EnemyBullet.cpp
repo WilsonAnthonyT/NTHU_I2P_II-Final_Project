@@ -29,17 +29,18 @@ EnemyBullet::EnemyBullet(std::string img, float speed, float damage, Engine::Poi
     Anchor = Engine::Point(0.5,0.5);
 }
 void EnemyBullet::Update(float deltaTime) {
+    auto scene = getPlayScene();
     Sprite::Update(deltaTime);
     if (IsCollision(Position.x, Position.y)) {
-        getPlayScene()->EnemyBulletGroup->RemoveObject(objectIterator);
+        scene->EnemyBulletGroup->RemoveObject(objectIterator);
         return;
     }
     if (!Engine::Collider::IsRectOverlap(Position - Size / 2, Position + Size / 2, Engine::Point(0, 0), PlayScene::GetClientSize()))
-        getPlayScene()->EnemyBulletGroup->RemoveObject(objectIterator);
+        scene->EnemyBulletGroup->RemoveObject(objectIterator);
 }
 
 bool EnemyBullet::IsCollision(float x, float y) {
-    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (!scene) return true;
 
     // Calculate bullet's square hitbox with tolerance

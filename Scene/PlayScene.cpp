@@ -65,13 +65,18 @@ const std::vector<int> PlayScene::code = {
     ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT, ALLEGRO_KEY_LEFT, ALLEGRO_KEY_RIGHT,
     ALLEGRO_KEY_B, ALLEGRO_KEY_A, ALLEGRO_KEY_LSHIFT, ALLEGRO_KEY_ENTER
 };
+
 Engine::Point PlayScene::GetClientSize() {
     return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 
 }
+
 void PlayScene::Initialize() {
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+    mask = nullptr;
+
+
     Camera.x=0,Camera.y=0;
     mapState.clear();
     keyStrokes.clear();
@@ -99,9 +104,46 @@ void PlayScene::Initialize() {
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
+
+
+    if (MapId == 3) {
+        //for flashlight
+        if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
+    }
+    else {
+        if (mask) {
+            al_destroy_bitmap(mask);
+            mask = nullptr;
+            al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
+            al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+        }
+    }
+
     ReadEnemyWave();
     ConstructUI();
-    if (MapId == 1) backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/forestbg.png");
+
+    if (MapId == 1 || MapId == 2 || MapId == 3 || MapId == 4 || MapId == 5) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
+        rainParticles.clear();
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distX(0, PlayScene::MapWidth * PlayScene::BlockSize);
+        std::uniform_real_distribution<> distSpeed(5.0f, 15.0f);
+        std::uniform_real_distribution<> distLength(10.0f, 30.0f);
+        rainEnabled = true;
+
+
+        for (int i = 0; i < count; ++i) {
+            RainParticle p;
+            p.x = distX(gen);
+            p.y = static_cast<float>(distX(gen) % (PlayScene::MapHeight * PlayScene::BlockSize));
+            p.speed = distSpeed(gen);
+            p.length = distLength(gen);
+            rainParticles.push_back(p);
+        }
+    }
+
+
     imgTarget = new Engine::Image("play/target.png", 0, 0);
     imgTarget->Visible = false;
     preview = nullptr;
@@ -202,6 +244,7 @@ void PlayScene::Draw() const {
     PlayerGroup->Draw();
     WeaponGroup->Draw();
     EffectGroup->Draw();
+    EnemyBulletGroup->Draw();
 
     al_identity_transform(&trans);
     al_use_transform(&trans);
@@ -381,14 +424,15 @@ void PlayScene::ReadMap() {
             }
             else if (num=='2') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                if ((mapData[idx-1]=='1'&&mapData[idx+1]=='1')&&idx%MapWidth!=(MapWidth-1)&&idx%MapWidth!=0)
-                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                else if (mapData[idx-1]=='1')
-                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                else if (mapData[idx+1]=='1')
-                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                else if (mapData[idx-1]=='2'||mapData[idx+1]=='2')
-                    TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/platform.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // if ((mapData[idx-1]=='1'&&mapData[idx+1]=='1')&&idx%MapWidth!=(MapWidth-1)&&idx%MapWidth!=0)
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/platform-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // else if (mapData[idx-1]=='1')
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/platform-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // else if (mapData[idx+1]=='1')
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/platform-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                // else if (mapData[idx-1]=='2'||mapData[idx+1]=='2')
+                //     TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num == 'B') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
@@ -455,8 +499,6 @@ void PlayScene::ReadMap() {
             }
         }
     }
-    //for flashlight
-    if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
 }
 
 void PlayScene::MiniMap() const {
@@ -839,4 +881,58 @@ void PlayScene::MazeCreator() {
     for (const auto& row : map)
         outFile << row << "\n";
     outFile.close();
+}
+
+
+void PlayScene::RenderDialog() const {
+    const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
+    const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
+
+    // Draw a semi-transparent box
+    al_draw_filled_rectangle(screenW * 0.1, screenH * 0.8, screenW * 0.9, screenH * 0.95, al_map_rgba(0, 0, 0, 200));
+    al_draw_rectangle(screenW * 0.1, screenH * 0.8, screenW * 0.9, screenH * 0.95, al_map_rgb(255, 255, 255), 2);
+
+    // Draw dialog text
+    ALLEGRO_FONT* dialogFont = al_load_font("Resource/fonts/pirulen.ttf", 24, 0); // Load font with size 24
+    if (!dialogFont) {
+        throw std::runtime_error("Failed to load font: pirulen.ttf");
+    }
+    if (dialogFont) {
+        al_draw_text(
+            dialogFont,
+            al_map_rgb(255, 255, 255),
+            screenW * 0.5,
+            screenH * 0.825,
+            ALLEGRO_ALIGN_CENTER,
+            currentDialogText.c_str()
+        );
+    }
+}
+
+void PlayScene::StartDialog(const std::vector<Dialog> &dialogs) {
+    while (!dialogQueue.empty()) dialogQueue.pop(); // Clear old dialogs
+    for (const auto& d : dialogs) {
+        dialogQueue.push(d);
+    }
+    currentState = GameState::Dialog;
+    if (!dialogQueue.empty()) {
+        currentDialogText = dialogQueue.front().text;
+        dialogTimer = dialogQueue.front().duration;
+        dialogQueue.pop();
+    }
+}
+
+void PlayScene::UpdateDialog(float deltaTime) {
+    if (currentState == GameState::Dialog) {
+        dialogTimer -= deltaTime;
+        if (dialogTimer <= 0) {
+            if (!dialogQueue.empty()) {
+                currentDialogText = dialogQueue.front().text;
+                dialogTimer = dialogQueue.front().duration;
+                dialogQueue.pop();
+            } else {
+                currentState = GameState::Normal; // Exit dialog state
+            }
+        }
+    }
 }
