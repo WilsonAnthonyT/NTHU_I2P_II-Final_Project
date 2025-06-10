@@ -28,7 +28,6 @@
 
 #include <allegro5/allegro_primitives.h>
 
-
 #include "Enemy/EjojoEnemy.h"
 #include "Player/MeleePlayer.hpp"
 #include "Player/Player.h"
@@ -191,6 +190,7 @@ void PlayScene::Update(float deltaTime) {
     //     MapId++;
     //     Engine::GameEngine::GetInstance().ChangeScene("play");
     // }
+
     UpdatePauseState();
     if (IsPaused) {
         UIGroup->Update(deltaTime);
@@ -479,18 +479,14 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 if (mapData[idx-MapWidth] != '1')
                     TileMapGroup->AddNewObject(new Engine::Image("play/grass.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if((mapData[idx-1])!='1'&& idx%MapWidth!=0&&(mapData[idx-MapWidth])=='1')
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if (mapData[idx+1] != '1'&& idx%MapWidth!=(MapWidth-1)&&(mapData[idx-MapWidth])=='1')
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if((mapData[idx-1])!='1'&& idx%MapWidth!=0&&(mapData[idx-MapWidth])!='1')
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-6.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if (mapData[idx+1] != '1'&& idx%MapWidth!=(MapWidth-1)&&(mapData[idx-MapWidth])!='1')
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-7.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if((mapData[idx-MapWidth-1])!='1'&& idx%MapWidth!=0 && mapData[idx-MapWidth] == '1' && mapData[idx-1] == '1')
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                // if (mapData[idx-MapWidth+1] != '1'&& idx%MapWidth!=(MapWidth-1) && mapData[idx-MapWidth] == '1' && mapData[idx+1] == '1')
-                //     TileMapGroup->AddNewObject(new Engine::Image("play/grass-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if((mapData[idx-1])!='1'&& idx%MapWidth!=0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/lborder.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx+1] != '1'&& idx%MapWidth!=(MapWidth-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/rborder.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if((mapData[idx-MapWidth-1])!='1'&& idx%MapWidth!=0 && mapData[idx-MapWidth] == '1' && mapData[idx-1] == '1')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/tlborder.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth+1] != '1'&& idx%MapWidth!=(MapWidth-1) && mapData[idx-MapWidth] == '1' && mapData[idx+1] == '1')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/trborder.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num=='2') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
@@ -658,7 +654,6 @@ void PlayScene::FlashLight() const {
                              i, al_map_rgba(255, 255, 255, 255/i * 2.f));
     }
 
-
     // Switch back to main display
     al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
 
@@ -688,8 +683,6 @@ void PlayScene::UIBtnClicked(int id) {
 void PlayScene::HomeOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
-
-
 
 
 //-----------For Pause UI-------------------------
