@@ -624,6 +624,68 @@ void PlayScene::MiniMap() const {
             al_draw_filled_circle(px, py, 3.0f, (player == player1) ? p1_color : p2_color);
         }
     }
+    for (auto& obj : InteractiveBlockGroup->GetObjects()) {
+        auto* sensor = dynamic_cast<Sensor*>(obj);
+        auto* box = dynamic_cast<Box*>(obj);
+        auto* buton = dynamic_cast<Buton*>(obj);
+        if (sensor && sensor->Visible) {
+            auto bmp = sensor->Bitmap.get();
+            float px = miniX + (sensor->Position.x - Camera.x) * xScale;
+            float py = miniY + (sensor->Position.y - Camera.y) * yScale;
+            float sx = sensor->Size.x * xScale;
+            float sy = sensor->Size.y * yScale;
+            px -= sx / 2;
+            
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
+        if (box && box->Visible) {
+            auto bmp = box->Bitmap.get();
+            float px = miniX + (box->Position.x - Camera.x) * xScale;
+            float py = miniY + (box->Position.y - Camera.y) * yScale;
+            float sx = box->Size.x * xScale;
+            float sy = box->Size.y * yScale;
+            px -= sx / 2;
+            py -= sy / 2;
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
+        if (buton && buton->Visible) {
+            auto bmp = buton->Bitmap.get();
+            float px = miniX + (buton->Position.x - Camera.x) * xScale;
+            float py = miniY + (buton->Position.y - Camera.y) * yScale;
+            float sx = buton->Size.x * xScale;
+            float sy = buton->Size.y * yScale;
+            px -= sx / 2;
+            py -= sy / 2;
+            if (bmp) {
+                al_draw_scaled_bitmap(
+                bmp,
+                0, 0,
+                al_get_bitmap_width(bmp), al_get_bitmap_height(bmp),
+                px, py,
+                sx, sy,
+                0
+                );
+            }
+        }
+    }
 
     // Reset clipping to full screen
     al_set_clipping_rectangle(0, 0, screenWidth, screenHeight);

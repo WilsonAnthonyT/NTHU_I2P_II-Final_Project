@@ -22,6 +22,7 @@ public:
     bool IsCollision(float x, float y);
 
     bool Push(float x, float y);
+    std::shared_ptr<ALLEGRO_BITMAP> Bitmap;
 
     float horizontalVelocity = 0;
 };

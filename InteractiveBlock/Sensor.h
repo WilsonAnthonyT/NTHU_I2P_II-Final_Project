@@ -13,13 +13,15 @@ protected:
     PlayScene *getPlayScene();
     int Weight;
 
+
 public:
     Sensor(std::string img, float x, float y, int weight);
     void Update(float deltaTime) override;
     void Draw() const override;
     int IsCollision(float x, float y);
+    std::shared_ptr<ALLEGRO_BITMAP> Bitmap;
 
-    bool active;
+    bool active;;
 };
 
 

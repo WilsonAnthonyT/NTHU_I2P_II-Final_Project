@@ -17,6 +17,7 @@ Sensor::Sensor(std::string img, float x, float y, int weight) : Engine::Sprite(i
     active = false;
     Anchor = Engine::Point(0.5, -1);
     Size.x=PlayScene::BlockSize,Size.y=PlayScene::BlockSize;
+    Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
 }
 
 void Sensor::Update(float deltaTime) {

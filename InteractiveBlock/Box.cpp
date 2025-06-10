@@ -1,5 +1,6 @@
 #include "Box.h"
 #include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
 #include "Scene/PlayScene.hpp"
 
 PlayScene *Box::getPlayScene() {
@@ -9,6 +10,7 @@ PlayScene *Box::getPlayScene() {
 Box::Box(std::string img, float x, float y) : Engine::Sprite(img, x, y){
     Anchor = Engine::Point(0.5, 0);
     Size.x=PlayScene::BlockSize/2,Size.y=PlayScene::BlockSize/2;
+    Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
 }
 
 void Box::Update(float deltaTime) {
