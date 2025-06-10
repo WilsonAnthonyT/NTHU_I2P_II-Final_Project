@@ -11,10 +11,10 @@
 class Sensor : public Engine::Sprite{
 protected:
     PlayScene *getPlayScene();
-    int Weight;
 
 public:
-    Sensor(std::string img, float x, float y, int weight);
+    int Weight;
+    Sensor(std::string img, float x, float y);
     void Update(float deltaTime) override;
     void Draw() const override;
     int IsCollision(float x, float y);

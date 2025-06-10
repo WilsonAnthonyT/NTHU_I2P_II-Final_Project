@@ -15,6 +15,9 @@
 #include "Player/Player.h"
 #include "UI/Component/Slider.hpp"
 
+#include "InteractiveBlock/Door.h"
+#include "InteractiveBlock/Sensor.h"
+
 class Turret;
 namespace Engine {
     class Group;
@@ -27,15 +30,6 @@ namespace Engine {
 
 class PlayScene final : public Engine::IScene {
 private:
-    struct DoorNode {
-        IObject* curr;
-        DoorNode* next;
-
-        DoorNode(IObject* data) : curr(data), next(nullptr) {};
-    };
-
-    std::unordered_map<IObject*, DoorNode> DoorSensorAssignments;
-
     ALLEGRO_FONT* dialogFont = nullptr;
     struct Dialog {
         std::string text;
@@ -72,7 +66,7 @@ public:
         TILE_DIRT,
         TILE_WPLATFORM,
     };
-
+    std::unordered_map<IObject*, std::vector<Door*>> DoorSensorAssignments;
     static Engine::Point Camera;
     static float Gravity;
     static bool Pause;

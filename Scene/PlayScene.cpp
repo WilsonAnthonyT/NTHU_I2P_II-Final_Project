@@ -369,7 +369,7 @@ void PlayScene::EarnMoney(int money) {
 }
 void PlayScene::ReadMap() {
     if (MapId==3)MazeCreator();
-    std::string filename = std::string("../Resource/map") + std::to_string(MapId) + ".txt";
+    std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
     // Read map file.
     char c;
     std::vector<char> mapData;
@@ -391,7 +391,7 @@ void PlayScene::ReadMap() {
             case 'F': mapData.push_back('F'); break;
             case 'S': mapData.push_back('S'); break;
             case 'N': mapData.push_back('N'); break;
-            case 'D': mapData.push_back('N'); break;
+            case 'D': mapData.push_back('D'); break;
             case 'T': mapData.push_back('T'); break;
             case '3': mapData.push_back('3'); break;
             case '4': mapData.push_back('4'); break;
@@ -547,7 +547,7 @@ void PlayScene::ReadMap() {
             }else if (num == 'S') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y,2));
+                InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }else if (num == 'D') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
@@ -584,36 +584,43 @@ void PlayScene::sensorAssign() {
 
     for (auto it : InteractiveBlockGroup->GetObjects()) {
         Door* doorIt = dynamic_cast<Door*>(it);
-        Sensor* sensorIt = dynamic_cast<Sensor*>(doorIt);
+        Sensor* sensorIt = dynamic_cast<Sensor*>(it);
 
         if (doorIt) door_address.push_back(doorIt);
         if (sensorIt) sensor_address.push_back(sensorIt);
     }
 
-    std::string filename = "../Resource/sensor_map" + std::to_string(MapId) + ".txt";
-    std::ifstream ifs("../Resource/sensor_map.txt", std::ios_base::in);
+    std::string filename = "Resource/sensor_map" + std::to_string(MapId) + ".txt";
+    std::ifstream ifs(filename, std::ios_base::in);
     if (ifs.is_open()) {
-        DoorNode *newNode = nullptr;
-        char data;
         int idx = 0;
-        while (ifs >> data) {
-            if (data == '\n'){
-                DoorSensorAssignments.insert({sensor_address[idx], *newNode});
-                newNode = nullptr;
-                idx++;
-            }
-            else if (isdigit(data)) {
-                if (!newNode) newNode = new DoorNode(door_address[static_cast<int>(data)]);
-                else {
-                    newNode->next = new DoorNode(door_address[static_cast<int>(data)]);
-                    newNode = newNode->next;
+        std::string line;
+        std::vector<Door*> doorList;
+
+        while (getline(ifs, line, '\n')) {
+            int mass;
+            for (char c : line) {
+                if (isdigit(c)) {
+                    std::cout << c << std::endl;
+                    if (!mass) mass = c - '0';
+                    doorList.push_back(door_address[c - '0']);
                 }
             }
+
+            std::cout << "SENSOR " << idx << " MASS: " << mass << std::endl;
+            sensor_address[idx]->Weight = mass;
+            mass = 0;
+            DoorSensorAssignments[sensor_address[idx]] = doorList;
+            idx++;
+            doorList.clear();
         }
+
+        door_address.clear();
+        sensor_address.clear();
 
         ifs.close();
     } else {
-        std::cerr << "[ERROR] Could not open scoreboard.txt for reading!" << std::endl;
+        std::cerr << "[ERROR] Could not open ButtonAssignment.txt for reading!" << std::endl;
     }
 }
 
