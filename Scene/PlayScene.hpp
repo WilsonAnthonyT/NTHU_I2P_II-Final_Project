@@ -40,10 +40,19 @@ private:
     struct Dialog {
         std::string text;
         float duration;
+        std::string speakerImagePath;  // Path to the speaker's image
+        std::string speakerName;       // Optional: speaker's name
     };
+    bool dialogSkipRequested = false;
+    bool dialogSkippable = true;
+    bool dialogFastForward = false;
+    std::string currentSpeakerImagePath;
+    std::string currentSpeakerName;
     std::queue<Dialog> dialogQueue;
     std::string currentDialogText;
     float dialogTimer = 0.0f;
+
+    //====================================
     ALLEGRO_BITMAP* mask;
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
@@ -162,7 +171,7 @@ public:
     GameState currentState = GameState::Normal;
 
 
-    void StartDialog(const std::vector<Dialog>& dialogs);
+    void StartDialog(const std::vector<Dialog>& dialogs, bool skippable);
     void UpdateDialog(float deltaTime);
     void RenderDialog() const;
 };
