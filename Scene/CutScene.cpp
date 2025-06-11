@@ -277,7 +277,7 @@ void CutScene::Update(float deltaTime) {
             UpdateDialog(deltaTime);
             if (dialogQueue.empty() && !isDialogFinished) {
                 isDialogFinished = true;
-                currentState = GameState::Transitioning;
+                currentState = GameState::Normal;
                 std::cout << "Dialog finished naturally" << std::endl;
             }
             break;

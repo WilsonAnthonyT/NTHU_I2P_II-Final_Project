@@ -21,6 +21,7 @@ MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy("play/EjojoMini.png",x, y) {
     std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
     nextFireCooldown = cooldownDist(rng);
     getPlayScene()->EffectGroup->AddNewObject(new LightEffect(Position.x, Position.y));
+    getPlayScene()->TotalMiniEjojo++;
 }
 
 void MiniEjojo::Update(float deltaTime) {
@@ -135,6 +136,7 @@ void MiniEjojo::OnDeath() {
                     Position.y
                 )
             );
+    getPlayScene()->TotalMiniEjojo--;
     Enemy::OnDeath();
 }
 
