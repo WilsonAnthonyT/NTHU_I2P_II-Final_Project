@@ -730,7 +730,14 @@ void PlayScene::MiniMap() const {
     // Draw visible tiles
     for (int y = start_y; y < end_y; y++) {
         for (int x = start_x; x < end_x; x++) {
-            if (mapState[y][x] != TILE_AIR) {
+            if (mapState[y][x] == TILE_WPLATFORM) {
+                float mx = miniX + (x * BlockSize - Camera.x) * xScale;
+                float my = miniY + (y * BlockSize - Camera.y) * yScale;
+                float mw = BlockSize * xScale;
+                float mh = BlockSize * yScale;
+                al_draw_line(mx, my, mx + mw, my, tile_color, 2.0f);
+            }
+            else if (mapState[y][x] != TILE_AIR) {
                 float mx = miniX + (x * BlockSize - Camera.x) * xScale;
                 float my = miniY + (y * BlockSize - Camera.y) * yScale;
                 float mw = BlockSize * xScale;
@@ -747,8 +754,9 @@ void PlayScene::MiniMap() const {
         if (player && player->Visible) {
             float px = miniX + (player->Position.x - Camera.x) * xScale;
             float py = miniY + (player->Position.y - Camera.y) * yScale;
+            float radius = 16.0f * scale;
 
-            al_draw_filled_circle(px, py, 3.0f, (player == player1) ? p1_color : p2_color);
+            al_draw_filled_circle(px, py, radius, (player == player1) ? p1_color : p2_color);
         }
     }
     for (auto& obj : InteractiveBlockGroup->GetObjects()) {
@@ -901,7 +909,14 @@ void PlayScene::FullMap() const {
     // Draw all tiles (entire map)
     for (int y = 0; y < MapHeight; y++) {
         for (int x = 0; x < MapWidth; x++) {
-            if (mapState[y][x] != TILE_AIR) {
+            if (mapState[y][x] == TILE_WPLATFORM) {
+                float fx = mapX + x * BlockSize * scale;
+                float fy = mapY + y * BlockSize * scale;
+                float fw = BlockSize * scale;
+                float fh = BlockSize * scale;
+                al_draw_line(fx, fy, fx + fw, fy, tile_color, 4.0f);
+            }
+            else if (mapState[y][x] != TILE_AIR) {
                 float fx = mapX + x * BlockSize * scale;
                 float fy = mapY + y * BlockSize * scale;
                 float fw = BlockSize * scale;
@@ -918,7 +933,7 @@ void PlayScene::FullMap() const {
         if (player && player->Visible) {
             float px = mapX + player->Position.x * scale;
             float py = mapY + player->Position.y * scale;
-            float radius = 20.0f * scale;
+            float radius = 16.0f * scale;
 
             al_draw_filled_circle(px, py, radius, (player == player1) ? p1_color : p2_color);
         }
@@ -1031,7 +1046,7 @@ void PlayScene::FullMap() const {
     al_set_clipping_rectangle(0, 0, screenWidth, screenHeight);
 
     // Draw border
-    al_draw_rounded_rectangle(mapX, mapY, mapX + scaledWidth, mapY + scaledHeight, 5, 5, al_map_rgb(255, 255, 255), 3.0f);
+    al_draw_rounded_rectangle(mapX, mapY, mapX + scaledWidth, mapY + scaledHeight, 5, 5, al_map_rgb(255, 255, 255), 5.0f);
 
     // Position the button at the top-left corner of the map
     Map_btn->Position.x = mapX + border;
