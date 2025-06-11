@@ -107,7 +107,7 @@ void PlayScene::Initialize() {
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
 
-    if (MapId == 3) {
+    if (MapId == 5) {
         //for flashlight
         if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
     }
@@ -328,7 +328,7 @@ void PlayScene::Draw() const {
 
     IScene::Draw(); // will draw tiles/UI, now offset by camera
 
-    if (MapId == 3 && !DebugMode) FlashLight();
+    if (MapId == 5 && !DebugMode) FlashLight();
 
     PlayerGroup->Draw();
     WeaponGroup->Draw();
@@ -339,7 +339,7 @@ void PlayScene::Draw() const {
     al_use_transform(&trans);
 
     //for map debug
-    if((MapId == 3 && DebugMode) || (MapId != 3)) {
+    if((MapId == 5 && DebugMode) || (MapId != 5)) {
         Map_btn->Enabled = true;
         if (isMap_clicked) FullMap();
         else MiniMap();
@@ -407,7 +407,7 @@ void PlayScene::EarnMoney(int money) {
     UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
 void PlayScene::ReadMap() {
-    if (MapId==3)MazeCreator();
+    if (MapId==5)MazeCreator();
     std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
     // Read map file.
     char c;
