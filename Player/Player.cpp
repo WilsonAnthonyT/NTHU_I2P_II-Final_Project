@@ -194,7 +194,7 @@ void Player::PlayerEnemyCollision(Player *player, float time) {
 
         if (overlapX && overlapY && !player->isKnockedback) {
             float direction = (abs(enemy->Position.x) > abs(player->Position.x)) ? -1 : 1;
-            player->knockbackVelocityX = direction * PlayScene::BlockSize * 2;
+            player->knockbackVelocityX = direction * PlayScene::BlockSize * 1;
             player->Hit(enemy->getDamage());
 
             player->knockbackTimer = player->maxKnockbackTime;

@@ -33,7 +33,7 @@ namespace Engine {
                     0, 0,                  // Source X, Y
                     bgWidth, bgHeight,      // Source width, height
                     x, PlayScene::Camera.y,                  // Destination X, Y
-                    PlayScene::BlockSize*16, PlayScene::BlockSize*9,      // Destination width, height (stretch vertically)
+                    PlayScene::BlockSize*16, PlayScene::BlockSize*10,      // Destination width, height (stretch vertically)
                     0                      // Flags (0 = no blending)
                 );
             }
@@ -44,7 +44,7 @@ namespace Engine {
                 al_draw_line(
                     p.x, p.y - PlayScene::Camera.y,  // Adjusted for camera
                     p.x, p.y + p.length - PlayScene::Camera.y,
-                    al_map_rgba(100, 100, 155, 100), // Semi-transparent blue
+                    al_map_rgba(100, 100, 155, 255), // Semi-transparent blue
                     1.5f
                 );
             }
