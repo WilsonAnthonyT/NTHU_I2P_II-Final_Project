@@ -247,9 +247,9 @@ void PlayScene::Update(float deltaTime) {
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     for (auto& p : rainParticles) {
-        p.y += p.speed * deltaTime * BlockSize * 2; // Animates properly with deltaTime
-        if (p.y > PlayScene::MapHeight * PlayScene::BlockSize) {
-            p.y = -p.length; // Reset above the screen
+        p.y += p.speed * deltaTime * BlockSize; // Animates properly with deltaTime
+        if (p.y > MapHeight * BlockSize * 2) {
+            p.y = -p.length; // Reset above  the screen
             p.x = rand() % (PlayScene::MapWidth * PlayScene::BlockSize);
         }
     }
