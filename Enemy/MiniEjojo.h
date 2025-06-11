@@ -30,6 +30,7 @@ public:
     void SetNextPattern() override;
     void ShootRandomPattern() override;
     void Update(float deltaTime) override;
+    void OnDeath() override;
 };
 
 

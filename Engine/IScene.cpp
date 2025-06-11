@@ -44,7 +44,7 @@ namespace Engine {
                 al_draw_line(
                     p.x, p.y - PlayScene::Camera.y,  // Adjusted for camera
                     p.x, p.y + p.length - PlayScene::Camera.y,
-                    al_map_rgba(100, 100, 255, 150), // Semi-transparent blue
+                    al_map_rgba(100, 100, 155, 100), // Semi-transparent blue
                     1.5f
                 );
             }

@@ -107,7 +107,7 @@ namespace Engine {
         /// <param name="icon">Window's icon image path.</param>
         /// <param name="freeMemoryOnSceneChanged">Determines whether to free memory between scenes.</param>
         void Start(const std::string &firstSceneName, int fps = 60, int screenW = 800, int screenH = 600, bool fullscreen = false, int reserveSamples = 1000,
-                   const char *title = "Pepek",
+                   const char *title = "",
                    const char *icon = "play/Demon.png", bool freeMemoryOnSceneChanged = false,
                    float deltaTimeThreshold = 0.05);
         /// <summary>

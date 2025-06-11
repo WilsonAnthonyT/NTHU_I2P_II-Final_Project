@@ -24,7 +24,7 @@ private:
 
     // Enemy CHILD
     int currentMiniEjojo = 0;
-    int maxMiniEjojo = 1;
+    int maxMiniEjojo = 2;
 
     // Random engine
     std::mt19937 rng;
@@ -33,6 +33,15 @@ private:
     float initialHP;
     float spawnThreshold;
     float lastHP;
+
+    bool isFalling = false;
+    float fallVelocity = 0.0f;
+    float crashShakeTimer = 0.0f;
+    float explosionTimer = 0.0f;
+    float smokeTimer = 0.0f;
+    float crashDelay = 1.5f; // Time before removal after crash
+    ALLEGRO_COLOR damageTint = al_map_rgb(255, 255, 255);
+    float crashProgress;
 
 public:
     EjojoEnemy(std::string img, int x, int y);
