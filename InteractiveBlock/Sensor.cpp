@@ -69,7 +69,7 @@ int Sensor::IsCollision(float x, float y) {
     // Calculate hitbox based on object size
     float left = x - Size.x/2;
     float right = x + Size.x/2;
-    float top = y;
+    float top = y + Size.y * 4/5;
     float bottom = y + Size.y;
 
     for (auto& it : scene->PlayerGroup->GetObjects()) {

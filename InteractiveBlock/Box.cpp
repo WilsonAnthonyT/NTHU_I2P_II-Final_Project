@@ -105,7 +105,7 @@ bool Box::IsCollision(float x, float y) {
         float p_Top = player->Position.y;
         float p_Bottom = player->Position.y + player->Size.y;
 
-        bool overlapX = left + PlayScene::BlockSize/15 < p_Right && right - PlayScene::BlockSize/15 > p_Left;
+        bool overlapX = left + PlayScene::BlockSize/8 < p_Right && right - PlayScene::BlockSize/8 > p_Left;
         bool overlapY = top < p_Bottom && bottom > p_Top;
 
         if (overlapX && overlapY) {
