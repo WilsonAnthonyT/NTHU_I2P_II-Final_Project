@@ -178,10 +178,22 @@ void CutScene::Initialize() {
         MoveCharacterTo("ship1", PlayScene::BlockSize * 5, PlayScene::BlockSize * 3, 6.0f);
         ScaleCharacterTo("ship1", 1.0f, 1.0f, 6.0f);
         // Set up scene transition (auto-change to play scene after 5 seconds)
-        sceneTransition.delay = 100.0f;
+        sceneTransition.delay = 10.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 100.0f;
+        sceneTransition.duration = 10.0f;
+    }
+    else if (scene->MapId == 2) {
+        sceneTransition.delay = 0.001f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 0.001f;
+    }
+    else if (scene->MapId == 3) {
+        sceneTransition.delay = 0.001f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 0.001f;
     }
 }
 
