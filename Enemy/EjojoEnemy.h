@@ -55,6 +55,7 @@ public:
     void SpawnMiniEjojo();
     void OnDeath() override;
 
+    //bool IsCollision(float x, float y, bool checkWallsOnly) override;
     int totalMiniEjojo = 0;
 
 };

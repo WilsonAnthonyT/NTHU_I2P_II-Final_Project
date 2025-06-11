@@ -10,7 +10,7 @@
 #include "Scene/PlayScene.hpp"
 
 MazePlayerA::MazePlayerA(float x, float y): Player("play/arwen.png", x, y,PlayScene::BlockSize * 2.25,100) {
-    Size = Engine::Point(PlayScene::BlockSize * 0.45, PlayScene::BlockSize * 0.65);
+    Size = Engine::Point(PlayScene::BlockSize * 0.4, PlayScene::BlockSize * 0.65);
 }
 void MazePlayerA::Update(float deltaTime) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());

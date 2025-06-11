@@ -107,7 +107,11 @@ void EjojoEnemy::Update(float deltaTime) {
         timeSinceLastShot += deltaTime;
         patternTimer += deltaTime;
         UpdateMovementPattern(deltaTime);
-        Position.x += VelocityX * deltaTime * 2.0f;
+
+        float newX = Position.x + VelocityX * deltaTime;
+        if (!IsCollision(newX, Position.y,false)) {
+            Position.x = newX;
+        }
         Position.y = PlayScene::GetClientSize().y - fixedAltitude + hoverOffset;
 
         if (hp <= spawnThreshold) {
@@ -290,4 +294,19 @@ void EjojoEnemy::OnDeath() {
         //AudioHelper::PlayAudio("spaceship-crash.ogg");
     }
 }
+
+// bool EjojoEnemy::IsCollision(float x, float y, bool checkWallsOnly) {
+//     PlayScene* scene = getPlayScene();
+//     if (!scene) return true;
+//
+//     Engine::Point mapSize = PlayScene::GetClientSize();
+//     float halfSizeX = abs(Size.x / 2);
+//     float halfSizeY = abs(Size.y / 2);
+//
+//     if (x - halfSizeX < 0 || x + halfSizeX > mapSize.x ||
+//         y - halfSizeY < 0 || y + halfSizeY > mapSize.y) {
+//         return true;
+//         }
+// }
+
 

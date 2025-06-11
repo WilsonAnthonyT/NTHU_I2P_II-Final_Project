@@ -45,16 +45,30 @@ void FlyingEnemy::Update(float deltaTime) {
     }
 
     // Get player positions
+    bool enemyInView = IsInCameraView(Position.x, Position.y);
+
+    // Get player positions and check if any are in view
     std::vector<Engine::Point> playerPositions;
+    bool anyPlayerInView = false;
+
     for (auto& player : scene->PlayerGroup->GetObjects()) {
-        if (player->Visible) playerPositions.push_back(player->Position);
+        if (player->Visible) {
+            bool playerInView = IsInCameraView(player->Position.x, player->Position.y);
+            anyPlayerInView = anyPlayerInView || playerInView;
+            playerPositions.push_back(player->Position);
+        }
+    }
+    // Only chase if both enemy and at least one player are in view
+    if (enemyInView && anyPlayerInView) {
+        ChasePlayer(playerPositions, deltaTime);
     }
 
-    // Chase player with flying behavior
-    ChasePlayer(playerPositions, deltaTime);
-
     // Apply movement
-    Position.x += VelocityX * deltaTime;
+    float newX = Position.x + VelocityX * deltaTime;
+
+    if (!IsCollision(newX, Position.y,false)) {
+        Position.x = newX;
+    }
     Position.y += VelocityY * deltaTime;
 
     // Keep enemy within screen bounds
@@ -163,7 +177,9 @@ void FlyingEnemy::Hit(float damage, float PosX, std::string type) {
 }
 
 bool FlyingEnemy::IsCollision(float x, float y, bool checkWallsOnly) {
-    // Flying enemies don't collide with terrain, only with screen boundaries
+    PlayScene* scene = getPlayScene();
+    if (!scene) return true;
+
     Engine::Point mapSize = PlayScene::GetClientSize();
     float halfSizeX = abs(Size.x / 2);
     float halfSizeY = abs(Size.y / 2);
@@ -173,6 +189,27 @@ bool FlyingEnemy::IsCollision(float x, float y, bool checkWallsOnly) {
         return true;
     }
 
+    float left = x - halfSizeX + tolerance;
+    float right = x + halfSizeX - tolerance;
+    float top = y + tolerance;
+    float bottom = y + Size.y - tolerance;
+
+    int tileLeft = static_cast<int>(left / PlayScene::BlockSize);
+    int tileRight = static_cast<int>(right / PlayScene::BlockSize);
+    int tileTop = static_cast<int>(top / PlayScene::BlockSize);
+    int tileBottom = static_cast<int>(bottom / PlayScene::BlockSize);
+
+    for (int yTile = tileTop; yTile <= tileBottom; ++yTile) {
+        for (int xTile = tileLeft; xTile <= tileRight; ++xTile) {
+            if (xTile >= 0 && xTile < scene->MapWidth &&
+                yTile >= 0 && yTile < scene->MapHeight) {
+                    int tileType = scene->mapState[yTile][xTile];
+                    if (tileType == PlayScene::TILE_DIRT) {
+                        return true;
+                    }
+                }
+        }
+    }
     return false;
 }
 

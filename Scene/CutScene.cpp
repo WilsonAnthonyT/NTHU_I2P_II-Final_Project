@@ -144,20 +144,20 @@ void CutScene::Initialize() {
         dialogs.push_back({
            "Warning unknown ships has entered our area.",
            3.5f,
-           "play/bryan.png",
-           "Bryan"
+           "play/tool-base.png",
+           "System"
        });
         dialogs.push_back({
             "These ships descended without a warning.",
             4.0f,
             "play/tool-base.png",
-            " "
+            "System"
         });
         dialogs.push_back({
             "We couldn’t stop them.",
             4.0f,
             "play/tool-base.png",
-            " "
+            "System"
         });
         //tumbal ga bakal kepake
         dialogs.push_back({
@@ -172,8 +172,8 @@ void CutScene::Initialize() {
         };
         AddCharacterAnimation("ship1", shipFrames, 10.0f, true);
         SetCharacterScale("ship1", 2.0f, 2.0f);
-        SetCharacterPosition("ship1", screenWidth, PlayScene::BlockSize * 3);
-        MoveCharacterTo("ship1", screenWidth/2, PlayScene::BlockSize * 3, 6.0f);
+        SetCharacterPosition("ship1", screenWidth, Blocksize * 3);
+        MoveCharacterTo("ship1", screenWidth/2, Blocksize * 3, 6.0f);
         ScaleCharacterTo("ship1", 0.8f, 0.8f, 6.0f);
 
         sceneTransition.delay = 23.0f;
@@ -183,7 +183,7 @@ void CutScene::Initialize() {
 
     }
     else if (scene->MapId == 2) {
-        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/cutscenebg1.png");
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/cutscene2.png");
         PlayScene::Camera.x = 0;
         PlayScene::Camera.y = 0;
         PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
@@ -225,15 +225,33 @@ void CutScene::Initialize() {
             "play/bryan.png",
             "Bryan"
         });
-        //Char 1 ship
-        std::vector<std::string> shipFrames = {
-            "cut-scene/ship1.png"
+        //animation sprites
+        std::vector<std::string> tankaFrames = {
+            "cut-scene/tankplayera.png"
         };
-        AddCharacterAnimation("ship1", shipFrames, 10.0f, true);
-        SetCharacterScale("ship1", 2.0f, 2.0f);
-        SetCharacterPosition("ship1", PlayScene::BlockSize * 15 , PlayScene::BlockSize * 3);
-        MoveCharacterTo("ship1", PlayScene::BlockSize * 5, PlayScene::BlockSize * 3, 6.0f);
-        ScaleCharacterTo("ship1", 0.8f, 0.8f, 6.0f);
+        AddCharacterAnimation("tanka", tankaFrames, 10.0f, true);
+        SetCharacterScale("tanka", 2*Blocksize/422, 2*Blocksize/422);
+        SetCharacterPosition("tanka", screenWidth-4*PlayScene::BlockSize, PlayScene::BlockSize * 5);
+        std::vector<std::string> tankbFrames = {
+            "cut-scene/tankplayerb.png"
+        };
+        AddCharacterAnimation("tankb", tankbFrames, 10.0f, true);
+        SetCharacterScale("tankb", 2*Blocksize/438, 2*Blocksize/438);
+        SetCharacterPosition("tankb", screenWidth-2*PlayScene::BlockSize, PlayScene::BlockSize * 5);
+        std::vector<std::string> bryanFrames = {
+            "cut-scene/bryan.png"
+        };
+        AddCharacterAnimation("bryan", bryanFrames, 10.0f, true);
+        SetCharacterScale("bryan", 0.45*PlayScene::BlockSize/38, 0.70*PlayScene::BlockSize/64);
+        SetCharacterPosition("bryan", PlayScene::BlockSize*2 - 0.45*PlayScene::BlockSize, PlayScene::BlockSize * 7-0.70*PlayScene::BlockSize);
+        MoveCharacterTo("bryan", screenWidth-PlayScene::BlockSize, PlayScene::BlockSize * 7-0.70*PlayScene::BlockSize, 6.0f);
+        std::vector<std::string> arwenFrames = {
+            "cut-scene/arwen.png"
+        };
+        AddCharacterAnimation("arwen", arwenFrames, 10.0f, true);
+        SetCharacterScale("arwen", 0.4*PlayScene::BlockSize/35, 0.65*PlayScene::BlockSize/64);
+        SetCharacterPosition("arwen", PlayScene::BlockSize, PlayScene::BlockSize * 7-0.65*PlayScene::BlockSize);
+        MoveCharacterTo("arwen", screenWidth-3*PlayScene::BlockSize, PlayScene::BlockSize * 7-0.65*PlayScene::BlockSize, 6.0f);
         StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
@@ -261,6 +279,16 @@ void CutScene::Terminate() {
         dialogFont = nullptr;
     }
     AudioHelper::StopSample(bgmInstance);
+
+    characterAnimations.clear();
+    characterPositions.clear();
+    characterTweensX.clear();
+    characterTweensY.clear();
+    characterScaleTweensX.clear();
+    characterScaleTweensY.clear();
+    animations.clear();
+
+
     IScene::Terminate();
 }
 
