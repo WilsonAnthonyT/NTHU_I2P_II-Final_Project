@@ -652,18 +652,26 @@ void PlayScene::sensorAssign() {
         while (getline(ifs, line, '\n')) {
             std::vector<Door*> doorList;
             int mass = -1;
-            for (char c : line) {
-                if (isdigit(c)) {
-                    //std::cout << c << std::endl;
-                    if (mass == -1) mass = c - '0';
-                    else {
-                        doorList.push_back(door_address[c - '0']);
-                        SensorDoorAssignments[door_address[c - '0']].push_back(sensor_address[idx]);
+
+            std::istringstream iss(line);
+            std::string token;
+
+            while (iss >> token) {
+                // Check if token is a number
+                if (!token.empty() && std::isdigit(token[0])) {
+                    // Convert to integer
+                    int value = std::stoi(token);
+
+                    if (mass == -1) {
+                        mass = value;
+                    } else {
+                        Door* door = door_address[value];
+                        doorList.push_back(door);
+                        SensorDoorAssignments[door].push_back(sensor_address[idx]);
                     }
                 }
             }
 
-            //std::cout << "SENSOR " << idx << " MASS: " << mass << std::endl;
             sensor_address[idx]->Weight = mass;
             DoorSensorAssignments.insert({sensor_address[idx], doorList});
             idx++;
