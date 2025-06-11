@@ -45,12 +45,13 @@ public:
         SLIDE_OUT,
         CUSTOM
     };
-
     struct SceneTransition {
         float delay = 0.0f;
         std::string targetScene = "";
         AnimationType transitionType = AnimationType::FADE_OUT;
         float duration = 1.0f;
+        float DialogDuration = 0.0f;
+        float AnimationDuration = 0.0f;
     };
 
 
@@ -150,12 +151,16 @@ public:
     void ScaleCharacterTo(const std::string& charId, float targetScaleX, float targetScaleY, float duration);
 
 private:
+    PlayScene *scene;
     // Pause menu
     bool IsPaused = false;
     void UpdatePauseState();
     void CreatePauseUI();
     
     // Dialog system
+    std::vector<Dialog> dialogs;
+    bool isDialogStarted = false;
+    bool isDialogFinished = false;
     void StartDialog(const std::vector<Dialog>& dialogs, bool skippable);
     void UpdateDialog(float deltaTime);
     void RenderDialog() const;
@@ -214,6 +219,10 @@ private:
     void UpdateAnimations(float deltaTime);
     void UpdateTransitions(float deltaTime);
     void DrawTransitionEffect() const;
+
+    bool startAnimation;
+    bool startDialog;
+    bool startTransition;
 };
 
 #endif // CUTSCENE_H

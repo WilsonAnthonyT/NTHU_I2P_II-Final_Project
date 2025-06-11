@@ -12,6 +12,9 @@
 #include "UI/Component/Label.hpp"
 
 #include "CutScene.h"
+
+#include <iostream>
+#include <ostream>
 #include <allegro5/allegro_primitives.h>
 #include "StageSelectScene.hpp"
 #include "Engine/GameEngine.hpp"
@@ -98,8 +101,15 @@ void CutScene::Initialize() {
     transitionTimer = 0.0f;
     fadeAlpha = 0.0f;
     currentState = GameState::Normal;
+    isDialogStarted = false;
+    isDialogFinished = false;
 
-    PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
+    characterTweensX.clear();
+    characterTweensY.clear();
+    characterScaleTweensX.clear();
+    characterScaleTweensY.clear();
+
+    scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
     mask = nullptr;
@@ -127,14 +137,13 @@ void CutScene::Initialize() {
         PlayScene::Camera.y = 0;
         PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
         PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
-
-        std::vector<Dialog> dialogs;
+        // Example animation
         dialogs.push_back({
-            "The sky... it's burning. They’ve arrived.",
-            3.5f,
-            "play/arwen.png",
-            "Arwen"
-        });
+           "The sky... it's burning. They’ve arrived.",
+           3.5f,
+           "play/arwen.png",
+           "Arwen"
+       });
         dialogs.push_back({
             "Unknown ships descended without a warning. We couldn’t stop them.",
             4.0f,
@@ -165,8 +174,6 @@ void CutScene::Initialize() {
             "play/bryan.png",
             "Bryan"
         });
-        StartDialog(dialogs, true);
-        // Example animation
 
         //Char 1 ship
         std::vector<std::string> shipFrames = {
@@ -177,11 +184,12 @@ void CutScene::Initialize() {
         SetCharacterPosition("ship1", PlayScene::BlockSize * 15 , PlayScene::BlockSize * 3);
         MoveCharacterTo("ship1", PlayScene::BlockSize * 5, PlayScene::BlockSize * 3, 6.0f);
         ScaleCharacterTo("ship1", 1.0f, 1.0f, 6.0f);
-        // Set up scene transition (auto-change to play scene after 5 seconds)
-        sceneTransition.delay = 10.0f;
+
+        sceneTransition.delay = 23.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 10.0f;
+        sceneTransition.duration = 1.0f;
+
     }
     else if (scene->MapId == 2) {
         sceneTransition.delay = 0.001f;
@@ -217,37 +225,55 @@ void CutScene::Update(float deltaTime) {
     switch (currentState) {
         case GameState::Dialog:
             UpdateDialog(deltaTime);
+            if (dialogQueue.empty() && !isDialogFinished) {
+                isDialogFinished = true;
+                currentState = GameState::Normal;
+                std::cout << "Dialog finished naturally" << std::endl;
+            }
             break;
         case GameState::Transitioning:
             UpdateTransitions(deltaTime);
             break;
         case GameState::Normal:
+            for (auto& [id, pos] : characterAnimations) {
+                if (characterTweensX.count(id) && !characterTweensX[id]->IsComplete()) {
+                    pos.position.x = characterTweensX[id]->Update(deltaTime);
+                }
+                if (characterTweensY.count(id) && !characterTweensY[id]->IsComplete()) {
+                    pos.position.y = characterTweensY[id]->Update(deltaTime);
+                }
+            }
+
+            for (auto& [id, character] : characterAnimations) {
+                character.animation->Update(deltaTime);
+                if (characterScaleTweensX.find(id) != characterScaleTweensX.end() &&
+                    !characterScaleTweensX[id]->IsComplete()) {
+                    character.scaleX = characterScaleTweensX[id]->Update(deltaTime);
+                    }
+                if (characterScaleTweensY.find(id) != characterScaleTweensY.end() &&
+                    !characterScaleTweensY[id]->IsComplete()) {
+                    character.scaleY = characterScaleTweensY[id]->Update(deltaTime);
+                    }
+            }
             break;
     }
-    for (auto& [id, pos] : characterAnimations) {
-        if (characterTweensX.count(id) && !characterTweensX[id]->IsComplete()) {
-            pos.position.x = characterTweensX[id]->Update(deltaTime);
-        }
-        if (characterTweensY.count(id) && !characterTweensY[id]->IsComplete()) {
-            pos.position.y = characterTweensY[id]->Update(deltaTime);
-        }
-    }
 
-    for (auto& [id, character] : characterAnimations) {
-        character.animation->Update(deltaTime);
-        if (characterScaleTweensX.find(id) != characterScaleTweensX.end() &&
-            !characterScaleTweensX[id]->IsComplete()) {
-            character.scaleX = characterScaleTweensX[id]->Update(deltaTime);
-            }
-        if (characterScaleTweensY.find(id) != characterScaleTweensY.end() &&
-            !characterScaleTweensY[id]->IsComplete()) {
-            character.scaleY = characterScaleTweensY[id]->Update(deltaTime);
-            }
-    }
 
     // Check for scene transition
-    if (!transitionStarted && sceneTransition.delay > 0) {
+    if (!transitionStarted && sceneTransition.delay > 0.0f) {
         transitionTimer += deltaTime;
+
+        //only for lv 1=================================
+        if (scene->MapId == 1) {
+            if (transitionTimer >= 6.0f && !isDialogStarted) {
+                StartDialog(dialogs, true);
+                isDialogStarted = true;
+            }
+            if (isDialogFinished) {
+                sceneTransition.delay = 0.1f;
+            }
+        }
+        //============================================
         if (transitionTimer >= sceneTransition.delay) {
             StartFadeOut();
         }
@@ -271,9 +297,25 @@ void CutScene::Draw() const {
 
     switch (currentState) {
         case GameState::Dialog:
+            for (const auto& [id, character] : characterAnimations) {
+                if (character.animation) {
+                    character.animation->SetFlip(character.flipHorizontal);
+                    character.animation->SetScale(character.scaleX, character.scaleY);
+                    character.animation->SetTint(character.tint);
+                    character.animation->Draw(character.position.x, character.position.y);
+                }
+            }
             RenderDialog();
             break;
         case GameState::Transitioning:
+            for (const auto& [id, character] : characterAnimations) {
+                if (character.animation) {
+                    character.animation->SetFlip(character.flipHorizontal);
+                    character.animation->SetScale(character.scaleX, character.scaleY);
+                    character.animation->SetTint(character.tint);
+                    character.animation->Draw(character.position.x, character.position.y);
+                }
+            }
             DrawTransitionEffect();
             break;
         case GameState::Normal:
