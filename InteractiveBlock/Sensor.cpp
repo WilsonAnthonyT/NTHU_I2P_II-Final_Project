@@ -27,41 +27,35 @@ void Sensor::Update(float deltaTime) {
 
     bool nowActive = IsCollision(Position.x, Position.y) >= Weight;
 
-    if (nowActive && !triggered) {
+    if (nowActive) {
         active = true;
-        triggered = true;
 
-        Sensor* sensorObj = dynamic_cast<Sensor*>(this->GetObjectIterator()->second);
+        Sensor* sensorObj = dynamic_cast<Sensor*>(GetObjectIterator()->second);
         auto& doorList = scene->DoorSensorAssignments[sensorObj];
 
         for (auto door : doorList) {
-            if (door->currState == Door::OPEN) {
-                door->Tint = al_map_rgb(255, 255, 255);
-                door->currState = Door::CLOSE;
-            } else {
-                door->Tint = al_map_rgb(85, 55, 0);
-                door->currState = Door::OPEN;
+            if (door->currState == door->initState) {
+                door->currState = (door->initState == Door::OPEN)? Door::CLOSE : Door::OPEN;
+
+                (door->currState == Door::OPEN)?
+                    door->Tint = al_map_rgb(85, 55, 0) : door->Tint = al_map_rgb(255, 255, 255);
             }
         }
 
         bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor-active.png");
     }
-    else if (!nowActive) {
-        active = false;
-        triggered = false;
-        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");
-    }
     else{
         active = false;
-        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor-active.png");
+        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");
         triggered = false;
     }
 
 
     if (Engine::IScene::DebugMode && active) {
-        this->Tint=al_map_rgb(255,0,0);
-    } else if (Engine::IScene::DebugMode && !active) this->Tint=al_map_rgb(255,255,255);
-    else if (!Engine::IScene::DebugMode) this->Tint=al_map_rgb(255,255,255);
+        Tint=al_map_rgb(255,0,0);
+    }
+    else if (Engine::IScene::DebugMode && !active) Tint=al_map_rgb(255,255,255);
+    else if (!Engine::IScene::DebugMode) Tint=al_map_rgb(255,255,255);
 }
 
 void Sensor::Draw() const{
