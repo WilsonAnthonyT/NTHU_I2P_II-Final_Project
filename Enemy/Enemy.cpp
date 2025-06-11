@@ -20,6 +20,7 @@
 #include "UI/Animation/DamageText.h"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/ExplosionEffect.hpp"
+#include "UI/Animation/LightEffect.h"
 
 PlayScene *Enemy::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
@@ -59,6 +60,7 @@ Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float
 //trying
 void Enemy::OnDeath() {
     auto *scene = getPlayScene();
+    scene->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
     scene->EnemyGroup->RemoveObject(GetObjectIterator());
 }
 

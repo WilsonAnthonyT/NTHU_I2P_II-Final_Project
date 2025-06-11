@@ -103,15 +103,18 @@ void CutScene::Initialize() {
     currentState = GameState::Normal;
     isDialogStarted = false;
     isDialogFinished = false;
+    isAnimationPhaseDone = false;
 
     characterTweensX.clear();
     characterTweensY.clear();
     characterScaleTweensX.clear();
     characterScaleTweensY.clear();
+    dialogs.clear();
 
     scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+    Blocksize = screenWidth / 16;
     mask = nullptr;
     ticks = 0;
     IsPaused = false;
@@ -125,13 +128,61 @@ void CutScene::Initialize() {
     CreatePauseUI();
 
     // Initialize dialog system
-    dialogFont = al_load_font("Resource/fonts/pirulen.ttf", 36, 0);
+    dialogFont = al_load_font("Resource/fonts/pirulen.ttf",  Blocksize * 0.2666666666667f, 0);
     if (!dialogFont) {
         throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
     }
 
     // Example dialog
     if (scene->MapId == 1) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/earth.png");
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
+        PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
+        PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+        // Example animation
+        dialogs.push_back({
+           "Warning unknown ships has entered our area.",
+           3.5f,
+           "play/bryan.png",
+           "Bryan"
+       });
+        dialogs.push_back({
+            "These ships descended without a warning.",
+            4.0f,
+            "play/tool-base.png",
+            " "
+        });
+        dialogs.push_back({
+            "We couldn’t stop them.",
+            4.0f,
+            "play/tool-base.png",
+            " "
+        });
+        //tumbal ga bakal kepake
+        dialogs.push_back({
+            "Feat. Bryan and Arwen",
+            4.0f,
+            "play/tool-base.png",
+            " "
+        });
+        //Char 1 ship
+        std::vector<std::string> shipFrames = {
+            "cut-scene/ship1.png"
+        };
+        AddCharacterAnimation("ship1", shipFrames, 10.0f, true);
+        SetCharacterScale("ship1", 2.0f, 2.0f);
+        SetCharacterPosition("ship1", screenWidth, PlayScene::BlockSize * 3);
+        MoveCharacterTo("ship1", screenWidth/2, PlayScene::BlockSize * 3, 6.0f);
+        ScaleCharacterTo("ship1", 0.8f, 0.8f, 6.0f);
+
+        sceneTransition.delay = 23.0f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 1.0f;
+
+    }
+    else if (scene->MapId == 2) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/cutscenebg1.png");
         PlayScene::Camera.x = 0;
         PlayScene::Camera.y = 0;
@@ -174,7 +225,6 @@ void CutScene::Initialize() {
             "play/bryan.png",
             "Bryan"
         });
-
         //Char 1 ship
         std::vector<std::string> shipFrames = {
             "cut-scene/ship1.png"
@@ -183,19 +233,13 @@ void CutScene::Initialize() {
         SetCharacterScale("ship1", 2.0f, 2.0f);
         SetCharacterPosition("ship1", PlayScene::BlockSize * 15 , PlayScene::BlockSize * 3);
         MoveCharacterTo("ship1", PlayScene::BlockSize * 5, PlayScene::BlockSize * 3, 6.0f);
-        ScaleCharacterTo("ship1", 1.0f, 1.0f, 6.0f);
+        ScaleCharacterTo("ship1", 0.8f, 0.8f, 6.0f);
+        StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
-
-    }
-    else if (scene->MapId == 2) {
-        sceneTransition.delay = 0.001f;
-        sceneTransition.targetScene = "play";
-        sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
     }
     else if (scene->MapId == 3) {
         sceneTransition.delay = 0.001f;
@@ -233,7 +277,7 @@ void CutScene::Update(float deltaTime) {
             UpdateDialog(deltaTime);
             if (dialogQueue.empty() && !isDialogFinished) {
                 isDialogFinished = true;
-                currentState = GameState::Normal;
+                currentState = GameState::Transitioning;
                 std::cout << "Dialog finished naturally" << std::endl;
             }
             break;
@@ -241,25 +285,52 @@ void CutScene::Update(float deltaTime) {
             UpdateTransitions(deltaTime);
             break;
         case GameState::Normal:
-            for (auto& [id, pos] : characterAnimations) {
-                if (characterTweensX.count(id) && !characterTweensX[id]->IsComplete()) {
-                    pos.position.x = characterTweensX[id]->Update(deltaTime);
+            if (!isAnimationPhaseDone) {
+                for (auto& [id, pos] : characterAnimations) {
+                    if (characterTweensX.count(id) && !characterTweensX[id]->IsComplete()) {
+                        pos.position.x = characterTweensX[id]->Update(deltaTime);
+                    }
+                    if (characterTweensY.count(id) && !characterTweensY[id]->IsComplete()) {
+                        pos.position.y = characterTweensY[id]->Update(deltaTime);
+                    }
                 }
-                if (characterTweensY.count(id) && !characterTweensY[id]->IsComplete()) {
-                    pos.position.y = characterTweensY[id]->Update(deltaTime);
+
+                for (auto& [id, character] : characterAnimations) {
+                    character.animation->Update(deltaTime);
+                    if (characterScaleTweensX.find(id) != characterScaleTweensX.end() &&
+                        !characterScaleTweensX[id]->IsComplete()) {
+                        character.scaleX = characterScaleTweensX[id]->Update(deltaTime);
+                        }
+                    if (characterScaleTweensY.find(id) != characterScaleTweensY.end() &&
+                        !characterScaleTweensY[id]->IsComplete()) {
+                        character.scaleY = characterScaleTweensY[id]->Update(deltaTime);
+                        }
+                }
+                bool allAnimationsDone = true;
+                for (const auto& [id, character] : characterAnimations) {
+                    if (!character.animation->IsComplete()) {
+                        allAnimationsDone = false;
+                        break;
+                    }
+                }
+                if (allAnimationsDone) {
+                    isAnimationPhaseDone = true;
+                    if (scene->MapId == 1) {
+                        StartDialog(dialogs, true);
+                        isDialogStarted = true;
+                    }
                 }
             }
-
-            for (auto& [id, character] : characterAnimations) {
-                character.animation->Update(deltaTime);
-                if (characterScaleTweensX.find(id) != characterScaleTweensX.end() &&
-                    !characterScaleTweensX[id]->IsComplete()) {
-                    character.scaleX = characterScaleTweensX[id]->Update(deltaTime);
+            if (isAnimationPhaseDone) {
+                if (scene->MapId == 1) {
+                    if (!isDialogStarted) {
+                        currentState = GameState::Dialog;
+                        isDialogStarted = true;
                     }
-                if (characterScaleTweensY.find(id) != characterScaleTweensY.end() &&
-                    !characterScaleTweensY[id]->IsComplete()) {
-                    character.scaleY = characterScaleTweensY[id]->Update(deltaTime);
-                    }
+                }
+                else {
+                    sceneTransition.delay = 0.01f;
+                }
             }
             break;
     }
@@ -277,6 +348,11 @@ void CutScene::Update(float deltaTime) {
             }
             if (isDialogFinished) {
                 sceneTransition.delay = 0.1f;
+            }
+        }
+        else {
+            if (isAnimationPhaseDone) {
+                sceneTransition.delay = 0.01f;
             }
         }
         //============================================
@@ -303,23 +379,47 @@ void CutScene::Draw() const {
 
     switch (currentState) {
         case GameState::Dialog:
-            for (const auto& [id, character] : characterAnimations) {
-                if (character.animation) {
-                    character.animation->SetFlip(character.flipHorizontal);
-                    character.animation->SetScale(character.scaleX, character.scaleY);
-                    character.animation->SetTint(character.tint);
-                    character.animation->Draw(character.position.x, character.position.y);
+            if (scene->MapId == 1) {
+                for (const auto& [id, character] : characterAnimations) {
+                    if (character.animation) {
+                        character.animation->SetFlip(character.flipHorizontal);
+                        character.animation->SetScale(character.TargetScale.x, character.TargetScale.y);
+                        character.animation->SetTint(character.tint);
+                        character.animation->Draw(character.TargetPosition.x, character.TargetPosition.y);
+                    }
+                }
+            }
+            else {
+                for (const auto& [id, character] : characterAnimations) {
+                    if (character.animation) {
+                        character.animation->SetFlip(character.flipHorizontal);
+                        character.animation->SetScale(character.scaleX, character.scaleY);
+                        character.animation->SetTint(character.tint);
+                        character.animation->Draw(character.position.x, character.position.y);
+                    }
                 }
             }
             RenderDialog();
             break;
         case GameState::Transitioning:
-            for (const auto& [id, character] : characterAnimations) {
-                if (character.animation) {
-                    character.animation->SetFlip(character.flipHorizontal);
-                    character.animation->SetScale(character.scaleX, character.scaleY);
-                    character.animation->SetTint(character.tint);
-                    character.animation->Draw(character.position.x, character.position.y);
+            if (scene->MapId == 1) {
+                for (const auto& [id, character] : characterAnimations) {
+                    if (character.animation) {
+                        character.animation->SetFlip(character.flipHorizontal);
+                        character.animation->SetScale(character.TargetScale.x, character.TargetScale.y);
+                        character.animation->SetTint(character.tint);
+                        character.animation->Draw(character.TargetPosition.x, character.TargetPosition.y);
+                    }
+                }
+            }
+            else {
+                for (const auto& [id, character] : characterAnimations) {
+                    if (character.animation) {
+                        character.animation->SetFlip(character.flipHorizontal);
+                        character.animation->SetScale(character.TargetScale.x, character.TargetScale.y);
+                        character.animation->SetTint(character.tint);
+                        character.animation->Draw(character.TargetPosition.x, character.TargetPosition.y);
+                    }
                 }
             }
             DrawTransitionEffect();
@@ -333,6 +433,16 @@ void CutScene::Draw() const {
                     character.animation->Draw(character.position.x, character.position.y);
                 }
             }
+            if (!isAnimationPhaseDone) {
+                al_draw_text(
+                    dialogFont,
+                    al_map_rgba(255, 255, 255, 180),
+                    screenWidth - 20,
+                    20,
+                    ALLEGRO_ALIGN_RIGHT,
+                    "Press [SPACE] to Skip"
+                );
+            }
             break;
     }
 }
@@ -341,6 +451,10 @@ void CutScene::OnMouseDown(int button, int mx, int my) {
     IScene::OnMouseDown(button, mx, my);
     if (currentState == GameState::Dialog && dialogSkippable) {
         dialogSkipRequested = true;
+    }
+    if (currentState == GameState::Normal && !isAnimationPhaseDone) {
+        isAnimationPhaseDone = true; // Skip animations
+        if (scene->MapId == 1) StartDialog(dialogs, true); // Start dialog
     }
 }
 
@@ -356,6 +470,13 @@ void CutScene::OnKeyDown(int keyCode) {
     if (currentState == GameState::Dialog && dialogSkippable) {
         if (keyCode == ALLEGRO_KEY_SPACE || keyCode == ALLEGRO_KEY_ENTER) {
             dialogSkipRequested = true;
+        }
+    }
+    if (currentState == GameState::Normal && !isAnimationPhaseDone) {
+        if (keyCode == ALLEGRO_KEY_SPACE) isAnimationPhaseDone = true; // Skip animations
+        if (scene->MapId == 1) {
+            StartDialog(dialogs, true);
+            isDialogStarted = true;
         }
     }
 }
@@ -414,6 +535,9 @@ void CutScene::SetCharacterPosition(const std::string& characterId, float x, flo
 }
 
 void CutScene::MoveCharacterTo(const std::string& characterId, float targetX, float targetY, float duration) {
+    characterAnimations[characterId].TargetPosition.x = targetX;
+    characterAnimations[characterId].TargetPosition.y = targetY;
+
     Engine::Point currentPos = characterAnimations[characterId].position;
     characterTweensX[characterId] = std::make_unique<Tween>(currentPos.x, targetX, duration,
         [](float t) { return t * t * (3 - 2 * t); });
@@ -438,6 +562,9 @@ void CutScene::SetCharacterUniformScale(const std::string& charId, float scale) 
 void CutScene::ScaleCharacterTo(const std::string& charId, float targetScaleX, float targetScaleY, float duration) {
     if (characterAnimations.find(charId) == characterAnimations.end()) return;
 
+    characterAnimations[charId].TargetScale.x = targetScaleX;
+    characterAnimations[charId].TargetScale.y = targetScaleY;
+
     auto& character = characterAnimations[charId];
     characterScaleTweensX[charId] = std::make_unique<Tween>(
         character.scaleX, targetScaleX, duration,
@@ -445,6 +572,28 @@ void CutScene::ScaleCharacterTo(const std::string& charId, float targetScaleX, f
     characterScaleTweensY[charId] = std::make_unique<Tween>(
         character.scaleY, targetScaleY, duration,
         [](float t) { return t * t * (3 - 2 * t); });
+}
+
+void CutScene::SkipAnimationToEnd() {
+    for (auto& [id, character] : characterAnimations) {
+        if (characterAnimations.count(id)) {
+            // Teleport position
+            character.position.x = characterAnimations[id].TargetPosition.x;
+            character.position.y = characterAnimations[id].TargetPosition.y;
+
+            // Teleport scale
+            character.scaleX = characterAnimations[id].TargetScale.x;
+            character.scaleY = characterAnimations[id].TargetScale.y;
+
+        }
+
+        // Force the animation to its last frame
+        if (character.animation && !character.animation->IsComplete()) {
+            character.animation->currentFrame = character.animation->frames.size() - 1;
+        }
+    }
+
+    isAnimationPhaseDone = true; // Mark animations as complete
 }
 
 
@@ -607,7 +756,7 @@ void CutScene::RenderDialog() const {
     // Draw dialog text
     if (dialogFont) {
         al_draw_text(dialogFont, al_map_rgb(255, 255, 255),
-                    screenW * 0.5, screenH * 0.825,
+                    screenW * 0.5, screenH * 0.85,
                     ALLEGRO_ALIGN_CENTER, currentDialogText.c_str());
     }
     if (dialogSkippable && dialogFont) {
@@ -615,7 +764,7 @@ void CutScene::RenderDialog() const {
             "Press to skip >>" : "Press to continue...";
 
         al_draw_text(dialogFont, al_map_rgba(200, 200, 200, 200),
-                    screenW * 0.88, screenH * 0.92,
+                    screenW * 0.88, screenH * 0.91,
                     ALLEGRO_ALIGN_RIGHT, hint.c_str());
     }
 }

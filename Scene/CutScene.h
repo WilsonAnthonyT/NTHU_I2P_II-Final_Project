@@ -29,6 +29,7 @@ namespace Engine {
 
 class CutScene : public Engine::IScene {
 public:
+    float Blocksize;
     // Dialog structure
     struct Dialog {
         std::string text;
@@ -58,10 +59,10 @@ public:
     // Enhanced AnimatedSprite class
     class AnimatedSprite {
     private:
-        std::vector<std::shared_ptr<ALLEGRO_BITMAP>> frames;
+
         float frameDuration;
         float currentTime = 0;
-        int currentFrame = 0;
+
         bool looping = true;
         bool flipHorizontal = false;
         float scaleX = 1.0f;
@@ -69,6 +70,8 @@ public:
         ALLEGRO_COLOR tint = al_map_rgba_f(1, 1, 1, 1);
 
     public:
+        int currentFrame = 0;
+        std::vector<std::shared_ptr<ALLEGRO_BITMAP>> frames;
         AnimatedSprite(const std::vector<std::string>& framePaths, float fps, bool loop = true);
         void Update(float deltaTime);
         void Draw(float x, float y) const;
@@ -100,6 +103,8 @@ public:
     struct Character {
         std::unique_ptr<AnimatedSprite> animation;
         Engine::Point position;
+        Engine::Point TargetPosition;
+        Engine::Point TargetScale;
         std::unique_ptr<Tween> tweenX;
         std::unique_ptr<Tween> tweenY;
         float scaleX = 1.0f;
@@ -149,6 +154,9 @@ public:
     void SetCharacterScale(const std::string& characterId, float scaleX, float scaleY);
     void SetCharacterUniformScale(const std::string& characterId, float scale);
     void ScaleCharacterTo(const std::string& charId, float targetScaleX, float targetScaleY, float duration);
+
+    //skip
+    void SkipAnimationToEnd();
 
 private:
     PlayScene *scene;
@@ -223,6 +231,8 @@ private:
     bool startAnimation;
     bool startDialog;
     bool startTransition;
+
+    bool isAnimationPhaseDone = false;
 };
 
 #endif // CUTSCENE_H

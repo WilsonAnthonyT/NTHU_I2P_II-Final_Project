@@ -621,8 +621,10 @@ void PlayScene::ReadMap() {
             }
         }
     }
-    DoorSensorAssignments.clear();
-    sensorAssign();
+    if (MapId == 1 || MapId == 3) {
+        DoorSensorAssignments.clear();
+        sensorAssign();
+    }
 }
 
 void PlayScene::sensorAssign() {
