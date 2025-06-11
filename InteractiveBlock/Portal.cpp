@@ -30,7 +30,7 @@ void Portal::Update(float deltaTime) {
         total++;
         if (buton->active)count++;
     }
-    if (total == count && count != 0 && total != 0) {
+    if (total == count) {
         active=true;
         bmp = Engine::Resources::GetInstance().GetBitmap("play/portal-active.png");
     }
