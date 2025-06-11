@@ -55,6 +55,8 @@ public:
     void SpawnMiniEjojo();
     void OnDeath() override;
 
+    int totalMiniEjojo = 0;
+
 };
 
 #endif // EJOJOENEMY_H

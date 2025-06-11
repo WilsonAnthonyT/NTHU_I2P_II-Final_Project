@@ -179,5 +179,8 @@ public:
 
     //remove player
     void RemovePlayer(Player *player);
+
+    //for level 2 only
+    int TotalMiniEjojo = 0;
 };
 #endif   // PLAYSCENE_HPP

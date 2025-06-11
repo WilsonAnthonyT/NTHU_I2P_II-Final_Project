@@ -2,6 +2,7 @@
 #include "Scene/PlayScene.hpp"
 #include "Bullet/FireBullet.hpp"
 #include <algorithm>
+#include <iostream>
 #include <allegro5/allegro_primitives.h>
 
 #include "MiniEjojo.h"
@@ -92,8 +93,11 @@ void EjojoEnemy::Update(float deltaTime) {
 
             // Countdown to removal
             crashShakeTimer -= deltaTime;
-            if (crashShakeTimer <= 0) {
-                getPlayScene()->EnemyGroup->RemoveObject(GetObjectIterator());
+            std::cout<<"current mini ejojo: " << currentMiniEjojo << std::endl;
+            std::cout<<"total mini ejojo: " << totalMiniEjojo << std::endl;
+            if (crashShakeTimer <= 0 && currentMiniEjojo == 2 && getPlayScene()->TotalMiniEjojo == 0) {
+                getPlayScene()->MapId++;
+                Engine::GameEngine::GetInstance().ChangeScene("story");
                 return;
             }
         }
