@@ -6,48 +6,183 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "StageSelectScene.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Resources.hpp"
 #include "UI/Component/Label.hpp"
 
+#include "CutScene.h"
+#include <allegro5/allegro_primitives.h>
+#include "StageSelectScene.hpp"
+#include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
+#include "UI/Component/Label.hpp"
+
+// AnimatedSprite implementation==============================================================
+CutScene::AnimatedSprite::AnimatedSprite(const std::vector<std::string>& framePaths, float fps, bool loop)
+    : frameDuration(1.0f/fps), looping(loop) {
+    for (const auto& path : framePaths) {
+        frames.push_back(Engine::Resources::GetInstance().GetBitmap(path));
+    }
+}
+
+void CutScene::AnimatedSprite::Update(float deltaTime) {
+    currentTime += deltaTime;
+    if (currentTime >= frameDuration) {
+        currentTime = 0;
+        currentFrame++;
+        if (currentFrame >= frames.size()) {
+            if (looping) currentFrame = 0;
+            else currentFrame = frames.size() - 1;
+        }
+    }
+}
+
+void CutScene::AnimatedSprite::Draw(float x, float y) const {
+    if (!frames.empty() && currentFrame < frames.size()) {
+        int flags = flipHorizontal ? ALLEGRO_FLIP_HORIZONTAL : 0;
+        al_draw_tinted_scaled_bitmap(
+            frames[currentFrame].get(),
+            tint,
+            0, 0,
+            al_get_bitmap_width(frames[currentFrame].get()),
+            al_get_bitmap_height(frames[currentFrame].get()),
+            x, y,
+            al_get_bitmap_width(frames[currentFrame].get()) * scaleX,
+            al_get_bitmap_height(frames[currentFrame].get()) * scaleY,
+            flags
+        );
+    }
+}
+
+void CutScene::AnimatedSprite::Reset() {
+    currentFrame = 0;
+    currentTime = 0;
+}
+
+bool CutScene::AnimatedSprite::IsComplete() const {
+    return !looping && currentFrame == frames.size() - 1;
+}
+
+// Tween implementation===============================================================================================
+CutScene::Tween::Tween(float start, float end, float dur, std::function<float(float)> ease)
+    : startValue(start), endValue(end), duration(dur), easing(ease) {}
+
+float CutScene::Tween::Update(float deltaTime) {
+    if (completed) return endValue;
+
+    elapsed += deltaTime;
+    if (elapsed >= duration) {
+        completed = true;
+        return endValue;
+    }
+
+    float t = easing(elapsed / duration);
+    return startValue + (endValue - startValue) * t;
+}
+
+bool CutScene::Tween::IsComplete() const {
+    return completed;
+}
+
+void CutScene::Tween::Reset() {
+    elapsed = 0;
+    completed = false;
+}
+
+// CutScene implementation
+CutScene::CutScene() : sceneTransition{0.0f, "play", AnimationType::FADE_OUT, 1.0f} {}
+
 void CutScene::Initialize() {
+    transitionStarted = false;
+    transitionTimer = 0.0f;
+    fadeAlpha = 0.0f;
+    currentState = GameState::Normal;
+
+    PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
     mask = nullptr;
-
     ticks = 0;
-
-    //Pause
     IsPaused = false;
-    // Add groups from bottom to top.
+
+    // Add groups from bottom to top
     AddNewObject(AnimationGroup = new Group());
     AddNewControlObject(UIGroup = new Group());
 
-    // Start BGM.
+    // Start BGM
     bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
-    backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
     CreatePauseUI();
 
-    //dialogue=======================================================================
+    // Initialize dialog system
     dialogFont = al_load_font("Resource/fonts/pirulen.ttf", 36, 0);
     if (!dialogFont) {
         throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
     }
-    std::vector<Dialog> dialogs;
-    dialogs.push_back({
-        "Hello, adventurer!",
-        3.0f,
-        "Resource/images/play/arwen.png",
-        "Arwen"
-    });
-    dialogs.push_back({
-        "The castle is dangerous!",
-        3.0f,
-        "Resources/images/play/bryan.png",
-        "Bryan"
-    });
-    StartDialog(dialogs, true);
-    //================================================================================
+
+    // Example dialog
+    if (scene->MapId == 1) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/cutscenebg1.png");
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
+        PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
+        PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+
+        std::vector<Dialog> dialogs;
+        dialogs.push_back({
+            "The sky... it's burning. They’ve arrived.",
+            3.5f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Unknown ships descended without a warning. We couldn’t stop them.",
+            4.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "We’ve lost contact with half the world. They're not here to talk.",
+            3.5f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "HQ’s gone silent... We're on our own now.",
+            3.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "This is no longer a war... It’s survival.",
+            3.0f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Then we fight. For Earth, for everyone who still breathes.",
+            3.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+        StartDialog(dialogs, true);
+        // Example animation
+
+        //Char 1 ship
+        std::vector<std::string> shipFrames = {
+            "cut-scene/ship1.png"
+        };
+        AddCharacterAnimation("ship1", shipFrames, 10.0f, true);
+        SetCharacterScale("ship1", 2.0f, 2.0f);
+        SetCharacterPosition("ship1", PlayScene::BlockSize * 15 , PlayScene::BlockSize * 3);
+        MoveCharacterTo("ship1", PlayScene::BlockSize * 5, PlayScene::BlockSize * 3, 6.0f);
+        ScaleCharacterTo("ship1", 1.0f, 1.0f, 6.0f);
+        // Set up scene transition (auto-change to play scene after 5 seconds)
+        sceneTransition.delay = 100.0f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 100.0f;
+    }
 }
 
 void CutScene::Terminate() {
@@ -65,23 +200,83 @@ void CutScene::Update(float deltaTime) {
         UIGroup->Update(deltaTime);
         return;
     }
+
+    // Update game state
+    switch (currentState) {
+        case GameState::Dialog:
+            UpdateDialog(deltaTime);
+            break;
+        case GameState::Transitioning:
+            UpdateTransitions(deltaTime);
+            break;
+        case GameState::Normal:
+            break;
+    }
+    for (auto& [id, pos] : characterAnimations) {
+        if (characterTweensX.count(id) && !characterTweensX[id]->IsComplete()) {
+            pos.position.x = characterTweensX[id]->Update(deltaTime);
+        }
+        if (characterTweensY.count(id) && !characterTweensY[id]->IsComplete()) {
+            pos.position.y = characterTweensY[id]->Update(deltaTime);
+        }
+    }
+
+    for (auto& [id, character] : characterAnimations) {
+        character.animation->Update(deltaTime);
+        if (characterScaleTweensX.find(id) != characterScaleTweensX.end() &&
+            !characterScaleTweensX[id]->IsComplete()) {
+            character.scaleX = characterScaleTweensX[id]->Update(deltaTime);
+            }
+        if (characterScaleTweensY.find(id) != characterScaleTweensY.end() &&
+            !characterScaleTweensY[id]->IsComplete()) {
+            character.scaleY = characterScaleTweensY[id]->Update(deltaTime);
+            }
+    }
+
+    // Check for scene transition
+    if (!transitionStarted && sceneTransition.delay > 0) {
+        transitionTimer += deltaTime;
+        if (transitionTimer >= sceneTransition.delay) {
+            StartFadeOut();
+        }
+    }
+
     AnimationGroup->Update(deltaTime);
 }
+
 void CutScene::Draw() const {
     if (IsPaused) {
         UIGroup->Draw();
         return;
     }
 
-    IScene::Draw(); // will draw tiles/UI, now offset by camera
+    // ALLEGRO_TRANSFORM trans;
+    // al_identity_transform(&trans);
+    // al_translate_transform(&trans, -PlayScene::Camera.x, -PlayScene::Camera.y);  // apply camera offset
+    // al_use_transform(&trans);  // set transform for all following drawing
 
-    AnimationGroup->Draw();
+    IScene::Draw();
 
-    //for map debug
-    if (currentState == GameState::Dialog) {
-        RenderDialog();
+    switch (currentState) {
+        case GameState::Dialog:
+            RenderDialog();
+            break;
+        case GameState::Transitioning:
+            DrawTransitionEffect();
+            break;
+        case GameState::Normal:
+            for (const auto& [id, character] : characterAnimations) {
+                if (character.animation) {
+                    character.animation->SetFlip(character.flipHorizontal);
+                    character.animation->SetScale(character.scaleX, character.scaleY);
+                    character.animation->SetTint(character.tint);
+                    character.animation->Draw(character.position.x, character.position.y);
+                }
+            }
+            break;
     }
 }
+
 void CutScene::OnMouseDown(int button, int mx, int my) {
     IScene::OnMouseDown(button, mx, my);
     if (currentState == GameState::Dialog && dialogSkippable) {
@@ -104,6 +299,94 @@ void CutScene::OnKeyDown(int keyCode) {
         }
     }
 }
+
+// Animation control
+
+// Scene transition
+void CutScene::SetSceneTransition(const SceneTransition& transition) {
+    sceneTransition = transition;
+}
+
+void CutScene::StartFadeOut() {
+    if (transitionStarted) return;
+
+    transitionStarted = true;
+    currentState = GameState::Transitioning;
+    fadeAlpha = 0.0f;
+
+    fadeTween = std::make_unique<Tween>(0.0f, 1.0f, sceneTransition.duration,
+        [](float t) { return t * t; }); // Ease in
+}
+
+void CutScene::UpdateTransitions(float deltaTime) {
+    if (fadeTween && !fadeTween->IsComplete()) {
+        fadeAlpha = fadeTween->Update(deltaTime);
+
+        if (fadeTween->IsComplete()) {
+            Engine::GameEngine::GetInstance().ChangeScene(sceneTransition.targetScene);
+        }
+    }
+}
+
+void CutScene::DrawTransitionEffect() const {
+    if (sceneTransition.transitionType == AnimationType::FADE_OUT) {
+        al_draw_filled_rectangle(0, 0, screenWidth, screenHeight,
+            al_map_rgba_f(0, 0, 0, fadeAlpha));
+    }
+}
+
+// Animation control for multiple characters============================
+void CutScene::AddCharacterAnimation(const std::string& characterId,
+                                   const std::vector<std::string>& framePaths,
+                                   float fps, bool loop) {
+    animations[characterId] = framePaths;
+    characterAnimations[characterId].animation = std::make_unique<AnimatedSprite>(framePaths, fps, loop);
+}
+
+void CutScene::PlayCharacterAnimation(const std::string& characterId, const std::string& animName) {
+    if (animations.find(animName) != animations.end()) {
+        characterAnimations[characterId].animation = std::make_unique<AnimatedSprite>(animations[animName], 10.0f, true);
+    }
+}
+
+void CutScene::SetCharacterPosition(const std::string& characterId, float x, float y) {
+    characterAnimations[characterId].position = Engine::Point(x, y);
+}
+
+void CutScene::MoveCharacterTo(const std::string& characterId, float targetX, float targetY, float duration) {
+    Engine::Point currentPos = characterAnimations[characterId].position;
+    characterTweensX[characterId] = std::make_unique<Tween>(currentPos.x, targetX, duration,
+        [](float t) { return t * t * (3 - 2 * t); });
+    characterTweensY[characterId] = std::make_unique<Tween>(currentPos.y, targetY, duration,
+        [](float t) { return t * t * (3 - 2 * t); });
+}
+
+void CutScene::SetCharacterScale(const std::string& charId, float scaleX, float scaleY) {
+    if (characterAnimations.find(charId) != characterAnimations.end()) {
+        characterAnimations[charId].scaleX = scaleX;
+        characterAnimations[charId].scaleY = scaleY;
+    }
+}
+
+void CutScene::SetCharacterUniformScale(const std::string& charId, float scale) {
+    if (characterAnimations.find(charId) != characterAnimations.end()) {
+        characterAnimations[charId].scaleX = scale;
+        characterAnimations[charId].scaleY = scale;
+    }
+}
+
+void CutScene::ScaleCharacterTo(const std::string& charId, float targetScaleX, float targetScaleY, float duration) {
+    if (characterAnimations.find(charId) == characterAnimations.end()) return;
+
+    auto& character = characterAnimations[charId];
+    characterScaleTweensX[charId] = std::make_unique<Tween>(
+        character.scaleX, targetScaleX, duration,
+        [](float t) { return t * t * (3 - 2 * t); }); // Smoothstep
+    characterScaleTweensY[charId] = std::make_unique<Tween>(
+        character.scaleY, targetScaleY, duration,
+        [](float t) { return t * t * (3 - 2 * t); });
+}
+
 
 //-----------For Pause UI-------------------------
 
@@ -241,18 +524,16 @@ void CutScene::RenderDialog() const {
 
     // Draw speaker image (left side of dialog box)
     if (!currentSpeakerImagePath.empty()) {
-        ALLEGRO_BITMAP* speakerImg = al_load_bitmap(currentSpeakerImagePath.c_str());
+        auto speakerImg = Engine::Resources::GetInstance().GetBitmap(currentSpeakerImagePath).get();
         if (speakerImg) {
             // Calculate position and size (adjust these values as needed)
             const float imgWidth = PlayScene::BlockSize;
             const float imgHeight = PlayScene::BlockSize;
             const float imgX = screenW * 0.1f - imgWidth - 10; // Left of dialog box
             const float imgY = screenH * 0.8f;
-
             al_draw_scaled_bitmap(speakerImg,
                                 0, 0, al_get_bitmap_width(speakerImg), al_get_bitmap_height(speakerImg),
                                 imgX, imgY, imgWidth, imgHeight, 0);
-            al_destroy_bitmap(speakerImg);
         }
     }
 
@@ -342,4 +623,6 @@ void CutScene::UpdateDialog(float deltaTime) {
         }
     }
 }
+
+
 

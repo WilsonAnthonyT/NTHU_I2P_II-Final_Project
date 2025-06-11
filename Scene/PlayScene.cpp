@@ -186,13 +186,13 @@ void PlayScene::Initialize() {
     dialogs.push_back({
         "Hello, adventurer!",
         3.0f,
-        "Resource/images/play/arwen.png",
+        "play/arwen.png",
         "Arwen"
     });
     dialogs.push_back({
         "The castle is dangerous!",
         3.0f,
-        "Resources/images/play/bryan.png",
+        "play/bryan.png",
         "Bryan"
     });
     StartDialog(dialogs, true);
@@ -1353,18 +1353,16 @@ void PlayScene::RenderDialog() const {
 
     // Draw speaker image (left side of dialog box)
     if (!currentSpeakerImagePath.empty()) {
-        ALLEGRO_BITMAP* speakerImg = al_load_bitmap(currentSpeakerImagePath.c_str());
+        auto speakerImg = Engine::Resources::GetInstance().GetBitmap(currentSpeakerImagePath).get();
         if (speakerImg) {
             // Calculate position and size (adjust these values as needed)
-            const float imgWidth = BlockSize;
-            const float imgHeight = BlockSize;
+            const float imgWidth = PlayScene::BlockSize;
+            const float imgHeight = PlayScene::BlockSize;
             const float imgX = screenW * 0.1f - imgWidth - 10; // Left of dialog box
             const float imgY = screenH * 0.8f;
-
             al_draw_scaled_bitmap(speakerImg,
                                 0, 0, al_get_bitmap_width(speakerImg), al_get_bitmap_height(speakerImg),
                                 imgX, imgY, imgWidth, imgHeight, 0);
-            al_destroy_bitmap(speakerImg);
         }
     }
 
