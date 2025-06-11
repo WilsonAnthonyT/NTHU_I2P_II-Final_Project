@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 #include <queue>
+#include <sstream>
 
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
