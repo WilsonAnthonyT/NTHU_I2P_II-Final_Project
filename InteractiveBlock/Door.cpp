@@ -31,7 +31,7 @@ void Door::Update(float deltaTime) {
 
     if (ShouldBeChange) {
         this->Tint = al_map_rgb(255, 255, 255);
-        if (this->currState = Door::OPEN) this->currState = CLOSE;
+        if (this->currState == Door::OPEN) this->currState = CLOSE;
         else this->currState = CLOSE;
     }
 

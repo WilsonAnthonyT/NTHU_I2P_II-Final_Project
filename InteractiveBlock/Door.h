@@ -25,6 +25,7 @@ public:
         CLOSE,
     };
     DoorState currState;
+    bool triggered;
     Door(std::string, float, float, DoorState);
     void Update(float deltaTime) override;
     bool IsCollision(float x, float y);
