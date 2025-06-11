@@ -26,7 +26,7 @@ namespace Engine {
 }   // namespace Engine
 
 
-
+class Sensor;
 class PlayScene final : public Engine::IScene {
 private:
     ALLEGRO_FONT* dialogFont = nullptr;
@@ -72,7 +72,8 @@ public:
         TILE_DIRT,
         TILE_WPLATFORM,
     };
-    std::unordered_map<IObject*, std::vector<Door*>> DoorSensorAssignments;
+    std::unordered_map<Sensor*, std::vector<Door*>> DoorSensorAssignments;
+    std::unordered_map<Door*, std::vector<Sensor*>> SensorDoorAssignments;
     static Engine::Point Camera;
     static float Gravity;
     static bool Pause;

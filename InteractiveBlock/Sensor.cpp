@@ -25,36 +25,36 @@ void Sensor::Update(float deltaTime) {
     auto scene = getPlayScene();
     if (!scene) return;
 
-    IObject* sensorObj = this->GetObjectIterator()->second;
+    bool nowActive = IsCollision(Position.x, Position.y) >= Weight;
 
-    //std::cout << "MIN WEIGHT:" << this->Weight << std::endl;
-    if (IsCollision(Position.x, Position.y)>=Weight) {
-        active=true;
+    if (nowActive && !triggered) {
+        active = true;
+        triggered = true;
 
-
+        Sensor* sensorObj = dynamic_cast<Sensor*>(this->GetObjectIterator()->second);
         auto& doorList = scene->DoorSensorAssignments[sensorObj];
 
-        //std::cout << "BANYAK PINTU: " << doorList.size() << std::endl;
-
-        for (auto door : doorList){
-            door->Tint = al_map_rgb(85, 55, 0);
-            door->isOpen = true;
+        for (auto door : doorList) {
+            if (door->currState == Door::OPEN) {
+                door->Tint = al_map_rgb(255, 255, 255);
+                door->currState = Door::CLOSE;
+            } else {
+                door->Tint = al_map_rgb(85, 55, 0);
+                door->currState = Door::OPEN;
+            }
         }
 
         bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor-active.png");
-
-        //std::cout << "SUCESSSSSSSSS" << std::endl;
+    }
+    else if (!nowActive) {
+        active = false;
+        triggered = false;
+        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");
     }
     else{
         active = false;
-        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor.png");
-
-        auto& doorList = scene->DoorSensorAssignments[sensorObj];
-
-        for (auto door : doorList){
-            door->Tint = al_map_rgb(255, 255, 255);
-            door->isOpen = false;
-        }
+        bmp = Engine::Resources::GetInstance().GetBitmap("play/sensor-active.png");
+        triggered = false;
     }
 
 

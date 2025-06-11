@@ -7,13 +7,33 @@ PlayScene *Door::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
 
-Door::Door(std::string img, float x, float y) : Engine::Sprite(img, x, y){
+Door::Door(std::string img, float x, float y, DoorState ds) : currState(ds), Engine::Sprite(img, x, y){
     Anchor = Engine::Point(0.5, 0);
     Size.x = PlayScene::BlockSize/2,Size.y=PlayScene::BlockSize/2;
     Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
 }
 
 void Door::Update(float deltaTime) {
+    auto scene = getPlayScene();
+
+    Door* doorObj = dynamic_cast<Door*>(this->GetObjectIterator()->second);
+    auto& sensorList = scene->SensorDoorAssignments[doorObj];
+
+    bool ShouldBeChange = false;
+    for (auto sense : sensorList){
+        if (sense->active == true) {
+            ShouldBeChange = false;
+            break;
+        }
+
+        ShouldBeChange = true;
+    }
+
+    if (ShouldBeChange) {
+        this->Tint = al_map_rgb(255, 255, 255);
+        if (this->currState = Door::OPEN) this->currState = CLOSE;
+        else this->currState = CLOSE;
+    }
 
     Sprite::Update(deltaTime);
 }

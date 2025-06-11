@@ -203,6 +203,7 @@ void PlayScene::Terminate() {
         al_destroy_font(dialogFont);
         dialogFont = nullptr;
     }
+
     AudioHelper::StopSample(bgmInstance);
     AudioHelper::StopSample(deathBGMInstance);
     deathBGMInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
@@ -213,6 +214,9 @@ void PlayScene::Update(float deltaTime) {
     //     MapId++;
     //     Engine::GameEngine::GetInstance().ChangeScene("play");
     // }
+
+    // DoorSensorAssignments.clear();
+    // sensorAssign();
 
     UpdatePauseState();
     if (IsPaused) {
@@ -590,7 +594,7 @@ void PlayScene::ReadMap() {
             }else if (num == 'D') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                InteractiveBlockGroup->AddNewObject(new Door("play/enemy-11.png",SpawnCoordinate.x, SpawnCoordinate.y));
+                InteractiveBlockGroup->AddNewObject(new Door("play/enemy-11.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE));
             }else if (num == 'N') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
@@ -617,7 +621,7 @@ void PlayScene::ReadMap() {
             }
         }
     }
-
+    DoorSensorAssignments.clear();
     sensorAssign();
 }
 
@@ -629,8 +633,15 @@ void PlayScene::sensorAssign() {
         Door* doorIt = dynamic_cast<Door*>(it);
         Sensor* sensorIt = dynamic_cast<Sensor*>(it);
 
-        if (doorIt) door_address.push_back(doorIt);
-        if (sensorIt) sensor_address.push_back(sensorIt);
+        if (doorIt) {
+            door_address.push_back(doorIt);
+            //doorIt->Tint = al_map_rgb(0,0,0);
+        }
+
+        if (sensorIt) {
+            sensor_address.push_back(sensorIt);
+            //sensorIt->Tint = al_map_rgb(0,0,0);
+        }
     }
 
     std::string filename = "Resource/sensor_map" + std::to_string(MapId) + ".txt";
@@ -638,24 +649,32 @@ void PlayScene::sensorAssign() {
     if (ifs.is_open()) {
         int idx = 0;
         std::string line;
-        std::vector<Door*> doorList;
-
         while (getline(ifs, line, '\n')) {
-            int mass;
+            std::vector<Door*> doorList;
+            int mass = -1;
             for (char c : line) {
                 if (isdigit(c)) {
-                    std::cout << c << std::endl;
-                    if (!mass) mass = c - '0';
-                    doorList.push_back(door_address[c - '0']);
+                    //std::cout << c << std::endl;
+                    if (mass == -1) mass = c - '0';
+                    else {
+                        doorList.push_back(door_address[c - '0']);
+                        SensorDoorAssignments[door_address[c - '0']].push_back(sensor_address[idx]);
+                    }
                 }
             }
 
-            std::cout << "SENSOR " << idx << " MASS: " << mass << std::endl;
+            //std::cout << "SENSOR " << idx << " MASS: " << mass << std::endl;
             sensor_address[idx]->Weight = mass;
-            mass = 0;
-            DoorSensorAssignments[sensor_address[idx]] = doorList;
+            DoorSensorAssignments.insert({sensor_address[idx], doorList});
             idx++;
-            doorList.clear();
+        }
+
+        for (auto it : sensor_address) {
+            std::cout << "DOOR ADDRESS: ";
+            for (auto d : DoorSensorAssignments[it]) {
+                std::cout << d << " ";
+            }
+            std::cout << std::endl;
         }
 
         door_address.clear();

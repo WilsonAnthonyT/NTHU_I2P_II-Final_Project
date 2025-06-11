@@ -141,7 +141,7 @@ bool Player::IsCollision(float x, float y) {
     for (auto& obj : scene->InteractiveBlockGroup->GetObjects()) {
         Box* block = dynamic_cast<Box*>(obj);
         Door* dor = dynamic_cast<Door*>(obj);
-        if ((block && block->Visible) || (dor && dor->Visible && !dor->isOpen)) {
+        if ((block && block->Visible) || (dor && dor->Visible && dor->currState == Door::CLOSE)) {
             float objleft;
             float objright;
             float objtop;

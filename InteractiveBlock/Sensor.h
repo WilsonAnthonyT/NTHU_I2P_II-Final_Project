@@ -21,7 +21,8 @@ public:
     int IsCollision(float x, float y);
     std::shared_ptr<ALLEGRO_BITMAP> Bitmap;
 
-    bool active;;
+    bool triggered;
+    bool active;
 };
 
 

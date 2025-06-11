@@ -203,6 +203,12 @@ void CutScene::Initialize() {
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 0.001f;
     }
+    else if (scene->MapId == 4) {
+        sceneTransition.delay = 0.001f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 0.001f;
+    }
 }
 
 void CutScene::Terminate() {
