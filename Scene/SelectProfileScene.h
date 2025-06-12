@@ -9,9 +9,10 @@
 
 class SelectProfileScene final : public Engine::IScene {
 
-    const int MAXprofile = 3;
+    static constexpr int MAXprofile = 3;
     static int profileID;
 
+public:
     struct ProfileData {
         std::string Name;
         std::string Created;
@@ -19,24 +20,22 @@ class SelectProfileScene final : public Engine::IScene {
         std::string Duration;
         std::string Stage;
     };
+    static std::vector<ProfileData> playerData;
 
-public:
     explicit SelectProfileScene() = default;
     void Initialize() override;
     void Terminate() override;
     void PlayOnClick(int);
     void BackOnClick();
 
-    static struct textData {
-        int HP_1;
-        int HP_2;
-
-        textData() : HP_1(0), HP_2(0) {};
+    struct textData {
+        int level;
     };
 
-    static textData* ReadProfileData(const int);
-    static void WriteProfileData(const int, textData*);
+    //static textData* ReadProfileData(const int);
+    static void WriteProfileData(textData*);
     static int getProfileID() {return profileID;}
+    static int getMAXprofile() {return MAXprofile;}
 
     // void BGMSlideOnValueChanged(float value);
     // void SFXSlideOnValueChanged(float value);

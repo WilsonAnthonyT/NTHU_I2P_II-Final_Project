@@ -220,6 +220,13 @@ void PlayScene::Update(float deltaTime) {
             transitionTick += deltaTime;
             if (transitionTick >= desiredTransitionTick) {
                 MapId++;
+
+                //this 3 lines is for updating the profile.
+                auto* newdata = new SelectProfileScene::textData();
+                newdata->level = MapId;
+                SelectProfileScene::WriteProfileData(newdata);
+                //----------------------------------------
+
                 Engine::GameEngine::GetInstance().ChangeScene("story");
             }
         }
@@ -681,11 +688,11 @@ void PlayScene::ReadMap() {
         sensorAssign();
     }
 
-    SelectProfileScene::textData* savedData = SelectProfileScene::ReadProfileData(SelectProfileScene::getProfileID());
-    if (savedData) {
-        player1->hp = savedData->HP_1;
-        player2->hp = savedData->HP_2;
-    }
+    // SelectProfileScene::textData* savedData = SelectProfileScene::ReadProfileData(SelectProfileScene::getProfileID());
+    // if (savedData) {
+    //     player1->hp = savedData->HP_1;
+    //     player2->hp = savedData->HP_2;
+    // }
 }
 
 void PlayScene::sensorAssign() {
