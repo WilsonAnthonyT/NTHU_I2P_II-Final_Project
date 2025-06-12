@@ -46,15 +46,6 @@ void EjojoEnemy::Update(float deltaTime) {
             smokeTimer = 0.05f + (rand() % 100) * 0.001f;
         }
 
-        explosionTimer -= deltaTime;
-        if (explosionTimer <= 0) {
-            getPlayScene()->EffectGroup->AddNewObject(
-                new ExplosionEffect(
-                    Position.x + (rand() % 100 - 50),
-                    Position.y + (rand() % 100))
-            );
-            explosionTimer = 0.15f + (rand() % 100) * 0.001f;
-        }
 
         float groundY = getPlayScene()->MapHeight * PlayScene::BlockSize - Size.y * 1.25f;
         if (Position.y >= groundY) {
@@ -69,8 +60,6 @@ void EjojoEnemy::Update(float deltaTime) {
 
                 // Big explosion
                 getPlayScene()->EffectGroup->AddNewObject(exp);
-
-                // Screen shake
 
 
                 // Ground debris
@@ -90,6 +79,18 @@ void EjojoEnemy::Update(float deltaTime) {
                                        groundY - 20)
                     );
                 }
+            }
+
+            explosionTimer -= deltaTime;
+            float posx = Position.x + ((rand() % (int)(Size.x))) - Size.x/2;
+            float posy = Position.y  + ((rand() % (int)(Size.y))) - Size.y/2;
+            if (explosionTimer <= 0) {
+                getPlayScene()->EffectGroup->AddNewObject(
+                    new ExplosionEffect(
+                        posx, posy
+                    )
+                );
+                explosionTimer = 0.15f + (rand() % 100) * 0.001f;
             }
 
             // Countdown to removal
@@ -188,7 +189,6 @@ void EjojoEnemy::ShootRandomPattern() {
             static float angleOffset = 0.0f;
             int numBullets = 20; // Number of bullets in the spiral
             float angleStep = ALLEGRO_PI / 10.0f; // Angle between bullets
-
             for (int i = 0; i < numBullets; i++) {
                 float angle = i * angleStep + angleOffset;
                 scene->EnemyBulletGroup->AddNewObject(

@@ -5,7 +5,7 @@
 
 #include "EjojoBoss.h"
 
-EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 10, 5, 5, 10),
+EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 500, 5, 5, 10),
                                        rng(std::random_device{}()) {
     // Base setup - position locked to right side
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
@@ -16,14 +16,14 @@ EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500
     currentPhase = 1;
     maxPhases = 3;
     phaseTransitionHP = {350, 150};
-    phaseTransitionDuration = 2.0f;
+    phaseTransitionDuration = 0.55f;
     phaseTransitionTimer = 0.0f;
     isTransitioning = false;
 
     // Movement - limited vertical movement only
     movementSpeed = PlayScene::BlockSize * 1.5f;
     movementBoundsX = Position.x;
-    movementBoundstopY = 0;
+    movementBoundstopY = 2* Size.y;
     movementBoundsbottomY = PlayScene::MapHeight * PlayScene::BlockSize - 3 * PlayScene::BlockSize;
 
 
@@ -31,20 +31,20 @@ EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500
     attackPatterns = {
         // Phase 1 patterns
         {
-            {"BulletRain", 3.0f, 1.5f},    // Straight left bullets
-            {"SpiralShot", 4.0f, 2.0f}     // Spiral to left
+            {"BulletRain", 0.75f, 0.5f},    // Straight left bullets
+            {"SpiralShot", 0.75f, 0.1f}     // Spiral to left
         },
         // Phase 2 patterns
         {
-            {"WaveAttack", 2.5f, 1.0f},    // Wave pattern left
-            {"ChargeBeam", 3.5f, 2.5f},    // Charging laser left
-            {"MiniSpawn", 5.0f, 3.0f}      // Minions that attack left
+            {"WaveAttack", 1.0f, 0.2f},    // Wave pattern left
+            {"ChargeBeam", 0.7f, 0.1f},    // Charging laser left
+            {"MiniSpawn", 0.8f, 0.1f}      // Minions that attack left
         },
         // Phase 3 patterns
         {
-            {"DoubleSpiral", 2.0f, 1.0f}, // Double spiral left
-            {"BulletHell", 3.0f, 1.5f},    // Bullet hell left
-            {"FinalAssault", 4.0f, 2.0f}    // Combined assault left
+            {"DoubleSpiral", 0.75f, 0.1f}, // Double spiral left
+            {"BulletHell", 0.5f, 0.1f},    // Bullet hell left
+            {"FinalAssault", 0.25f, 0.1f}    // Combined assault left
         }
     };
 
@@ -92,18 +92,11 @@ void EjojoBoss::StartPhaseTransition() {
     phaseTransitionTimer = 0.0f;
     currentAttack = "";
 
-    // Play transformation sound
-    // getPlayScene()->PlaySample("boss_transform.wav");
-
-    // Create transition effects
-    for (int i = 0; i < 15; i++) {
-        getPlayScene()->EffectGroup->AddNewObject(
-            new ExplosionEffect(
-                Position.x + (rand() % 200 - 100),
-                Position.y + (rand() % 100 - 50)
-            )
-        );
-    }
+    //Create transition effects
+    ExplosionEffect* exp = new ExplosionEffect(Position.x + (rand() % 200 - 100), Position.y + (rand() % 100 - 50) );
+    exp->Size.x = Size.x/2;
+    exp->Size.y = Size.y/2;
+    getPlayScene()->EffectGroup->AddNewObject(exp);
 }
 
 void EjojoBoss::HandlePhaseTransition(float deltaTime) {
@@ -225,7 +218,6 @@ void EjojoBoss::PerformAttack() {
         }
     }
     else if (currentAttack == "SpiralShot") {
-        // Spiral pattern firing left
         static float spiralAngle = 0;
         for (int i = 0; i < 8; i++) {
             float angle = spiralAngle + (ALLEGRO_PI/4) * i;
@@ -322,7 +314,7 @@ void EjojoBoss::PerformAttack() {
     }
     else if (currentAttack == "BulletHell") {
         // Concentrated leftward bullet hell
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; i < 36; i++) {
             float angle = (ALLEGRO_PI/12) * i;
             // Convert to leftward cone
             float baseAngle = ALLEGRO_PI + (ALLEGRO_PI/4); // Left + 45 degree cone
@@ -343,7 +335,7 @@ void EjojoBoss::PerformAttack() {
         // Combined leftward assault
         // Bullet rain
         float spacing = Size.y / 8;
-        for (int i = -4; i <= 4; i++) {
+        for (int i = -8; i <= 8; i++) {
             scene->EnemyBulletGroup->AddNewObject(
                 new EnemyFireBullet(
                     Engine::Point(Position.x, Position.y + i*spacing),
@@ -357,7 +349,7 @@ void EjojoBoss::PerformAttack() {
 
         // Tight spiral
         static float spiralAngle = 0;
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 24; i++) {
             float angle = spiralAngle + (ALLEGRO_PI/6) * i;
             Engine::Point dir(-0.8f - 0.2f*abs(cos(angle)), sin(angle)*0.6f);
 
@@ -443,12 +435,12 @@ void EjojoBoss::UpdateVisualEffects(float deltaTime) {
             //         0.5f
             //     )
             // );
-            getPlayScene()->EffectGroup->AddNewObject(
-                new ExplosionEffect(
-                    Position.x + (rand() % 100 - 50),
-                    Position.y + (rand() % 100 - 50)
-                )
-            );
+            // getPlayScene()->EffectGroup->AddNewObject(
+            //     new ExplosionEffect(
+            //         Position.x + (rand() % 100 - 50),
+            //         Position.y + (rand() % 100 - 50)
+            //     )
+            // );
         }
     }
 }

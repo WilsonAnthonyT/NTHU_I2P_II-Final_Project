@@ -2,6 +2,7 @@
 #define MELEEPLAYER_HPP
 #include "Player.h"
 #include "Weapon/MeleeShield.h"
+#include "Weapon/RangeWeapon.h"
 
 class MeleeWeapon;
 class LinkWeapon;
@@ -11,6 +12,7 @@ public:
     void Update(float deltaTime) override;
     MeleeWeapon *weapon;
     MeleeShield *shield;
+    RangeWeapon *range;
 
     void ChangeWeapon(MeleeWeapon * newWeapon);
     void ChangeShield(MeleeShield * newShield);

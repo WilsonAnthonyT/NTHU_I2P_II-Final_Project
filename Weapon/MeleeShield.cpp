@@ -12,6 +12,9 @@ MeleeShield::MeleeShield(std::string img, float x, float y, Player *player) : Sp
 }
 
 void MeleeShield::Update(float deltaTime){
+    if (player->Visible) this->Visible = true;
+    else this->Visible = false;
+
     float halfSize_x = abs(player->Size.x) / 2;
     float halfSize_y = abs(player->Size.y) / 2;
     Position.y= player->Position.y + halfSize_y;

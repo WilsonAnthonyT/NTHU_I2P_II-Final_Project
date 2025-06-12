@@ -38,28 +38,32 @@ bool Bullet::IsCollision(float x, float y) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (!scene) return true;
 
-    // Calculate bullet's square hitbox with tolerance
-    float halfSize_x = abs(Size.x)/2;
-    float bulletLeft = Position.x - halfSize_x/ 2;
-    float bulletRight = Position.x + halfSize_x / 2;
-    float bulletTop = Position.y - abs(Size.y)/4;
-    float bulletBottom = Position.y + abs(Size.y)/4;
+    float bulletHalfWidth = abs(Size.x) / 2;
+    float bulletHalfHeight = abs(Size.y) / 2;
+    float bulletLeft = Position.x - bulletHalfWidth;
+    float bulletRight = Position.x + bulletHalfWidth;
+    float bulletTop = Position.y - bulletHalfHeight;
+    float bulletBottom = Position.y + bulletHalfHeight;
 
     for (auto &it : scene->EnemyGroup->GetObjects()) {
         auto *enemy = dynamic_cast<Enemy *>(it);
-        float EnemyHalfSizeX = abs(enemy->Size.x / 2);
-        float EnemyLeft = enemy->Position.x - EnemyHalfSizeX;
-        float EnemyRight = enemy->Position.x + EnemyHalfSizeX ;
-        float EnemyTop = enemy->Position.y;
-        float EnemyBottom = enemy->Position.y + abs(enemy->Size.y/2);
+        if (!enemy->Visible) continue;
 
-        if (!enemy->Visible)
-            continue;
-        if (EnemyLeft < bulletLeft && EnemyRight > bulletLeft && EnemyTop < bulletBottom && EnemyBottom > bulletTop) {
+        float enemyHalfWidth = abs(enemy->Size.x) / 2;
+        float enemyHalfHeight = abs(enemy->Size.y) / 2;
+        float EnemyLeft = enemy->Position.x - enemyHalfWidth;
+        float EnemyRight = enemy->Position.x + enemyHalfWidth;
+        float EnemyTop = enemy->Position.y - enemyHalfHeight;
+        float EnemyBottom = enemy->Position.y + enemyHalfHeight;
+
+        if (EnemyLeft < bulletRight &&
+            EnemyRight > bulletLeft &&
+            EnemyTop < bulletBottom &&
+            EnemyBottom > bulletTop) {
             OnExplode(enemy);
             enemy->Hit(damage, Position.x, "range");
             return true;
-        }
+            }
     }
 
     // Screen boundaries

@@ -22,6 +22,10 @@ MeleeWeapon::MeleeWeapon(std::string img, float x, float y, float Rr,Player *pla
 
 void MeleeWeapon::Update(float deltaTime){
     Play = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+
+    if (player->Visible) this->Visible = true;
+    else this->Visible = false;
+
     Position.y=player->Position.y + PlayScene::BlockSize*0.55;
     flipped=player->flipped;
     if (flipped) {

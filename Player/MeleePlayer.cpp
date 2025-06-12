@@ -11,14 +11,21 @@
 #include "Weapon/LinkShield.h"
 #include "Weapon/LinkWeapon.h"
 #include "Weapon/MeleeWeapon.h"
+#include "Weapon/RangeWeapon.h"
 
 
 MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryan.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    weapon = new BasicSword(x, y, this);
-    shield = new BasicShield(x, y, this);
-    scene->WeaponGroup->AddNewObject(weapon);
-    scene->WeaponGroup->AddNewObject(shield);
+    if (scene->MapId != 6) {
+        weapon = new BasicSword(x, y, this);
+        shield = new BasicShield(x, y, this);
+        scene->WeaponGroup->AddNewObject(weapon);
+        scene->WeaponGroup->AddNewObject(shield);
+    }
+    else {
+        range = new RangeWeapon("play/guns.png",x,y,.4,30,this, PlayScene::BlockSize*11);
+        scene->WeaponGroup->AddNewObject(range);
+    }
     Size = Engine::Point(PlayScene::BlockSize * 0.45, PlayScene::BlockSize * 0.7);
 }
 

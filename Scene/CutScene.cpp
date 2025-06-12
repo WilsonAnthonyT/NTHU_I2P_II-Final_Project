@@ -135,11 +135,11 @@ void CutScene::Initialize() {
     CreatePauseUI();
 
     // Initialize dialog system
-    dialogFont = al_load_font("Resource/fonts/pirulen.ttf",  Blocksize * 0.2666666666667f, 0);
+    dialogFont = al_load_font("Resource/fonts/pirulen.ttf",  Blocksize * 0.267f, 0);
     if (!dialogFont) {
         throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
     }
-    // Example dialog
+    // Animasi dulu baru dialog
     if (scene->MapId == 1) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/earth.png");
         PlayScene::Camera.x = 0;
@@ -148,23 +148,96 @@ void CutScene::Initialize() {
         PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
         // Example animation
         dialogs.push_back({
-           "Warning unknown ships has entered our area.",
-           3.5f,
-           "play/tool-base.png",
-           "System"
-       });
+    "Warning! Unidentified ships have breached our defense.",
+    3.5f,
+    "play/tool-base.png",
+    "System"
+});
         dialogs.push_back({
-            "These ships descended without a warning.",
-            4.0f,
+            "Scanners detect alien signatures. ",
+            2.0f,
             "play/tool-base.png",
             "System"
         });
         dialogs.push_back({
-            "We couldn’t stop them.",
-            4.0f,
+            "They descended without any prior signal..",
+            2.0f,
             "play/tool-base.png",
             "System"
         });
+        dialogs.push_back({
+            "These ships are not alone—",
+            2.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "They carry portals to summon otherworldly creatures.",
+            2.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "The invaders’ motives are unknown.",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "but we believe their goal is to colonize us .",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "This is not just an invasion. It's an extermination.",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "We need to act fast. Deploying our elite fighters.",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Bryan and Arwen, the best we've got.",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Bryan specializes in sword technique; ",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Arwen's skills lie in gun's specialization.",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "They’re humanity’s last hope. ",
+            2.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "If anyone can turn the tide, it’s them.",
+            2.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Good luck out there. We’re counting on you.",
+            4.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+
         //tumbal ga bakal kepake
         dialogs.push_back({
             "Feat. Bryan and Arwen",
@@ -182,12 +255,14 @@ void CutScene::Initialize() {
         MoveCharacterTo("ship1", screenWidth/2, Blocksize * 3, 6.0f);
         ScaleCharacterTo("ship1", 0.8f, 0.8f, 6.0f);
 
-        sceneTransition.delay = 23.0f;
+        sceneTransition.delay = 100.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
 
     }
+
+    //Dialog dulu baru animasi
     else if (scene->MapId == 2) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/cutscene2.png");
         PlayScene::Camera.x = 0;
@@ -196,40 +271,47 @@ void CutScene::Initialize() {
         PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
         // Example animation
         dialogs.push_back({
-           "The sky... it's burning. They’ve arrived.",
-           3.5f,
-           "play/arwen.png",
-           "Arwen"
-       });
+    "The ship... it’s descending fast. We need to act now!",
+    3.5f,
+    "play/arwenDialog.png",
+    "Arwen"
+});
         dialogs.push_back({
-            "Unknown ships descended without a warning. We couldn’t stop them.",
+            "There’s no time to lose. We’ll use the tanks to intercept it.",
             4.0f,
-            "play/bryan.png",
+            "play/bryanDialog.png",
             "Bryan"
         });
         dialogs.push_back({
-            "We’ve lost contact with half the world. They're not here to talk.",
+            "Do you think these tanks can take it down?",
             3.5f,
-            "play/arwen.png",
+            "play/arwenDialog.png",
             "Arwen"
         });
         dialogs.push_back({
-            "HQ’s gone silent... We're on our own now.",
+            "We’ve got no other choice. It’s either this or total annihilation.",
             3.0f,
-            "play/bryan.png",
+            "play/bryanDialog.png",
             "Bryan"
         });
         dialogs.push_back({
-            "This is no longer a war... It’s survival.",
+            "Alright. Let’s move. For Earth and everyone counting on us!",
             3.0f,
-            "play/arwen.png",
+            "play/arwenDialog.png",
             "Arwen"
         });
         dialogs.push_back({
-            "Then we fight. For Earth, for everyone who still breathes.",
+            "Get inside the tanks! It’s time to fight back.",
             3.0f,
-            "play/bryan.png",
+            "play/bryanDialog.png",
             "Bryan"
+        });
+        //tumbal ga bakal kepake
+        dialogs.push_back({
+            "Feat. Bryan and Arwen",
+            4.0f,
+            "play/tool-base.png",
+            " "
         });
         //animation sprites
         std::vector<std::string> tankaFrames = {
@@ -237,27 +319,29 @@ void CutScene::Initialize() {
         };
         AddCharacterAnimation("tanka", tankaFrames, 10.0f, true);
         SetCharacterScale("tanka", 2*Blocksize/422, 2*Blocksize/422);
-        SetCharacterPosition("tanka", screenWidth-4*PlayScene::BlockSize, PlayScene::BlockSize * 5);
+        SetCharacterPosition("tanka", screenWidth-5*Blocksize, Blocksize * 5);
         std::vector<std::string> tankbFrames = {
             "cut-scene/tankplayerb.png"
         };
         AddCharacterAnimation("tankb", tankbFrames, 10.0f, true);
         SetCharacterScale("tankb", 2*Blocksize/438, 2*Blocksize/438);
-        SetCharacterPosition("tankb", screenWidth-2*PlayScene::BlockSize, PlayScene::BlockSize * 5);
+        SetCharacterPosition("tankb", screenWidth-3*Blocksize, Blocksize * 5);
+        
         std::vector<std::string> bryanFrames = {
             "cut-scene/bryan.png"
         };
         AddCharacterAnimation("bryan", bryanFrames, 10.0f, true);
-        SetCharacterScale("bryan", 0.45*PlayScene::BlockSize/38, 0.70*PlayScene::BlockSize/64);
-        SetCharacterPosition("bryan", PlayScene::BlockSize*2 - 0.45*PlayScene::BlockSize, PlayScene::BlockSize * 7-0.70*PlayScene::BlockSize);
-        MoveCharacterTo("bryan", screenWidth-PlayScene::BlockSize, PlayScene::BlockSize * 7-0.70*PlayScene::BlockSize, 6.0f);
+        SetCharacterScale("bryan", 0.45*Blocksize/38, 0.70*Blocksize/64);
+        SetCharacterPosition("bryan", Blocksize*3 - 0.45*Blocksize, Blocksize * 7-0.70*Blocksize);
+        MoveCharacterTo("bryan", screenWidth-2*Blocksize, Blocksize * 7-0.70*Blocksize, 6.0f);
+
         std::vector<std::string> arwenFrames = {
             "cut-scene/arwen.png"
         };
         AddCharacterAnimation("arwen", arwenFrames, 10.0f, true);
-        SetCharacterScale("arwen", 0.4*PlayScene::BlockSize/35, 0.65*PlayScene::BlockSize/64);
-        SetCharacterPosition("arwen", PlayScene::BlockSize, PlayScene::BlockSize * 7-0.65*PlayScene::BlockSize);
-        MoveCharacterTo("arwen", screenWidth-3*PlayScene::BlockSize, PlayScene::BlockSize * 7-0.65*PlayScene::BlockSize, 6.0f);
+        SetCharacterScale("arwen", 0.4*Blocksize/35, 0.65*Blocksize/64);
+        SetCharacterPosition("arwen", Blocksize*2, Blocksize * 7-0.65*Blocksize);
+        MoveCharacterTo("arwen", screenWidth-4*Blocksize, Blocksize * 7-0.65*Blocksize, 6.0f);
         StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
@@ -266,16 +350,122 @@ void CutScene::Initialize() {
         sceneTransition.duration = 1.0f;
     }
     else if (scene->MapId == 3 ) {
-        sceneTransition.delay = 0.001f;
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/cutscene2.png");
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
+        PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
+        PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+        // Example animation
+        dialogs.push_back({
+    "Did we just beat them?",
+    3.5f,
+    "play/arwenDialog.png",
+    "Arwen"
+});
+        dialogs.push_back({
+            "Not yet. We took down their ship, but...",
+            4.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "But what?",
+            3.5f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "We need to see what’s inside.",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "You're right. Earth is still in danger.",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Yeah, we need to act quick.",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        std::vector<std::string> shipFrames = {
+            "cut-scene/ejojo.png"
+        };
+        AddCharacterAnimation("ship", shipFrames, 10.0f, true);
+        SetCharacterScale("ship", 8*Blocksize/1024, 4*Blocksize/1024);
+        SetCharacterPosition("ship", screenWidth/2, 4.5*Blocksize);
+        std::vector<std::string> tankaFrames = {
+            "cut-scene/tankplayera.png"
+        };
+        AddCharacterAnimation("tanka", tankaFrames, 10.0f, true);
+        SetCharacterScale("tanka", 2*Blocksize/422, 2*Blocksize/422);
+        SetCharacterPosition("tanka", Blocksize, Blocksize * 5);
+        std::vector<std::string> tankbFrames = {
+            "cut-scene/tankplayerb.png"
+        };
+        AddCharacterAnimation("tankb", tankbFrames, 10.0f, true);
+        SetCharacterScale("tankb", 2*Blocksize/438, 2*Blocksize/438);
+        SetCharacterPosition("tankb", 3*Blocksize, Blocksize * 5);
+
+        std::vector<std::string> bryanFrames = {
+            "cut-scene/bryan.png"
+        };
+        AddCharacterAnimation("bryan", bryanFrames, 10.0f, true);
+        SetCharacterScale("bryan", 0.45*Blocksize/38, 0.70*Blocksize/64);
+        SetCharacterPosition("bryan", Blocksize*4 - 0.45*Blocksize, Blocksize * 7-0.70*Blocksize);
+        MoveCharacterTo("bryan", screenWidth-Blocksize, Blocksize * 7-0.70*Blocksize, 6.0f);
+        std::vector<std::string> arwenFrames = {
+            "cut-scene/arwen.png"
+        };
+        AddCharacterAnimation("arwen", arwenFrames, 10.0f, true);
+        SetCharacterScale("arwen", 0.4*Blocksize/35, 0.65*Blocksize/64);
+        SetCharacterPosition("arwen", Blocksize*2-0.4*Blocksize, Blocksize * 7-0.65*Blocksize);
+        MoveCharacterTo("arwen", screenWidth-3*Blocksize, Blocksize * 7-0.65*Blocksize, 6.0f);
+        StartDialog(dialogs, true);
+
+        sceneTransition.delay = 23.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
+        sceneTransition.duration = 1.0f;
     }
     else if (scene->MapId == 4 ) {
-        sceneTransition.delay = 0.001f;
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/demoneyes.png");
+        dialogs.push_back({
+           "The demons are approaching.",
+           3.5f,
+           "play/tool-base.png",
+           ""
+       });
+        //tumbal ga bakal kepake
+        dialogs.push_back({
+            "Feat. Bryan and Arwen",
+            4.0f,
+            "play/tool-base.png",
+            " "
+        });
+        std::vector<std::string> demonFrames = {
+            "cut-scene/demonnoeyes.png",
+            "cut-scene/demoneyes.png"
+        };
+        AddCharacterAnimation("demon", demonFrames, 1.0f, true);
+        SetCharacterScale("demon", (16*Blocksize)/1920 , (10*Blocksize)/1200);
+        SetCharacterPosition("demon", 0, 0);
+        MoveCharacterTo("demon", 0.1, 0.1, 10.0f);
+        StartDialog(dialogs, true);
+        sceneTransition.delay = 10.f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
+        sceneTransition.duration = 1.0f;
     }
     else if (scene->MapId == 5 ) {
         sceneTransition.delay = 0.001f;
@@ -284,10 +474,123 @@ void CutScene::Initialize() {
         sceneTransition.duration = 0.001f;
     }
     else if (scene->MapId == 6 ) {
-        sceneTransition.delay = 0.001f;
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
+        PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
+        PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+        // Example animation
+        dialogs.push_back({
+    "Warning! Unidentified ships have breached our defense.",
+    3.5f,
+    "play/tool-base.png",
+    "System"
+});
+        dialogs.push_back({
+            "Scanners detect alien signatures. ",
+            2.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "They descended without any prior signal..",
+            2.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "These ships are not alone—",
+            2.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "They carry portals to summon otherworldly creatures.",
+            2.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "The invaders’ motives are unknown.",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "but we believe their goal is to colonize us .",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "This is not just an invasion. It's an extermination.",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "We need to act fast. Deploying our elite fighters.",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Bryan and Arwen, the best we've got.",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Bryan specializes in sword technique; ",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Arwen's skills lie in gun's specialization.",
+            3.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "They’re humanity’s last hope. ",
+            2.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "If anyone can turn the tide, it’s them.",
+            2.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+        dialogs.push_back({
+            "Good luck out there. We’re counting on you.",
+            4.0f,
+            "play/sir.png",
+            "Lieutenant"
+        });
+
+        //tumbal ga bakal kepake
+        dialogs.push_back({
+            "Feat. Bryan and Arwen",
+            4.0f,
+            "play/tool-base.png",
+            " "
+        });
+        //Char 1 ship
+        std::vector<std::string> FlashFrames = {
+            "cut-scene/flash.png"
+        };
+        AddCharacterAnimation("flash", FlashFrames, 10.0f, true);
+        SetCharacterScale("flash", Blocksize/1920, Blocksize/1200);
+        SetCharacterPosition("flash", screenWidth/2 + 1, Blocksize * 3);
+        MoveCharacterTo("flash", screenWidth/2 - Blocksize * 3, Blocksize * 3, 6.0f);
+        ScaleCharacterTo("flash", 0.8f, 0.8f, 6.0f);
+
+        sceneTransition.delay = 10.001f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
+        sceneTransition.duration = 1.001f;
     }
     else if (scene->MapId == 7 ) {
         sceneTransition.delay = 0.001f;
@@ -747,8 +1050,8 @@ void CutScene::RenderDialog() const {
         auto speakerImg = Engine::Resources::GetInstance().GetBitmap(currentSpeakerImagePath).get();
         if (speakerImg) {
             // Calculate position and size (adjust these values as needed)
-            const float imgWidth = PlayScene::BlockSize;
-            const float imgHeight = PlayScene::BlockSize;
+            const float imgWidth = Blocksize * 1.2f;
+            const float imgHeight = Blocksize * 1.8f;
             const float imgX = screenW * 0.1f - imgWidth - 10; // Left of dialog box
             const float imgY = screenH * 0.8f;
             al_draw_scaled_bitmap(speakerImg,

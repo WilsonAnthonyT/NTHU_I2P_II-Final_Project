@@ -19,7 +19,7 @@
 class Player;
 
 EnemyFireBullet::EnemyFireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Engine::Sprite *parent, float speed) :
-EnemyBullet("play/bullet-8.png", speed, 2, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
+EnemyBullet("play/bullet-8.png", speed, 4, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
     Size = Engine::Point(PlayScene::BlockSize * 0.8, PlayScene::BlockSize * 0.8);
 }
 

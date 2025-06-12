@@ -58,6 +58,7 @@ public:
     //for movement during dialogue
     void EnableMovement(bool enable) { movementEnabled = enable; }
     bool IsMovementEnabled() const { return movementEnabled; }
+
 };
 
 

@@ -49,6 +49,7 @@
 #include "InteractiveBlock/Portal.h"
 #include "InteractiveBlock/Door.h"
 #include "InteractiveBlock/Sensor.h"
+#include "Player/JetpackPlayerA.h"
 #include "Player/MazePlayerA.h"
 #include "Player/MazePlayerB.h"
 #include "Player/TankPlayerA.h"
@@ -472,6 +473,7 @@ void PlayScene::ReadMap() {
             case 'L': mapData.push_back('L'); break;
             case 's': mapData.push_back('s'); break;
             case 'a': mapData.push_back('a'); break;
+            case '<': mapData.push_back('<'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -554,6 +556,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'a':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case '<':
                     mapState[i][j]=TILE_AIR;
                     break;
 
@@ -673,6 +678,12 @@ void PlayScene::ReadMap() {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new ArcherSkelly(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }
+            else if (num == '<') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player2 = (new JetpackPlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player2);
             }
         }
     }
