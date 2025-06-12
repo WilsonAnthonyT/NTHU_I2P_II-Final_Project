@@ -155,9 +155,6 @@ public:
     void SetCharacterUniformScale(const std::string& characterId, float scale);
     void ScaleCharacterTo(const std::string& charId, float targetScaleX, float targetScaleY, float duration);
 
-    //skip
-    void SkipAnimationToEnd();
-
 private:
     PlayScene *scene;
     // Pause menu
@@ -182,7 +179,7 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Tween>> characterScaleTweensY;
 
     // Animation system
-    std::map<std::string, std::vector<std::string>> animations;
+    //std::map<std::string, std::vector<std::string>> animations;
 
     // Scene transition
     SceneTransition sceneTransition;

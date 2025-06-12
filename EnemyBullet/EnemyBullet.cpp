@@ -4,6 +4,7 @@
 
 #include "EnemyBullet.h"
 
+#include <iostream>
 #include <allegro5/allegro_primitives.h>
 
 #include "Enemy/Enemy.hpp"
@@ -25,8 +26,11 @@ PlayScene *EnemyBullet::getPlayScene() {
 EnemyBullet::EnemyBullet(std::string img, float speed, float damage, Engine::Point position, Engine::Point forwardDirection, float rotation, Sprite *parent) : Sprite(img, position.x, position.y), speed(speed), damage(damage), parent(parent) {
     Velocity = forwardDirection.Normalize() * speed;
     Rotation = rotation;
-    CollisionRadius = 6;
+    CollisionRadius = 0;
     Anchor = Engine::Point(0.5,0.5);
+    std::cout << "ForwardDir: (" << forwardDirection.x << ", " << forwardDirection.y << ")\n";
+    std::cout << "Velocity: (" << Velocity.x << ", " << Velocity.y << ")\n";
+    std::cout << "Magnitude: " << forwardDirection.Magnitude() << "\n";
 }
 void EnemyBullet::Update(float deltaTime) {
     auto scene = getPlayScene();
@@ -35,8 +39,10 @@ void EnemyBullet::Update(float deltaTime) {
         scene->EnemyBulletGroup->RemoveObject(objectIterator);
         return;
     }
-    if (!Engine::Collider::IsRectOverlap(Position - Size / 2, Position + Size / 2, Engine::Point(0, 0), PlayScene::GetClientSize()))
+    if (!Engine::Collider::IsRectOverlap(Position - Size / 2, Position + Size / 2, Engine::Point(0, 0), PlayScene::GetClientSize())) {
         scene->EnemyBulletGroup->RemoveObject(objectIterator);
+        return;
+    }
 }
 
 bool EnemyBullet::IsCollision(float x, float y) {

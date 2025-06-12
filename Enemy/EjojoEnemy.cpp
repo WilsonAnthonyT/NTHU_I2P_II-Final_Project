@@ -22,8 +22,9 @@ EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 5
     speed = PlayScene::BlockSize * 1.8f;
     bulletSpeed = PlayScene::BlockSize * 2.5f;
 
-    std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
-    nextFireCooldown = cooldownDist(rng);
+    //std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
+    //nextFireCooldown = cooldownDist(rng);
+    nextFireCooldown = 1.0f;
     currentMiniEjojo = 0;
 
     // Track the initial HP and set the spawn threshold
@@ -153,13 +154,13 @@ void EjojoEnemy::ShootRandomPattern() {
     switch(pattern) {
         case 0: {
             float bulletSpacing = 50.0f; // Adjust the spacing between bullets
-            int numBullets = 20; // Number of bullets in the rain
+            int numBullets = 10; // Number of bullets in the rain
 
             for (int i = 0; i < numBullets; i++) {
                     float bulletX = Position.x - (numBullets / 2) * bulletSpacing + i * bulletSpacing;
                     scene->EnemyBulletGroup->AddNewObject(
                         new EnemyFireBullet(
-                            Engine::Point(bulletX, Position.y + Size.y / 2), // Spawn bullets in a line
+                            Engine::Point(bulletX, Position.y), // Spawn bullets in a line
                             Engine::Point(0, 1), // Move straight down
                             ALLEGRO_PI / 2, // Facing down
                             this,
@@ -174,7 +175,7 @@ void EjojoEnemy::ShootRandomPattern() {
             for (int i = -10; i <= 10; i++) {
                 scene->EnemyBulletGroup->AddNewObject(
                     new EnemyFireBullet(
-                        Engine::Point(Position.x, Position.y + Size.y/2),
+                        Engine::Point(Position.x, Position.y),
                         Engine::Point(i * 0.5f, 1), // Angled bullets
                         ALLEGRO_PI/2 - (i * 0.15f),
                         this,

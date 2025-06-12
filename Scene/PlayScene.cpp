@@ -197,6 +197,8 @@ void PlayScene::Initialize() {
     });
     StartDialog(dialogs, true);
     //================================================================================
+    //for transition
+    transitionTick = 0.0f;
 }
 void PlayScene::Terminate() {
     if (dialogFont) {
@@ -210,10 +212,15 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
-    // if (enemyWaveData.empty() && EnemyGroup->GetObjects().empty()) {
-    //     MapId++;
-    //     Engine::GameEngine::GetInstance().ChangeScene("play");
-    // }
+    if (MapId == 1) {
+        if (EnemyGroup->GetObjects().empty()) {
+            transitionTick += deltaTime;
+            if (transitionTick >= desiredTransitionTick) {
+                MapId++;
+                Engine::GameEngine::GetInstance().ChangeScene("story");
+            }
+        }
+    }
 
     // DoorSensorAssignments.clear();
     // sensorAssign();
@@ -352,6 +359,18 @@ void PlayScene::Draw() const {
     if (currentState == GameState::Dialog) {
         RenderDialog();
     }
+
+    //for transition
+    if (transitionTick > 0) {
+        if (MapId == 1 && EnemyGroup->GetObjects().empty()) {
+            float alpha = std::min(transitionTick / desiredTransitionTick, 1.0f); // from 0.0 to 1.0
+            int alpha255 = static_cast<int>(alpha * 255);
+            ALLEGRO_COLOR fadeColor = al_map_rgba(0, 0, 0, alpha255);
+            al_draw_filled_rectangle(0, 0, Engine::GameEngine::GetInstance().GetScreenWidth(),
+                                     Engine::GameEngine::GetInstance().GetScreenHeight(), fadeColor);
+        }
+    }
+
 
     if (DebugMode) {
         for (int i = 0; i < MapHeight; i++) {
@@ -708,8 +727,9 @@ void PlayScene::MiniMap() const {
 
     // Colors
     const ALLEGRO_COLOR bgColor = al_map_rgba(0, 0, 0, 200);
-    const ALLEGRO_COLOR p1_color = al_map_rgb(255, 0, 0);
-    const ALLEGRO_COLOR p2_color = al_map_rgb(0, 255, 0);
+    const ALLEGRO_COLOR enemy_color = al_map_rgb(255, 0, 0);
+    const ALLEGRO_COLOR p2_color = al_map_rgb(120, 0, 255);
+    const ALLEGRO_COLOR p1_color = al_map_rgb(0, 255, 0);
     const ALLEGRO_COLOR tile_color = al_map_rgb(100, 100, 100);
 
     al_draw_filled_rounded_rectangle(miniX, miniY, miniX + miniWidth, miniY + miniHeight, 5, 5, bgColor);
@@ -759,6 +779,18 @@ void PlayScene::MiniMap() const {
             al_draw_filled_circle(px, py, radius, (player == player1) ? p1_color : p2_color);
         }
     }
+
+    for (auto& obj : EnemyGroup->GetObjects()) {
+        Enemy *enemy = dynamic_cast<Enemy *>(obj);
+        if (enemy && enemy->Visible && enemy->getHp() > 0) {
+            float px = miniX + (enemy->Position.x - Camera.x) * xScale;
+            float py = miniY + (enemy->Position.y - Camera.y) * yScale;
+            float radius = 16.0f * scale;
+
+            al_draw_filled_circle(px, py, radius, enemy_color);
+        }
+    }
+
     for (auto& obj : InteractiveBlockGroup->GetObjects()) {
         auto* sensor = dynamic_cast<Sensor*>(obj);
         auto* box = dynamic_cast<Box*>(obj);
@@ -896,8 +928,9 @@ void PlayScene::FullMap() const {
 
     // Colors
     const ALLEGRO_COLOR bgColor = al_map_rgba(0, 0, 0, 200);
-    const ALLEGRO_COLOR p1_color = al_map_rgb(255, 0, 0);
-    const ALLEGRO_COLOR p2_color = al_map_rgb(0, 255, 0);
+    const ALLEGRO_COLOR enemy_color = al_map_rgb(255, 0, 0);
+    const ALLEGRO_COLOR p2_color = al_map_rgb(120, 0, 255);
+    const ALLEGRO_COLOR p1_color = al_map_rgb(0, 255, 0);
     const ALLEGRO_COLOR tile_color = al_map_rgb(100, 100, 100);
 
     // Draw background
@@ -936,6 +969,17 @@ void PlayScene::FullMap() const {
             float radius = 16.0f * scale;
 
             al_draw_filled_circle(px, py, radius, (player == player1) ? p1_color : p2_color);
+        }
+    }
+
+    for (auto& obj : EnemyGroup->GetObjects()) {
+        Enemy *enemy = dynamic_cast<Enemy *>(obj);
+        if (enemy && enemy->Visible) {
+            float px = mapX + (enemy->Position.x) * scale;
+            float py = mapY + (enemy->Position.y) * scale;
+            float radius = 16.0f * scale;
+
+            al_draw_filled_circle(px, py, radius, enemy_color);
         }
     }
 
@@ -1291,7 +1335,7 @@ void PlayScene::Enable2ndPlayer(int stage) {
 }
 
 void PlayScene::MazeCreator() {
-    std::string filename = "Resource/map3.txt";
+    std::string filename = "Resource/map5.txt";
     const int width = 25;
     const int height = 25;
     std::vector<std::string> map(height, std::string(width, '4'));

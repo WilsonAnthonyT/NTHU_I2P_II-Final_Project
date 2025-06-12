@@ -8,19 +8,19 @@ class EjojoEnemy : public FlyingEnemy {
 private:
     // Attack pattern variables
 
-    float timeSinceLastShot;
+    float timeSinceLastShot = 0.0f;
     float minFireCooldown = 1.0f;
     float maxFireCooldown = 3.0f;
-    float nextFireCooldown;
-    float spawnCooldown;
+    float nextFireCooldown = 0.0f;
+    float spawnCooldown = 0.0f;
 
     // Movement pattern variables
-    float patternDuration = 4.0f;
+    float patternDuration = 2.0f;
     float patternTimer = 0.0f;
     int currentPattern = 0;
     float hoverOffset = 0.0f;
-    float fixedAltitude;
-    float bulletSpeed;
+    float fixedAltitude = 0.0f;
+    float bulletSpeed = 0.0f;
 
     // Enemy CHILD
     int currentMiniEjojo = 0;

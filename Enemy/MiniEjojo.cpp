@@ -18,8 +18,8 @@ MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy("play/EjojoMini.png",x, y) {
     speed = PlayScene::BlockSize * 1.8f;
     bulletSpeed = PlayScene::BlockSize * 2.5f;
 
-    std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
-    nextFireCooldown = cooldownDist(rng);
+    //std::uniform_real_distribution<float> cooldownDist(minFireCooldown, maxFireCooldown);
+    nextFireCooldown = 1.0f;
     getPlayScene()->EffectGroup->AddNewObject(new LightEffect(Position.x, Position.y));
     getPlayScene()->TotalMiniEjojo++;
 }
@@ -100,7 +100,7 @@ void MiniEjojo::ShootRandomPattern() {
                     float bulletX = Position.x - (numBullets / 2) * bulletSpacing + i * bulletSpacing;
                     scene->EnemyBulletGroup->AddNewObject(
                         new EnemyFireBullet(
-                            Engine::Point(bulletX, Position.y + Size.y / 2), // Spawn bullets in a line
+                            Engine::Point(bulletX, Position.y), // Spawn bullets in a line
                             Engine::Point(0, 1), // Move straight down
                             ALLEGRO_PI / 2, // Facing down
                             this,
@@ -115,7 +115,7 @@ void MiniEjojo::ShootRandomPattern() {
             for (int i = -2; i <= 2; i++) {
                 scene->EnemyBulletGroup->AddNewObject(
                     new EnemyFireBullet(
-                        Engine::Point(Position.x, Position.y + Size.y/2),
+                        Engine::Point(Position.x, Position.y),
                         Engine::Point(i * 0.3f, 1), // Angled bullets
                         ALLEGRO_PI/2 - (i * 0.15f),
                         this,

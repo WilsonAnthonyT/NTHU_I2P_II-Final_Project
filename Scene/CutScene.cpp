@@ -132,7 +132,6 @@ void CutScene::Initialize() {
     if (!dialogFont) {
         throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
     }
-
     // Example dialog
     if (scene->MapId == 1) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/earth.png");
@@ -259,13 +258,19 @@ void CutScene::Initialize() {
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
     }
-    else if (scene->MapId == 3) {
+    else if (scene->MapId == 3 ) {
         sceneTransition.delay = 0.001f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 0.001f;
     }
-    else if (scene->MapId == 4) {
+    else if (scene->MapId == 4 ) {
+        sceneTransition.delay = 0.001f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 0.001f;
+    }
+    else if (scene->MapId == 5 ) {
         sceneTransition.delay = 0.001f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
@@ -286,9 +291,6 @@ void CutScene::Terminate() {
     characterTweensY.clear();
     characterScaleTweensX.clear();
     characterScaleTweensY.clear();
-    animations.clear();
-
-
     IScene::Terminate();
 }
 
@@ -334,15 +336,17 @@ void CutScene::Update(float deltaTime) {
                         character.scaleY = characterScaleTweensY[id]->Update(deltaTime);
                         }
                 }
+
                 bool allAnimationsDone = true;
                 for (const auto& [id, character] : characterAnimations) {
-                    if (!character.animation->IsComplete()) {
-                        allAnimationsDone = false;
-                        break;
-                    }
+                   if (character.position != character.TargetPosition) {
+                       allAnimationsDone = false;
+                       break;
+                   }
                 }
                 if (allAnimationsDone) {
                     isAnimationPhaseDone = true;
+                    std::cout << "Animations finished" << std::endl;
                     if (scene->MapId == 1) {
                         StartDialog(dialogs, true);
                         isDialogStarted = true;
@@ -430,24 +434,12 @@ void CutScene::Draw() const {
             RenderDialog();
             break;
         case GameState::Transitioning:
-            if (scene->MapId == 1) {
-                for (const auto& [id, character] : characterAnimations) {
-                    if (character.animation) {
-                        character.animation->SetFlip(character.flipHorizontal);
-                        character.animation->SetScale(character.TargetScale.x, character.TargetScale.y);
-                        character.animation->SetTint(character.tint);
-                        character.animation->Draw(character.TargetPosition.x, character.TargetPosition.y);
-                    }
-                }
-            }
-            else {
-                for (const auto& [id, character] : characterAnimations) {
-                    if (character.animation) {
-                        character.animation->SetFlip(character.flipHorizontal);
-                        character.animation->SetScale(character.TargetScale.x, character.TargetScale.y);
-                        character.animation->SetTint(character.tint);
-                        character.animation->Draw(character.TargetPosition.x, character.TargetPosition.y);
-                    }
+            for (const auto& [id, character] : characterAnimations) {
+                if (character.animation) {
+                    character.animation->SetFlip(character.flipHorizontal);
+                    character.animation->SetScale(character.TargetScale.x, character.TargetScale.y);
+                    character.animation->SetTint(character.tint);
+                    character.animation->Draw(character.TargetPosition.x, character.TargetPosition.y);
                 }
             }
             DrawTransitionEffect();
@@ -548,18 +540,13 @@ void CutScene::DrawTransitionEffect() const {
 void CutScene::AddCharacterAnimation(const std::string& characterId,
                                    const std::vector<std::string>& framePaths,
                                    float fps, bool loop) {
-    animations[characterId] = framePaths;
     characterAnimations[characterId].animation = std::make_unique<AnimatedSprite>(framePaths, fps, loop);
 }
 
-void CutScene::PlayCharacterAnimation(const std::string& characterId, const std::string& animName) {
-    if (animations.find(animName) != animations.end()) {
-        characterAnimations[characterId].animation = std::make_unique<AnimatedSprite>(animations[animName], 10.0f, true);
-    }
-}
 
 void CutScene::SetCharacterPosition(const std::string& characterId, float x, float y) {
     characterAnimations[characterId].position = Engine::Point(x, y);
+    characterAnimations[characterId].TargetPosition = Engine::Point(x, y);
 }
 
 void CutScene::MoveCharacterTo(const std::string& characterId, float targetX, float targetY, float duration) {
@@ -601,29 +588,6 @@ void CutScene::ScaleCharacterTo(const std::string& charId, float targetScaleX, f
         character.scaleY, targetScaleY, duration,
         [](float t) { return t * t * (3 - 2 * t); });
 }
-
-void CutScene::SkipAnimationToEnd() {
-    for (auto& [id, character] : characterAnimations) {
-        if (characterAnimations.count(id)) {
-            // Teleport position
-            character.position.x = characterAnimations[id].TargetPosition.x;
-            character.position.y = characterAnimations[id].TargetPosition.y;
-
-            // Teleport scale
-            character.scaleX = characterAnimations[id].TargetScale.x;
-            character.scaleY = characterAnimations[id].TargetScale.y;
-
-        }
-
-        // Force the animation to its last frame
-        if (character.animation && !character.animation->IsComplete()) {
-            character.animation->currentFrame = character.animation->frames.size() - 1;
-        }
-    }
-
-    isAnimationPhaseDone = true; // Mark animations as complete
-}
-
 
 //-----------For Pause UI-------------------------
 
