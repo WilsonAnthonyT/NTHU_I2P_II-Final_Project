@@ -38,15 +38,25 @@ void StageSelectScene::Initialize() {
     AddNewObject(new Engine::Label("Stage 3", "pirulen.ttf", 48, halfW, halfH / 2 + 300, 0, 0, 0, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 400, 400, 100);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 4));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Stage 4", "pirulen.ttf", 48, halfW, halfH / 2 + 450, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 550, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 5));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 5", "pirulen.ttf", 48, halfW, halfH / 2 + 450, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Stage 5", "pirulen.ttf", 48, halfW, halfH / 2 + 600, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 700, 400, 100);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 6));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Stage 6", "pirulen.ttf", 48, halfW, halfH / 2 + 750, 0, 0, 0, 255, 0.5, 0.5));
 
     //back button
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 550, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 900, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::BackOnClick, this));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("back", "pirulen.ttf", 48, halfW, halfH / 2 + 600, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("back", "pirulen.ttf", 48, halfW, halfH / 2 + 950, 0, 0, 0, 255, 0.5, 0.5));
 
     // Slider *sliderBGM, *sliderSFX;
     // sliderBGM = new Slider(40 + halfW - 95, halfH - 50 - 2, 190, 4);

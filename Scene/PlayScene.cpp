@@ -28,6 +28,7 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "Enemy/EjojoBoss.h"
 #include "Enemy/EjojoEnemy.h"
 #include "Player/MeleePlayer.hpp"
 #include "Player/Player.h"
@@ -123,7 +124,7 @@ void PlayScene::Initialize() {
     ReadEnemyWave();
     ConstructUI();
 
-    if (MapId == 1 || MapId == 2 || MapId == 3 || MapId == 4 || MapId == 5) {
+    if (MapId == 1 || MapId == 2 || MapId == 3 || MapId == 4 || MapId == 5 || MapId == 6 || MapId == 7) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
         rainParticles.clear();
         std::random_device rd;
@@ -366,7 +367,6 @@ void PlayScene::Draw() const {
         int alpha255 = static_cast<int>(alpha * 255);
         ALLEGRO_COLOR fadeColor;
 
-        // Fully opaque black once transition time is reached
         if (transitionTick >= desiredTransitionTick) {
             fadeColor = al_map_rgba(0, 0, 0, 255);
         } else {
@@ -467,6 +467,7 @@ void PlayScene::ReadMap() {
             case '4': mapData.push_back('4'); break;
             case '5': mapData.push_back('5'); break;
             case '6': mapData.push_back('6'); break;
+            case 'L': mapData.push_back('L'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -543,6 +544,8 @@ void PlayScene::ReadMap() {
                 case '6':
                     mapState[i][j]=TILE_AIR;
                     break;
+                case 'L':
+                    mapState[i][j]=TILE_AIR;
                 default:
                     mapState[i][j]=TILE_AIR;
                     break;
@@ -645,10 +648,14 @@ void PlayScene::ReadMap() {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Portal("play/portal.png",SpawnCoordinate.x, SpawnCoordinate.y));
+            } else if (num == 'L') {
+                Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                EnemyGroup->AddNewObject(new EjojoBoss("play/EjojoBoss.png",EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
         }
     }
-    if (MapId == 1 || MapId == 3) {
+    if (MapId == 3) {
         DoorSensorAssignments.clear();
         sensorAssign();
     }

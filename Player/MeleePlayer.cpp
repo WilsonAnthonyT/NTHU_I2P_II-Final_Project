@@ -4,6 +4,7 @@
 
 #include "Player.h"
 #include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Weapon/BasicShield.h"
 #include "Weapon/BasicSword.h"
@@ -11,10 +12,11 @@
 #include "Weapon/LinkWeapon.h"
 #include "Weapon/MeleeWeapon.h"
 
+
 MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryan.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    auto *weapon = new BasicSword(x, y, this);
-    auto *shield = new BasicShield(x, y, this);
+    weapon = new BasicSword(x, y, this);
+    shield = new BasicShield(x, y, this);
     scene->WeaponGroup->AddNewObject(weapon);
     scene->WeaponGroup->AddNewObject(shield);
     Size = Engine::Point(PlayScene::BlockSize * 0.45, PlayScene::BlockSize * 0.7);
@@ -120,4 +122,24 @@ void MeleePlayer::Update(float deltaTime) {
             Size.x = shouldFlip ? -fabs(Size.x) : fabs(Size.x);
         }
     }
+}
+
+void MeleePlayer::ChangeWeapon(MeleeWeapon* newWeapon) {
+    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    if (weapon) {
+        scene->WeaponGroup->RemoveObject(weapon->GetObjectIterator());
+        delete weapon;
+    }
+    weapon = newWeapon;// Set to player's current position
+    scene->WeaponGroup->AddNewObject(weapon);
+}
+
+void MeleePlayer::ChangeShield(MeleeShield* newShield) {
+    PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+    if (shield) {
+        scene->WeaponGroup->RemoveObject(shield->GetObjectIterator());
+        delete shield;
+    }
+    shield = newShield;// Set to player's current position
+    scene->WeaponGroup->AddNewObject(shield);
 }

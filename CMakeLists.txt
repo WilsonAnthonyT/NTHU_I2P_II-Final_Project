@@ -150,6 +150,8 @@ add_executable(Final-Project
         Scene/CutScene.h
         Scene/SelectProfileScene.cpp
         Scene/SelectProfileScene.h
+        Enemy/EjojoBoss.cpp
+        Enemy/EjojoBoss.h
 )
 
 IF (WIN32)

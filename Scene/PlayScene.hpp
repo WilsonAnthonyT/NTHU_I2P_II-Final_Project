@@ -47,7 +47,7 @@ private:
     float dialogTimer = 0.0f;
 
     //====================================
-    ALLEGRO_BITMAP* mask;
+
     ALLEGRO_SAMPLE_ID bgmId;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> deathBGMInstance;
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
@@ -186,5 +186,11 @@ public:
     //for transition
     float transitionTick = 0.0f;
     float desiredTransitionTick = 2.0f;
+
+    //========================SHOP=================================
+    bool isShop = false;
+
+    //
+    ALLEGRO_BITMAP* mask;
 };
 #endif   // PLAYSCENE_HPP

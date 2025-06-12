@@ -13,7 +13,7 @@
 #include "UI/Animation/ExplosionEffect.hpp"
 #include "UI/Animation/LightEffect.h"
 
-EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 10, 5, 5, 10),
+EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 100, 5, 5, 10),
                                        rng(std::random_device{}()) {
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
     fixedAltitude = PlayScene::BlockSize * 8;
@@ -94,8 +94,6 @@ void EjojoEnemy::Update(float deltaTime) {
 
             // Countdown to removal
             crashShakeTimer -= deltaTime;
-            std::cout<<"current mini ejojo: " << currentMiniEjojo << std::endl;
-            std::cout<<"total mini ejojo: " << totalMiniEjojo << std::endl;
             if (crashShakeTimer <= 0 && currentMiniEjojo == 2 && getPlayScene()->TotalMiniEjojo == 0) {
                 getPlayScene()->MapId++;
                 Engine::GameEngine::GetInstance().ChangeScene("story");

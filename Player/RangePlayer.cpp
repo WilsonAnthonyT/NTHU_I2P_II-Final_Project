@@ -10,7 +10,8 @@
 
 RangePlayer::RangePlayer(float x, float y) : Player("play/arwen.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    scene->WeaponGroup->AddNewObject(new RangeWeapon("play/pistol.png",x,y,.4,30,this, PlayScene::BlockSize*11));
+    weapon = new RangeWeapon("play/pistol.png",x,y,.4,30,this, PlayScene::BlockSize*11);
+    scene->WeaponGroup->AddNewObject(weapon);
     Size = Engine::Point(PlayScene::BlockSize * 0.4, PlayScene::BlockSize * 0.65);
 }
 
