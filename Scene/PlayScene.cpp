@@ -28,6 +28,7 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "SelectProfileScene.h"
 #include "Enemy/EjojoBoss.h"
 #include "Enemy/ArcherSkelly.h"
 #include "Enemy/EjojoEnemy.h"
@@ -87,7 +88,6 @@ void PlayScene::Initialize() {
     keyStrokes.clear();
     ticks = 0;
     deathCountDown = -1;
-    lives = 10;
     money = 150;
     SpeedMult = 1;
     Gravity = 18.0f * BlockSize;
@@ -679,6 +679,12 @@ void PlayScene::ReadMap() {
     if (MapId == 3) {
         DoorSensorAssignments.clear();
         sensorAssign();
+    }
+
+    SelectProfileScene::textData* savedData = SelectProfileScene::ReadProfileData(SelectProfileScene::getProfileID());
+    if (savedData) {
+        player1->hp = savedData->HP_1;
+        player2->hp = savedData->HP_2;
     }
 }
 
