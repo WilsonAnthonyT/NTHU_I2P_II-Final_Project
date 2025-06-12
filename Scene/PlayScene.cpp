@@ -29,6 +29,7 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "Enemy/EjojoBoss.h"
+#include "Enemy/ArcherSkelly.h"
 #include "Enemy/EjojoEnemy.h"
 #include "Player/MeleePlayer.hpp"
 #include "Player/Player.h"
@@ -42,6 +43,7 @@
 #include "Enemy/FlyingEnemy.h"
 #include "Enemy/FlyingDemon.h"
 #include "Enemy/MiniEjojo.h"
+#include "Enemy/SwordSkelly.h"
 #include "InteractiveBlock/Box.h"
 #include "InteractiveBlock/Buton.h"
 #include "InteractiveBlock/Portal.h"
@@ -468,6 +470,8 @@ void PlayScene::ReadMap() {
             case '5': mapData.push_back('5'); break;
             case '6': mapData.push_back('6'); break;
             case 'L': mapData.push_back('L'); break;
+            case 's': mapData.push_back('s'); break;
+            case 'a': mapData.push_back('a'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -546,6 +550,13 @@ void PlayScene::ReadMap() {
                     break;
                 case 'L':
                     mapState[i][j]=TILE_AIR;
+                case 's':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'a':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+
                 default:
                     mapState[i][j]=TILE_AIR;
                     break;
@@ -652,6 +663,16 @@ void PlayScene::ReadMap() {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new EjojoBoss("play/EjojoBoss.png",EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }
+            else if (num == 's') {
+                Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                EnemyGroup->AddNewObject(new SwordSkelly(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }
+            else if (num == 'a') {
+                Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                EnemyGroup->AddNewObject(new ArcherSkelly(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
         }
     }

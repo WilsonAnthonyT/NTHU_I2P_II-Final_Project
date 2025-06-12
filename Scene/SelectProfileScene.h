@@ -8,14 +8,23 @@
 
 
 class SelectProfileScene final : public Engine::IScene {
-private:
-protected:
+
+    const int MAXprofile = 3;
+
+    struct ProfileData {
+        std::string Name;
+        std::string Created;
+        std::string Last_Played;
+        std::string Duration;
+    };
+
 public:
     explicit SelectProfileScene() = default;
     void Initialize() override;
     void Terminate() override;
     void PlayOnClick(int stage);
     void BackOnClick();
+    void ReadProfileData(int);
 
     void BGMSlideOnValueChanged(float value);
     void SFXSlideOnValueChanged(float value);
