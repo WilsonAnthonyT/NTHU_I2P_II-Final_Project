@@ -84,8 +84,13 @@ void StartScene::Terminate() {
     IScene::Terminate();
 }
 void StartScene::PlayOnClick(int stage) {
+    Engine::GameEngine::GetInstance().ChangeScene("profile-select");
+}
+
+void StartScene::CreditOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("stage-select");
 }
+
 void StartScene::SettingsOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("settings");
 }

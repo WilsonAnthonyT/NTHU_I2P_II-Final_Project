@@ -146,16 +146,16 @@ add_executable(Final-Project
     InteractiveBlock/Buton.h
     InteractiveBlock/Portal.cpp
     InteractiveBlock/Portal.h
-        Scene/CutScene.cpp
-        Scene/CutScene.h
-        Scene/SelectProfileScene.cpp
-        Scene/SelectProfileScene.h
-        Enemy/SwordSkelly.cpp
-        Enemy/SwordSkelly.h
-        Enemy/ArcherSkelly.cpp
-        Enemy/ArcherSkelly.h
-        EnemyBullet/ArrowBullet.cpp
-        EnemyBullet/ArrowBullet.h
+    Scene/CutScene.cpp
+    Scene/CutScene.h
+    Scene/SelectProfileScene.cpp
+    Scene/SelectProfileScene.h
+    Enemy/SwordSkelly.cpp
+    Enemy/SwordSkelly.h
+    Enemy/ArcherSkelly.cpp
+    Enemy/ArcherSkelly.h
+    EnemyBullet/ArrowBullet.cpp
+    EnemyBullet/ArrowBullet.h
 )
 
 IF (WIN32)
