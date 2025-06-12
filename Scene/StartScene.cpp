@@ -55,7 +55,7 @@ void StartScene::Initialize() {
     AddNewObject(new Engine::Label("Settings", "pirulen.ttf", PlayScene::BlockSize/3, halfW/2 + PlayScene::BlockSize*0.5, 4*PlayScene::BlockSize + 2*(h-(7*PlayScene::BlockSize))/5+PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 
     btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", PlayScene::BlockSize*3, 5*PlayScene::BlockSize + 3*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
-    btn->SetOnClickCallback(std::bind(&StartScene::DISPLAYonClick, this, 0));
+    btn->SetOnClickCallback(std::bind(&StartScene::CreditOnClick, this, 0));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Credit", "pirulen.ttf", PlayScene::BlockSize/3, halfW/2 + PlayScene::BlockSize*0.5, 5*PlayScene::BlockSize + 3*(h-(7*PlayScene::BlockSize))/5+PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 
