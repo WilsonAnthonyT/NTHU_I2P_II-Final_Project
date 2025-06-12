@@ -9,11 +9,12 @@
 #include "EnemyBullet/EnemyFireBullet.h"
 #include "EnemyBullet/EnemyBullet.h"
 #include "Engine/GameEngine.hpp"
+#include "Scene/SelectProfileScene.h"
 #include "UI/Animation/DirtyEffect.hpp"
 #include "UI/Animation/ExplosionEffect.hpp"
 #include "UI/Animation/LightEffect.h"
 
-EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 100, 5, 5, 10),
+EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 10, 5, 5, 10),
                                        rng(std::random_device{}()) {
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
     fixedAltitude = PlayScene::BlockSize * 8;
@@ -34,6 +35,8 @@ EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 5
 }
 
 void EjojoEnemy::Update(float deltaTime) {
+    auto scene = getPlayScene();
+    if (!scene) return;
     if (isFalling) {
         crashProgress = crashShakeTimer > 0 ? 1.0f :
                             std::max(0.5f, 1.0f - ((Position.y) / (getPlayScene()->MapHeight * PlayScene::BlockSize)));
@@ -95,9 +98,19 @@ void EjojoEnemy::Update(float deltaTime) {
             // Countdown to removal
             crashShakeTimer -= deltaTime;
             if (crashShakeTimer <= 0 && currentMiniEjojo == 2 && getPlayScene()->TotalMiniEjojo == 0) {
-                getPlayScene()->MapId++;
-                Engine::GameEngine::GetInstance().ChangeScene("story");
-                return;
+                scene->transitionTick += deltaTime;
+                if (scene->transitionTick >= scene->desiredTransitionTick) {
+                    scene->MapId++;
+
+                    //this 3 lines is for updating the profile.
+                    auto* newdata = new SelectProfileScene::textData();
+                    newdata->level = scene->MapId;
+                    SelectProfileScene::WriteProfileData(newdata);
+                    //----------------------------------------
+
+                    Engine::GameEngine::GetInstance().ChangeScene("story");
+                    return;
+                }
             }
         }
     }

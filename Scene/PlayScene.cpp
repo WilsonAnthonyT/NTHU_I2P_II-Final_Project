@@ -332,6 +332,18 @@ void PlayScene::Update(float deltaTime) {
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
         if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+        if (MapId == 3) {
+            MapId++;
+
+            //this 3 lines is for updating the profile.
+            auto* newdata = new SelectProfileScene::textData();
+            newdata->level = MapId;
+            SelectProfileScene::WriteProfileData(newdata);
+            //----------------------------------------
+
+            Engine::GameEngine::GetInstance().ChangeScene("story");
+            return;
+        }
         //Engine::GameEngine::GetInstance().ChangeScene("win");
         return;
     }
