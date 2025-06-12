@@ -150,6 +150,12 @@ add_executable(Final-Project
         Scene/CutScene.h
         Scene/SelectProfileScene.cpp
         Scene/SelectProfileScene.h
+        Enemy/SwordSkelly.cpp
+        Enemy/SwordSkelly.h
+        Enemy/ArcherSkelly.cpp
+        Enemy/ArcherSkelly.h
+        EnemyBullet/ArrowBullet.cpp
+        EnemyBullet/ArrowBullet.h
 )
 
 IF (WIN32)
