@@ -12,6 +12,7 @@
 #include "Scene/SettingsScene.hpp"
 #include "Scene/LeaderboardScene.hpp"
 #include "Scene/ScoreboardScene.hpp"
+#include "Scene/SelectProfileScene.h"
 
 int PlayScene::BlockSize = 0;
 int main(int argc, char **argv) {
@@ -28,6 +29,7 @@ int main(int argc, char **argv) {
 	game.AddNewScene("settings", new SettingsScene());	//ADDED
 	game.AddNewScene("leaderboard", new LeaderboardScene());	//ADDED
 	game.AddNewScene("scoreboard", new ScoreboardScene());	//ADDED
+	game.AddNewScene("profile-select", new SelectProfileScene());
 
     // TODO HACKATHON-1 (1/1): Change the start scene
 

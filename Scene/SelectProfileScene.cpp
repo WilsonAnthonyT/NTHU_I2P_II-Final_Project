@@ -3,8 +3,11 @@
 //
 
 #include "SelectProfileScene.h"
+
+#include <fstream>
 #include <allegro5/allegro_audio.h>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -25,30 +28,66 @@ void SelectProfileScene::Initialize() {
     int halfW = w / 2;
     int halfH = h / 2;
     Engine::ImageButton *btn;
+    std::vector<ProfileData> playerData; //(MAXprofile,{"+", "", "", ""});
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 - 50, 400, 100);
-    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 1));
-    AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 1", "pirulen.ttf", 48, halfW, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
+    std::string summfile = "../Resource/player-data/data-summary.txt";
+    std::ifstream ifs(summfile, std::ios_base::in);
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 100, 400, 100);
-    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 2));
-    AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 2", "pirulen.ttf", 48, halfW, halfH / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
+    if (ifs.is_open()) {
+        std::string str;
+        int user_idx = 0;
+        while (getline(ifs, str)){
+            if (str[0] == '#' || str.empty()) {
+                str.clear();
+                continue;
+            }
 
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 250, 400, 100);
-    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 3));
-    AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 3", "pirulen.ttf", 48, halfW, halfH / 2 + 300, 0, 0, 0, 255, 0.5, 0.5));
+            std::stringstream ss(str);
+            std::string name, made, last, dur;
+            while (
+            getline(ss, name, '~') &&
+            getline(ss, made, '~') &&
+            getline(ss, last, '~') &&
+            getline(ss, dur)
+            ) {
+                playerData.push_back( {
+                    name.substr(0,name.length()-1),
+                    (made.substr(1, made.length()-1)),
+                    last.substr(1, last.length()-1),
+                    dur.substr(1, dur.length())
+                });
 
-    //back button
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 550, 400, 100);
+                name.clear();
+                made.clear();
+                last.clear();
+                dur.clear();
+            }
+
+            str.clear();
+        }
+
+        ifs.close();
+    } else {
+        std::cerr << "[ERROR] Could not open DATA SUMMARY for reading!" << std::endl;
+    }
+
+    for (int i = 1; i <= 3; i++) {
+        btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*3/2, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
+        btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, i));
+        AddNewControlObject(btn);
+        AddNewObject(new Engine::Label(playerData[i-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
+    }
+
+
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*3/2, 6*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&SelectProfileScene::BackOnClick, this));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("back", "pirulen.ttf", 48, halfW, halfH / 2 + 600, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Back", "pirulen.ttf", PlayScene::BlockSize/3, halfW, 6*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 
     //bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
 }
+
+
 void SelectProfileScene::Terminate() {
     // AudioHelper::StopSample(bgmInstance);
     // bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
@@ -58,7 +97,39 @@ void SelectProfileScene::BackOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
 void SelectProfileScene::PlayOnClick(int stage) {
-    PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
-    scene->MapId = stage;
-    Engine::GameEngine::GetInstance().ChangeScene("play");
+    ReadProfileData(stage);
 }
+
+void SelectProfileScene::ReadProfileData(int ID) {
+    std::string filename = "../Resource/player-data/data" + std::to_string(ID) + ".txt";
+    std::ifstream ifs(filename, std::ios_base::in);
+
+    if (ifs.is_open()) {
+        std::string line;
+        int map_idx = -1;
+
+        while (getline(ifs, line)) {
+            if (line[0] == '#') {
+                line.clear();
+                continue;
+            }
+
+            if (map_idx == -1) {
+                map_idx = stoi(line);
+            }
+
+            line.clear();
+        }
+
+        if (map_idx != -1) {
+            PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
+            scene->MapId = map_idx;
+            Engine::GameEngine::GetInstance().ChangeScene("play");
+        }
+
+        ifs.close();
+    } else {
+        std::cerr << "[ERROR] Could not open PLAYER PROFILE DATA for reading!" << std::endl;
+    }
+}
+
