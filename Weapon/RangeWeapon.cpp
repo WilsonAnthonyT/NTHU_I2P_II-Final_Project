@@ -11,6 +11,7 @@
 
 #include "Engine/GameEngine.hpp"
 #include "Engine/Sprite.hpp"
+#include "Player/JetpackPlayerA.h"
 #include "Player/MeleePlayer.hpp"
 #include "Player/RangePlayer.hpp"
 #include "Scene/PlayScene.hpp"
@@ -38,8 +39,9 @@ void RangeWeapon::Update(float deltaTime) {
     al_get_keyboard_state(&keyState);
     MeleePlayer *player1 = dynamic_cast<MeleePlayer *>(player);
     RangePlayer *player2 = dynamic_cast<RangePlayer *>(player);
+    JetpackPlayerA *player3 = dynamic_cast<JetpackPlayerA *>(player);
 
-    if (al_key_down(&keyState, ALLEGRO_KEY_C) && Cooldown<=0 && player2) {
+    if (al_key_down(&keyState, ALLEGRO_KEY_C) && Cooldown<=0 && (player2||player3)) {
         AudioHelper::PlayAudio("laser.wav");
         Cooldown = FireRate;
         float bulletdir = abs(Size.x/2) * (flipped? -1.0f : 1.0f);
