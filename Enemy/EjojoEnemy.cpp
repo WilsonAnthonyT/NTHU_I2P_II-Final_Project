@@ -51,8 +51,7 @@ void EjojoEnemy::Update(float deltaTime) {
             getPlayScene()->EffectGroup->AddNewObject(
                 new ExplosionEffect(
                     Position.x + (rand() % 100 - 50),
-                    Position.y + (rand() % 100)
-                )
+                    Position.y + (rand() % 100))
             );
             explosionTimer = 0.15f + (rand() % 100) * 0.001f;
         }
@@ -65,10 +64,11 @@ void EjojoEnemy::Update(float deltaTime) {
             if (crashShakeTimer == 0) { // Only trigger once
                 crashShakeTimer = crashDelay;
 
+                ExplosionEffect* exp = new ExplosionEffect(Position.x, groundY);
+                exp->Size = Engine::Point(Size.y/2, Size.y/2);
+
                 // Big explosion
-                getPlayScene()->EffectGroup->AddNewObject(
-                    new ExplosionEffect(Position.x, Position.y)
-                );
+                getPlayScene()->EffectGroup->AddNewObject(exp);
 
                 // Screen shake
 
@@ -79,7 +79,7 @@ void EjojoEnemy::Update(float deltaTime) {
                         new DirtyEffect("play/dirty-1.png",
                                        0.5f + (rand() % 100)*0.01f,
                                        Position.x + (rand() % 200 - 100),
-                                       groundY)
+                                       groundY - Size.y * 1.25f)
                     );
                 }
 
@@ -280,9 +280,9 @@ void EjojoEnemy::OnDeath() {
         hoverOffset = 0;
 
         // Initial explosion
-        getPlayScene()->EffectGroup->AddNewObject(
-            new ExplosionEffect(Position.x, Position.y)
-        );
+        ExplosionEffect *exp = new ExplosionEffect(Position.x, Position.y);
+        exp->Size = Engine::Point(Size.y, Size.y);
+        getPlayScene()->EffectGroup->AddNewObject(exp);
 
         // Start smoke trail
         smokeTimer = 0.05f;

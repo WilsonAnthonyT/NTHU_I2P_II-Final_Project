@@ -362,13 +362,21 @@ void PlayScene::Draw() const {
 
     //for transition
     if (transitionTick > 0) {
-        if (MapId == 1 && EnemyGroup->GetObjects().empty()) {
-            float alpha = std::min(transitionTick / desiredTransitionTick, 1.0f); // from 0.0 to 1.0
-            int alpha255 = static_cast<int>(alpha * 255);
-            ALLEGRO_COLOR fadeColor = al_map_rgba(0, 0, 0, alpha255);
-            al_draw_filled_rectangle(0, 0, Engine::GameEngine::GetInstance().GetScreenWidth(),
-                                     Engine::GameEngine::GetInstance().GetScreenHeight(), fadeColor);
+        float alpha = std::min(transitionTick / desiredTransitionTick, 1.0f); // from 0.0 to 1.0
+        int alpha255 = static_cast<int>(alpha * 255);
+        ALLEGRO_COLOR fadeColor;
+
+        // Fully opaque black once transition time is reached
+        if (transitionTick >= desiredTransitionTick) {
+            fadeColor = al_map_rgba(0, 0, 0, 255);
+        } else {
+            fadeColor = al_map_rgba(0, 0, 0, alpha255);
         }
+
+        al_draw_filled_rectangle(0, 0,
+            Engine::GameEngine::GetInstance().GetScreenWidth(),
+            Engine::GameEngine::GetInstance().GetScreenHeight(),
+            fadeColor);
     }
 
 
