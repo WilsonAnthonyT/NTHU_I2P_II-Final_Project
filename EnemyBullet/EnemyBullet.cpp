@@ -28,9 +28,6 @@ EnemyBullet::EnemyBullet(std::string img, float speed, float damage, Engine::Poi
     Rotation = rotation;
     CollisionRadius = 0;
     Anchor = Engine::Point(0.5,0.5);
-    std::cout << "ForwardDir: (" << forwardDirection.x << ", " << forwardDirection.y << ")\n";
-    std::cout << "Velocity: (" << Velocity.x << ", " << Velocity.y << ")\n";
-    std::cout << "Magnitude: " << forwardDirection.Magnitude() << "\n";
 }
 void EnemyBullet::Update(float deltaTime) {
     auto scene = getPlayScene();

@@ -15,6 +15,9 @@
 
 #include "LeaderboardScene.hpp"
 
+#include "PlayScene.hpp"
+#include "SelectProfileScene.h"
+
 int LeaderboardScene::val = 0;
 
 void LeaderboardScene::Initialize() {
@@ -51,9 +54,45 @@ void LeaderboardScene::Update(float deltaTime) {
     if (tick > 1) {
         tick--;
     }
+    // else if (tick == 1) {
+    //     tick = 0;
+    //     setScore();
+    //     // Get current time
+    //     std::time_t now = std::time(nullptr);
+    //
+    //     // Convert to local time
+    //     std::tm tm;
+    //     #ifdef _WIN32
+    //             localtime_s(&tm, &now);  // Windows
+    //     #else
+    //             localtime_r(&now, &tm);  // Linux / macOS
+    //     #endif
+    //
+    //     // Format date with slashes: YYYY/MM/DD
+    //     std::ostringstream oss;
+    //     oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+    //     dateNtime = oss.str();
+    //
+    //     ofs.open("../Resource/scoreboard.txt", std::ios_base::app);
+    //     if (ofs.is_open()) {
+    //         std::cout << "Successfully saved name: " << Name << std::endl;
+    //         ofs
+    //         << Name << " ~ "
+    //         << score << " ~ "
+    //         << dateNtime << " ~"
+    //         << std::endl;
+    //
+    //         ofs.close();
+    //     } else {
+    //         std::cerr << "[ERROR] Could not open scoreboard.txt for writing!" << std::endl;
+    //     }
+    //
+    //     Engine::GameEngine::GetInstance().ChangeScene("start");
+    // }
+
     else if (tick == 1) {
         tick = 0;
-        setScore();
+
         // Get current time
         std::time_t now = std::time(nullptr);
 
@@ -70,21 +109,54 @@ void LeaderboardScene::Update(float deltaTime) {
         oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
         dateNtime = oss.str();
 
-        ofs.open("../Resource/scoreboard.txt", std::ios_base::app);
+        auto& it = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1];
+        it.Name = Name;
+        it.Created = dateNtime;
+        it.Last_Played = "-";
+        it.Duration = "0";
+        it.Stage = "1";
+
+        Name.clear();
+        dateNtime.clear();
+
+        std::string filename = "../Resource/player-data/data-summary.txt";
+        std::ofstream ofs(filename, std::ios_base::out);
+
         if (ofs.is_open()) {
-            std::cout << "Successfully saved name: " << Name << std::endl;
             ofs
-            << Name << " ~ "
-            << score << " ~ "
-            << dateNtime << " ~"
+            << "# everything related to the profile will be saved here" << std::endl
+            << "# Name ~ date created ~ last played ~ Screen time ~ last stage" << std::endl
+            << "# MAX data 3" << std::endl
             << std::endl;
 
-            ofs.close();
-        } else {
-            std::cerr << "[ERROR] Could not open scoreboard.txt for writing!" << std::endl;
-        }
 
-        Engine::GameEngine::GetInstance().ChangeScene("start");
+            for (auto& it : SelectProfileScene::playerData) {
+                ofs
+                << it.Name << "~"
+                << it.Created << "~"
+                << it.Last_Played << "~"
+                << it.Duration << "~"
+                << it.Stage << std::endl;
+            }
+
+            for (auto& it : SelectProfileScene::playerData) {
+                std::cout
+                << it.Name << "."
+                << it.Created << "."
+                << it.Last_Played << "."
+                << it.Duration << "."
+                << it.Stage << std::endl;
+            }
+
+
+            ofs.close();
+            auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+            scene->MapId = 1;
+            Engine::GameEngine::GetInstance().ChangeScene("story");
+        }
+        else {
+            std::cerr << "[ERROR] Could not open DATA SUMMARY for INITIAL WRITING!" << std::endl;
+        }
     }
 }
 

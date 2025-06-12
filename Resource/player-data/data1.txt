@@ -1,1 +1,5 @@
-3
+# everything related to the gameplay will be saved here
+# player1,player2
+# Contains : HP
+
+50,50

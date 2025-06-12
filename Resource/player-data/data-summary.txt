@@ -1,6 +1,7 @@
-# Name ~ date created ~ last played ~ Screen time
-# MAX 3
+# everything related to the profile will be saved here
+# Name ~ date created ~ last played ~ Screen time ~ last stage
+# MAX data 3
 
-+ ~ 0 ~ 0 ~ 0
-+ ~ 0 ~ 0 ~ 0
-+ ~ 0 ~ 0 ~ 0
+MIHU21~2025/06/13  01:35~-~0~2
+KONTOL~2025/06/13  01:51~-~0~4
+FEIVEL~2025/06/13  01:16~0~0~2

@@ -63,7 +63,6 @@ private:
     Engine::Point lastPlayerPosition;
 
 protected:
-    int lives;
     int money;
     int SpeedMult;
 

@@ -9,6 +9,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <memory>
 #include <string>
 
 #include "Engine/AudioHelper.hpp"
@@ -22,14 +23,17 @@
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
+std::vector<SelectProfileScene::ProfileData> SelectProfileScene::playerData;
+int SelectProfileScene::profileID = 0;
+
 void SelectProfileScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
     Engine::ImageButton *btn;
-    std::vector<ProfileData> playerData; //(MAXprofile,{"+", "", "", ""});
 
+    playerData.clear();
     std::string summfile = "../Resource/player-data/data-summary.txt";
     std::ifstream ifs(summfile, std::ios_base::in);
 
@@ -43,18 +47,20 @@ void SelectProfileScene::Initialize() {
             }
 
             std::stringstream ss(str);
-            std::string name, made, last, dur;
+            std::string name, made, last, dur, level;
             while (
             getline(ss, name, '~') &&
             getline(ss, made, '~') &&
             getline(ss, last, '~') &&
-            getline(ss, dur)
+            getline(ss, dur, '~') &&
+            getline(ss, level)
             ) {
                 playerData.push_back( {
-                    name.substr(0,name.length()-1),
-                    (made.substr(1, made.length()-1)),
-                    last.substr(1, last.length()-1),
-                    dur.substr(1, dur.length())
+                    name,
+                    made,
+                    last,
+                    dur,
+                    level,
                 });
 
                 name.clear();
@@ -96,40 +102,79 @@ void SelectProfileScene::Terminate() {
 void SelectProfileScene::BackOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
-void SelectProfileScene::PlayOnClick(int stage) {
-    ReadProfileData(stage);
-}
+void SelectProfileScene::PlayOnClick(int ID) {
+    profileID = ID;
 
-void SelectProfileScene::ReadProfileData(int ID) {
-    std::string filename = "../Resource/player-data/data" + std::to_string(ID) + ".txt";
-    std::ifstream ifs(filename, std::ios_base::in);
-
-    if (ifs.is_open()) {
-        std::string line;
-        int map_idx = -1;
-
-        while (getline(ifs, line)) {
-            if (line[0] == '#') {
-                line.clear();
-                continue;
-            }
-
-            if (map_idx == -1) {
-                map_idx = stoi(line);
-            }
-
-            line.clear();
-        }
-
-        if (map_idx != -1) {
-            PlayScene *scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
-            scene->MapId = map_idx;
-            Engine::GameEngine::GetInstance().ChangeScene("play");
-        }
-
-        ifs.close();
-    } else {
-        std::cerr << "[ERROR] Could not open PLAYER PROFILE DATA for reading!" << std::endl;
+    if (playerData[ID-1].Name == "+") {
+        Engine::GameEngine::GetInstance().ChangeScene("leaderboard");
+    }
+    else {
+        PlayScene *scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+        scene->MapId = stoi(playerData[ID-1].Stage);
+        Engine::GameEngine::GetInstance().ChangeScene("story");
     }
 }
 
+// SelectProfileScene::textData* SelectProfileScene::ReadProfileData(const int readID) {
+//
+//     std::string filename = "../Resource/player-data/data" + std::to_string(readID) + ".txt";
+//     std::ifstream ifs(filename, std::ios_base::in);
+//
+//     if (ifs.is_open()) {
+//         std::string line;
+//         auto *data = new textData();
+//
+//         while (getline(ifs, line)) {
+//             if (line[0] == '#' || line.empty()) {
+//                 line.clear();
+//                 continue;
+//             }
+//
+//             std::stringstream ss(line);
+//             std::string str;
+//
+//             std::getline(ss, str,',');
+//             data->HP_1 = stoi(str);
+//
+//             std::getline(ss, str);
+//             data->HP_2 = stoi(str);
+//
+//             line.clear();
+//         }
+//
+//         ifs.close();
+//         return data;
+//     }
+//
+//     std::cerr << "[ERROR] Could not open PLAYER PROFILE DATA for READING!" << std::endl;
+//     return nullptr;
+// }
+
+void SelectProfileScene::WriteProfileData(textData* allplayers) {
+    std::string filename = "../Resource/player-data/data-summary.txt";
+    std::ofstream ofs(filename, std::ios_base::out);
+
+    if (ofs.is_open()) {
+        ofs
+        << "# everything related to the profile will be saved here" << std::endl
+        << "# Name ~ date created ~ last played ~ Screen time ~ last stage" << std::endl
+        << "# MAX data 3" << std::endl
+        << std::endl;
+
+        playerData[profileID-1].Stage = std::to_string(allplayers->level);
+
+        for (auto& it : SelectProfileScene::playerData) {
+            ofs
+            << it.Name << "~"
+            << it.Created << "~"
+            << it.Last_Played << "~"
+            << it.Duration << "~"
+            << it.Stage << std::endl;
+        }
+
+        ofs.close();
+    }
+    else {
+        std::cerr << "[ERROR] Could not open DATA SUMMARY for INITIAL WRITING!" << std::endl;
+    }
+}

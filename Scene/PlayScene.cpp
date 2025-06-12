@@ -28,6 +28,7 @@
 
 #include <allegro5/allegro_primitives.h>
 
+#include "SelectProfileScene.h"
 #include "Enemy/EjojoBoss.h"
 #include "Enemy/ArcherSkelly.h"
 #include "Enemy/EjojoEnemy.h"
@@ -88,7 +89,6 @@ void PlayScene::Initialize() {
     keyStrokes.clear();
     ticks = 0;
     deathCountDown = -1;
-    lives = 10;
     money = 150;
     SpeedMult = 1;
     Gravity = 18.0f * BlockSize;
@@ -221,6 +221,13 @@ void PlayScene::Update(float deltaTime) {
             transitionTick += deltaTime;
             if (transitionTick >= desiredTransitionTick) {
                 MapId++;
+
+                //this 3 lines is for updating the profile.
+                auto* newdata = new SelectProfileScene::textData();
+                newdata->level = MapId;
+                SelectProfileScene::WriteProfileData(newdata);
+                //----------------------------------------
+
                 Engine::GameEngine::GetInstance().ChangeScene("story");
             }
         }
@@ -326,6 +333,18 @@ void PlayScene::Update(float deltaTime) {
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
         if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+        if (MapId == 3) {
+            MapId++;
+
+            //this 3 lines is for updating the profile.
+            auto* newdata = new SelectProfileScene::textData();
+            newdata->level = MapId;
+            SelectProfileScene::WriteProfileData(newdata);
+            //----------------------------------------
+
+            Engine::GameEngine::GetInstance().ChangeScene("story");
+            return;
+        }
         //Engine::GameEngine::GetInstance().ChangeScene("win");
         return;
     }
@@ -691,6 +710,12 @@ void PlayScene::ReadMap() {
         DoorSensorAssignments.clear();
         sensorAssign();
     }
+
+    // SelectProfileScene::textData* savedData = SelectProfileScene::ReadProfileData(SelectProfileScene::getProfileID());
+    // if (savedData) {
+    //     player1->hp = savedData->HP_1;
+    //     player2->hp = savedData->HP_2;
+    // }
 }
 
 void PlayScene::sensorAssign() {
