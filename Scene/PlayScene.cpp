@@ -133,8 +133,7 @@ void PlayScene::Initialize() {
 
     ConstructUI();
 
-    if (MapId == 1 || MapId == 2 || MapId == 3 || MapId == 4 || MapId == 5 || MapId == 6 || MapId == 7) {
-        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
+    if (MapId == 1 || MapId == 2) {
         rainParticles.clear();
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -199,6 +198,7 @@ void PlayScene::Initialize() {
     }
     std::vector<PlayScene::Dialog> dialogs;
     if (MapId == 1) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
         dialogs.push_back({
             "Monsters everywhere! This is insane!",
             3.0f,
@@ -243,6 +243,7 @@ void PlayScene::Initialize() {
         });
     }
     else if (MapId == 2) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
         dialogs.push_back({
             "The tank can only shoot upwards.",
             4.0f,
@@ -264,6 +265,8 @@ void PlayScene::Initialize() {
     }
 
     else if (MapId == 3) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-1.png");
+        backgroundIMG2 = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-2.png");
         dialogs.push_back({
             "Wow, this ship is enormous!",
             3.0f,

@@ -23,7 +23,7 @@ JetpackPlayerB::JetpackPlayerB(float x, float y) : Player("play/jetpackB-inactiv
 
     // Jetpack-specific properties
     jetpackForce = PlayScene::BlockSize * 3;          // Upward force when jetpack is active
-    maxJetpackFuel = 5.0f;          // Maximum fuel in seconds
+    maxJetpackFuel = INFINITY;          // Maximum fuel in seconds
     jetpackFuel = maxJetpackFuel;   // Current fuel
     fuelRechargeRate = 1.5f;        // Fuel recharge rate per second
     fuelRechargeDelay = 1.0f;       // Delay before recharging starts after last use

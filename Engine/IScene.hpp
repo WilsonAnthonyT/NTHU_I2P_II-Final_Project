@@ -65,7 +65,8 @@ namespace Engine {
         void Draw() const override;
         void OnKeyDown(int keyCode) override;
         static bool DebugMode;
-        std::shared_ptr<ALLEGRO_BITMAP> backgroundIMG;
+        std::shared_ptr<ALLEGRO_BITMAP> backgroundIMG = nullptr;
+        std::shared_ptr<ALLEGRO_BITMAP> backgroundIMG2 = nullptr;
     };
 }
 #endif   // ISCENE_HPP

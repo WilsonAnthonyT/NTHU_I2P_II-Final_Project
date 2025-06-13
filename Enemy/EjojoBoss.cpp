@@ -10,7 +10,7 @@
 EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 500, 5, 5, 10),
                                                       rng(std::random_device{}()) {
     // Base setup - position locked to right side
-    Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
+    Size = Engine::Point(PlayScene::BlockSize*3, PlayScene::BlockSize*3);
     Position = Engine::Point(PlayScene::GetClientSize().x - PlayScene::BlockSize*3,
                            PlayScene::GetClientSize().y/2);
 
@@ -26,8 +26,8 @@ EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 100
     // Movement - limited vertical movement only
     movementSpeed = PlayScene::BlockSize * 1.5f;
     movementBoundsX = Position.x;
-    movementBoundstopY = 2* Size.y;
-    movementBoundsbottomY = PlayScene::MapHeight * PlayScene::BlockSize - 3 * PlayScene::BlockSize;
+    movementBoundstopY = PlayScene::BlockSize * 2.0f;
+    movementBoundsbottomY = PlayScene::MapHeight * PlayScene::BlockSize - 4 * PlayScene::BlockSize;
 
 
     // Attack patterns - all firing leftward

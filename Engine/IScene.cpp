@@ -16,37 +16,67 @@ namespace Engine {
         Clear();
     }
     void IScene::Draw() const {
+        auto scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
         al_clear_to_color(al_map_rgb(0, 0, 0));
+        if (scene && scene->MapId == 3) {
+            if (backgroundIMG && backgroundIMG2) {
+                const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
+                const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
 
-        if (backgroundIMG) {
-            const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
-            const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
+                // Get background dimensions
+                const int bgWidth1 = al_get_bitmap_width(backgroundIMG.get());
+                const int bgHeight1 = al_get_bitmap_height(backgroundIMG.get());
+                const int bgWidth2 = al_get_bitmap_width(backgroundIMG2.get());
+                const int bgHeight2 = al_get_bitmap_height(backgroundIMG2.get());
 
-            // Get background dimensions
-            const int bgWidth = al_get_bitmap_width(backgroundIMG.get());
-            const int bgHeight = al_get_bitmap_height(backgroundIMG.get());
+                // Determine which background to draw
+                for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += PlayScene::BlockSize * 16) {
+                    ALLEGRO_BITMAP* bgToDraw = (static_cast<int>(x / (PlayScene::BlockSize * 16)) % 2 == 0) ? backgroundIMG.get() : backgroundIMG2.get();
 
-            // Draw the background (stretched vertically, looped horizontally)
-            for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += PlayScene::BlockSize*16) {
-                al_draw_scaled_bitmap(
-                    backgroundIMG.get(),    // Source bitmap
-                    0, 0,                  // Source X, Y
-                    bgWidth, bgHeight,      // Source width, height
-                    x, PlayScene::Camera.y,                  // Destination X, Y
-                    PlayScene::BlockSize*16, PlayScene::BlockSize*10,      // Destination width, height (stretch vertically)
-                    0                      // Flags (0 = no blending)
-                );
+                    al_draw_scaled_bitmap(
+                        bgToDraw,               // Source bitmap
+                        0, 0,                   // Source X, Y
+                        (bgToDraw == backgroundIMG.get() ? bgWidth1 : bgWidth2),
+                        (bgToDraw == backgroundIMG.get() ? bgHeight1 : bgHeight2),
+                        x, PlayScene::Camera.y, // Destination X, Y
+                        PlayScene::BlockSize * 16, PlayScene::BlockSize * 10, // Destination width, height
+                        0                       // Flags (0 = no blending)
+                    );
+                }
             }
-            //al_draw_filled_rectangle(0, 0, PlayScene::MapWidth * PlayScene::BlockSize, PlayScene::MapHeight * PlayScene::BlockSize, al_map_rgba(0, 0, 0, 100));
+        }
+        else {
+            if (backgroundIMG) {
+                const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
+                const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
 
-            //for rain
-            for (const auto& p : rainParticles) {
-                al_draw_line(
-                    p.x, p.y - PlayScene::Camera.y,  // Adjusted for camera
-                    p.x, p.y + p.length - PlayScene::Camera.y,
-                    al_map_rgba(100, 100, 155, 255), // Semi-transparent blue
-                    1.5f
-                );
+                // Get background dimensions
+                const int bgWidth = al_get_bitmap_width(backgroundIMG.get());
+                const int bgHeight = al_get_bitmap_height(backgroundIMG.get());
+
+                // Draw the background (stretched vertically, looped horizontally)
+                for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += PlayScene::BlockSize*16) {
+                    al_draw_scaled_bitmap(
+                        backgroundIMG.get(),    // Source bitmap
+                        0, 0,                  // Source X, Y
+                        bgWidth, bgHeight,      // Source width, height
+                        x, PlayScene::Camera.y,                  // Destination X, Y
+                        PlayScene::BlockSize*16, PlayScene::BlockSize*10,      // Destination width, height (stretch vertically)
+                        0                      // Flags (0 = no blending)
+                    );
+                }
+                //al_draw_filled_rectangle(0, 0, PlayScene::MapWidth * PlayScene::BlockSize, PlayScene::MapHeight * PlayScene::BlockSize, al_map_rgba(0, 0, 0, 100));
+
+                //for rain
+                for (const auto& p : rainParticles) {
+                    al_draw_line(
+                        p.x, p.y - PlayScene::Camera.y,  // Adjusted for camera
+                        p.x, p.y + p.length - PlayScene::Camera.y,
+                        al_map_rgba(100, 100, 155, 255), // Semi-transparent blue
+                        1.5f
+                    );
+                }
+
             }
         }
 
