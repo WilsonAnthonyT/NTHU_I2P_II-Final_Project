@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Bullet/FireBullet.hpp"
 #include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Weapon/RangeWeapon.h"
 
@@ -18,6 +19,13 @@ RangePlayer::RangePlayer(float x, float y) : Player("play/arwen.png",x,y, PlaySc
     }
     scene->WeaponGroup->AddNewObject(weapon);
     Size = Engine::Point(PlayScene::BlockSize * 0.4, PlayScene::BlockSize * 0.65);
+    // for (int i = 1; i <= 4; i++) {
+    //     idleAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("play/bryan-idle-" + std::to_string(i) + ".png"));
+    //     walkAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("play/bryan-walk-" + std::to_string(i) + ".png"));
+    // }
+    // for (int i = 1; i <= 2; i++) {
+    //     jumpAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("play/bryan-jump-" + std::to_string(i) + ".png"));
+    // }
 }
 
 
@@ -122,4 +130,50 @@ void RangePlayer::Update(float deltaTime) {
             Size.x = shouldFlip ? -fabs(Size.x) : fabs(Size.x);
         }
     }
+
+    if (isJumping || isFalling) {
+        currentState = JUMPING;
+    }
+    else if (inputVelocity.x != 0) {
+        currentState = WALKING;
+    }
+    else {
+        currentState = IDLE;
+    }
+    UpdateAnimation(deltaTime);
+}
+
+void RangePlayer::UpdateAnimation(float deltaTime) {
+    // animationTime += deltaTime;
+    //
+    // std::vector<std::shared_ptr<ALLEGRO_BITMAP>>* currentAnimation = nullptr;
+    //
+    // switch (currentState) {
+    //     case IDLE:
+    //         currentAnimation = &idleAnimation;
+    //         frameDuration = 0.15f;
+    //         break;
+    //     case WALKING:
+    //         currentAnimation = &walkAnimation;
+    //         frameDuration = 0.1f;
+    //         break;
+    //     case JUMPING:
+    //     case FALLING:
+    //         currentAnimation = &jumpAnimation;
+    //         frameDuration = 0.2f;
+    //         break;
+    // }
+    //
+    // if (animationTime >= frameDuration) {
+    //     animationTime = 0;
+    //     currentFrame = (currentFrame + 1) % currentAnimation->size();
+    //     this->bmp = (*currentAnimation)[currentFrame]; // .get() to access raw pointer
+    //
+    //     // Handle sprite flipping
+    //     if (flipped) {
+    //         Size.x = -fabs(Size.x);
+    //     } else {
+    //         Size.x = fabs(Size.x);
+    //     }
+    // }
 }

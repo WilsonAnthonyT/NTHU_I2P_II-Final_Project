@@ -11,6 +11,8 @@
 #include <map>
 #include <unordered_set>
 
+#include "ArcherSkelly.h"
+#include "SwordSkelly.h"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
@@ -37,7 +39,7 @@ void Enemy::OnExplode() {
     //     getPlayScene()->GroundEffectGroup->AddNewObject(new DirtyEffect("play/dirty-" + std::to_string(distId(rng)) + ".png", dist(rng), Position.x, Position.y));
     // }
 
-    AudioHelper::PlayAudio("coins.mp3");
+    // AudioHelper::PlayAudio("coins.mp3");
 }
 Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float hp, int money, int scores, float dmg) : Engine::Sprite(img, x, y), speed(speed), hp(hp), money(money), scores(scores), damage(dmg) {
     CollisionRadius = Size.x/2;
@@ -59,6 +61,11 @@ Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float
 
 //trying
 void Enemy::OnDeath() {
+    idleAnimation.clear();
+    walkAnimation.clear();
+    deathAnimation.clear();
+    attackingAnimation.clear();
+
     auto *scene = getPlayScene();
     scene->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
     scene->EnemyGroup->RemoveObject(GetObjectIterator());
@@ -73,8 +80,14 @@ void Enemy::Hit(float damage, float PosX, std::string type) {
 
     if (hp <= 0) {
         hp = 0;
-        OnExplode();
-        OnDeath();
+        VelocityX = 0;
+        SwordSkelly* s = dynamic_cast<SwordSkelly*>(this);
+        auto a = dynamic_cast<ArcherSkelly*>(this);
+        if (s || a) {
+        }
+        else {
+            OnDeath();
+        }
     }
     else {
         if (type == "melee") {
@@ -256,7 +269,8 @@ void Enemy::Update(float deltaTime) {
     bool isOnGround = !isJumping && !IsCollision(Position.x, Position.y + 1, true);
 
     // Horizontal movement and wall detection
-    float newX = Position.x + VelocityX * deltaTime;
+    float newX = Position.x;
+    if (this->getHp() > 0) newX += VelocityX * deltaTime;
     bool hitWall = !IsCollision(newX, Position.y, true) && IsCollision(newX, Position.y,false);
 
     if (!IsCollision(newX, Position.y,false)) {
@@ -270,7 +284,8 @@ void Enemy::Update(float deltaTime) {
     }
 
     // Vertical movement (using normal collision check)
-    float newY = Position.y + verticalVelocity * deltaTime;
+    float newY = Position.y;
+    if (this->getHp() > 0) newY += verticalVelocity * deltaTime;
     if (!IsCollision(Position.x, newY,false)) {
         Position.y = newY;
     } else {
@@ -409,6 +424,37 @@ bool Enemy::IsInCameraView(float x, float y) {
             y >= cameraY &&
             y <= cameraY + screenH);
 }
+
+bool Enemy::IsPlayerInRange(float x, float y, float AttackRange) {
+    PlayScene* scene = getPlayScene();
+    if (!scene) return true;
+
+    float halfSizeX = abs(Size.x / 2);
+    float left = x - halfSizeX + tolerance;
+    float right = x + halfSizeX - tolerance;
+    float top = y + tolerance;
+    float bottom = y + Size.y - tolerance;
+    for (auto obj : scene->PlayerGroup->GetObjects()) {
+        auto *player = dynamic_cast<Player *>(obj);
+        float PlayerHalfSizeX = abs(player->Size.x / 2);
+        float PlayerLeft = player->Position.x - PlayerHalfSizeX;
+        float PlayerRight = player->Position.x + PlayerHalfSizeX ;
+        float PlayerTop = player->Position.y;
+        float PlayerBottom = player->Position.y + abs(player->Size.y/2);
+
+        if (!player->Visible)
+            continue;
+        if (PlayerLeft < right + AttackRange && PlayerRight > left - AttackRange && PlayerTop < bottom + AttackRange && PlayerBottom > top + AttackRange) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Enemy::UpdateAnimation(float deltaTime) {
+
+}
+
 
 
 //return HP (for missile)

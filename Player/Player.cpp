@@ -192,6 +192,11 @@ void Player::PlayerEnemyCollision(Player *player, float time) {
         Enemy* enemy = dynamic_cast<Enemy*>(it);
         if (!enemy) continue;
 
+        if (enemy->getHp() <= 0) {
+            enemy = nullptr;
+            continue;
+        }
+
         int half_enemy = abs(enemy->Size.x) / 2;
 
         float enemy_Left = enemy->Position.x - half_enemy;

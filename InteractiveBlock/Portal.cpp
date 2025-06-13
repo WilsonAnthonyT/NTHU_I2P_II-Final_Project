@@ -13,11 +13,14 @@ PlayScene *Portal::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
 
-Portal::Portal(std::string img, float x, float y) : Engine::Sprite(img, x, y){
+Portal::Portal(std::string img, float x, float y) : Sprite(img, x, y){
     active = false;
     Anchor = Engine::Point(0.5,0.5);
     Size.x=PlayScene::BlockSize,Size.y=PlayScene::BlockSize;
     Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
+    for (int i = 1; i <= 6; i++) {
+        ActiveAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/portal-active-" + std::to_string(i) + ".png"));
+    }
 }
 
 void Portal::Update(float deltaTime) {
@@ -32,10 +35,12 @@ void Portal::Update(float deltaTime) {
     }
     if (total == count) {
         active=true;
-        bmp = Engine::Resources::GetInstance().GetBitmap("play/portal-active.png");
     }
     if (active)IsCollision(Position.x,Position.y);
+
+    UpdateAnimation(deltaTime);
 }
+
 void Portal::IsCollision(float x, float y) {
     PlayScene* scene = getPlayScene();
     if (!scene) return;
@@ -63,5 +68,24 @@ void Portal::IsCollision(float x, float y) {
         if (overlapX && overlapY) {
             player->Visible = false;
         }
+    }
+}
+
+void Portal::UpdateAnimation(float deltaTime) {
+    if (active) {
+        animationTime += deltaTime;
+
+        std::vector<std::shared_ptr<ALLEGRO_BITMAP>>* currentAnimation = nullptr;
+        currentAnimation = &ActiveAnimation;
+        frameDuration = 0.15f;
+
+        if (animationTime >= frameDuration) {
+            animationTime = 0;
+            currentFrame = (currentFrame + 1) % currentAnimation->size();
+            this->bmp = (*currentAnimation)[currentFrame]; // .get() to access raw pointer
+        }
+    }
+    else {
+        this->bmp = Engine::Resources::GetInstance().GetBitmap("play/portal.png");
     }
 }

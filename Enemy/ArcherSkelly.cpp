@@ -1,12 +1,34 @@
 #include "ArcherSkelly.h"
 
 #include "EnemyBullet/ArrowBullet.h"
+#include "Engine/Resources.hpp"
 #include "Scene/PlayScene.hpp"
 
 ArcherSkelly::ArcherSkelly(int x, int y)
     : Enemy("play/skeletonbow.png", x, y, 100, PlayScene::BlockSize * 1.25f, 10, 5, 5, 10),
       shootingRange(PlayScene::BlockSize * 4.5f) {
     getPlayScene()->TotalArcherSkelly++;
+    AttackRange = 4.0f * PlayScene::BlockSize;
+    currentState = ATTACKING;
+    idleFrameDuration = 0.15f;
+    walkFrameDuration = 0.1f;
+    attackFrameDuration = 0.4f;
+    deathFrameDuration = 0.24f;
+    attackCooldown = shotCooldown;
+    attackInterval = shotInterval;
+
+    // for (int i = 1; i <= 10; i++) {
+    //     walkAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowwalking-" + std::to_string(i) + ".png"));
+    // }
+    // for (int i = 1; i <= 1; i++) {
+    //     idleAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowwalking-" + std::to_string(i) + ".png"));
+    // }
+    for (int i = 1; i <= 4; i++) {
+        attackingAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowattack-" + std::to_string(i) + ".png"));
+    }
+    for (int i = 1; i <= 5; i++) {
+        deathAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowdying-" + std::to_string(i) + ".png"));
+    }
 }
 
 void ArcherSkelly::Update(float deltaTime) {
@@ -15,6 +37,12 @@ void ArcherSkelly::Update(float deltaTime) {
         Sprite::Update(deltaTime);
         return;
     }
+
+    if (hp <= 0) {
+        UpdateAnimation(deltaTime);
+        return;
+    }
+
 
     // Update shot cooldown
     if (shotCooldown > 0) {
@@ -54,7 +82,9 @@ void ArcherSkelly::Update(float deltaTime) {
 
             // Check if player is in shooting range and cooldown is ready
             float horizontalDistance = std::abs(targetPos.x - Position.x);
-            if (horizontalDistance <= shootingRange && shotCooldown <= 0) {
+            if (horizontalDistance <= shootingRange &&
+                shotCooldown <= 0 &&
+                !isAttacking) {
                 ShootArrow(targetPos, scene);
                 shotCooldown = shotInterval;
             }
@@ -118,7 +148,10 @@ void ArcherSkelly::Update(float deltaTime) {
         }
     }
 
+
     Sprite::Update(deltaTime);
+
+    UpdateAnimation(deltaTime);
 }
 
 void ArcherSkelly::ChasePlayer(const std::vector<Engine::Point>& playerPositions, float deltaTime) {
@@ -187,6 +220,11 @@ void ArcherSkelly::ChasePlayer(const std::vector<Engine::Point>& playerPositions
 }
 
 void ArcherSkelly::ShootArrow(const Engine::Point& targetPos, PlayScene* scene) {
+    if (isAttacking) return;
+
+    isAttacking = true;
+    currentFrame = 0; // Reset animation frame
+    animationTime = 0;
     // Calculate direction to player
     Engine::Point direction = targetPos - Position;
     float angle = atan2(direction.y, direction.x);
@@ -215,7 +253,80 @@ void ArcherSkelly::ShootArrow(const Engine::Point& targetPos, PlayScene* scene) 
     );
 }
 
-void ArcherSkelly::OnDeath() {
-    Enemy::OnDeath();
-    getPlayScene()->TotalArcherSkelly--;
+void ArcherSkelly::UpdateAnimation(float deltaTime) {
+    animationTime += deltaTime;
+
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>>* currentAnimation = nullptr;
+    float* currentFrameDuration = nullptr;
+    bool looping = true;
+
+    // State priority: Death > Attack > Movement > Idle
+    if (hp <= 0) {
+        currentState = DEAD;
+        currentAnimation = &deathAnimation;
+        currentFrameDuration = &deathFrameDuration;
+        looping = false;
+    }
+    else if (isAttacking) {
+        currentState = ATTACKING;
+        currentAnimation = &attackingAnimation;
+        currentFrameDuration = &attackFrameDuration;
+        looping = true;  // Attacks shouldn't loop
+    }
+    // else if (isJumping || isFalling || std::abs(VelocityX) > 0.1f) {
+    //     currentState = WALKING;
+    //     currentAnimation = &walkAnimation;
+    //     currentFrameDuration = &walkFrameDuration;
+    // }
+    // else {
+    //     currentState = IDLE;
+    //     currentAnimation = &idleAnimation;
+    //     currentFrameDuration = &idleFrameDuration;
+    // }
+
+    // Update animation frames
+    if (currentAnimation && !currentAnimation->empty()) {
+        if (animationTime >= *currentFrameDuration) {
+            animationTime = 0;
+
+            if (looping) {
+                currentFrame = (currentFrame + 1) % currentAnimation->size();
+            }
+            else if (currentFrame < currentAnimation->size() - 1) {
+                currentFrame++;
+            }
+
+            // Update bitmap
+            if (currentFrame >= 0 && currentFrame < currentAnimation->size()) {
+                bmp = (*currentAnimation)[currentFrame];
+            } else {
+                currentFrame = 0;  // Reset to safe value
+                if (!currentAnimation->empty()) {
+                    bmp = (*currentAnimation)[0];
+                }
+            }
+
+            // Handle direction
+            if (VelocityX != 0) {
+                Size.x = std::abs(Size.x) * (VelocityX > 0 ? 1 : -1);
+            }
+        }
+    }
+
+    // Handle attack completion
+    if (currentState == ATTACKING &&
+        currentFrame == attackingAnimation.size() - 1)
+    {
+        isAttacking = false;
+    }
+
+    // Handle death completion
+    if (currentState == DEAD &&
+        currentFrame >= deathAnimation.size() - 1)
+    {
+        getPlayScene()->TotalArcherSkelly--;
+        auto *scene = getPlayScene();
+        scene->EnemyGroup->RemoveObject(this->GetObjectIterator());
+    }
 }
+

@@ -36,9 +36,6 @@ void Sensor::Update(float deltaTime) {
         for (auto door : doorList) {
             if (door->currState == door->initState) {
                 door->currState = (door->initState == Door::OPEN)? Door::CLOSE : Door::OPEN;
-
-                (door->currState == Door::OPEN)?
-                    door->Tint = al_map_rgb(85, 55, 0) : door->Tint = al_map_rgb(255, 255, 255);
             }
         }
 

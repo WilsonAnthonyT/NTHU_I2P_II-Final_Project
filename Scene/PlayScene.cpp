@@ -388,12 +388,6 @@ void PlayScene::Update(float deltaTime) {
                 delete newdata;
             }
             //----------------------------------------
-                //this 3 lines is for updating the profile.
-                auto* newdata = new SelectProfileScene::textData();
-                newdata->level = MapId;
-                SelectProfileScene::WriteProfileData(newdata);
-                //----------------------------------------
-
                 Engine::GameEngine::GetInstance().ChangeScene("story");
                 return;
             }
@@ -1029,7 +1023,7 @@ void PlayScene::MiniMap() const {
             float sx = door->Size.x * xScale;
             float sy = door->Size.y * yScale;
             px -= sx / 2;
-            py += sy;
+            py -= sy / 2;
             if (bmp) {
                 al_draw_scaled_bitmap(
                 bmp,

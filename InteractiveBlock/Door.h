@@ -19,6 +19,10 @@ class Door : public Engine::Sprite {
 protected:
     PlayScene *getPlayScene();
     float verticalVelocity = 0;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> ActiveAnimation;
+    float animationTime = 0;
+    float frameDuration = 0.75f; // Time between frames in seconds
+    int currentFrame = 0;
 public:
     enum DoorState {
         OPEN,
@@ -28,7 +32,9 @@ public:
     bool horizontal;
     Door(std::string, float, float, DoorState,bool horizontal);
     void Update(float deltaTime) override;
+    void UpdateAnimation(float deltaTime);
     std::shared_ptr<ALLEGRO_BITMAP> Bitmap;
+
 };
 
 #endif //DOOR_H

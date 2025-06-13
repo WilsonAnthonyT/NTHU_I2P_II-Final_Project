@@ -11,10 +11,17 @@ Door::Door(std::string img, float x, float y, DoorState ds, bool horizontal) : h
     Anchor = Engine::Point(0.5, 0.5);
     if (horizontal) {
         Size.x = PlayScene::BlockSize,Size.y=PlayScene::BlockSize*6/32;
+        for (int i = 1; i <= 2; i++) {
+            ActiveAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/dor1-" + std::to_string(i) + ".png"));
+        }
     } else if (!horizontal) {
         Size.x = PlayScene::BlockSize*6/32,Size.y=PlayScene::BlockSize;
+        for (int i = 1; i <= 2; i++) {
+            ActiveAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/dor-" + std::to_string(i) + ".png"));
+        }
     }
     Bitmap = Engine::Resources::GetInstance().GetBitmap(img);
+
 }
 
 void Door::Update(float deltaTime) {
@@ -34,10 +41,33 @@ void Door::Update(float deltaTime) {
 
     if (ShouldBeChange && currState != initState) {
         currState = initState;
-        (currState == OPEN)?
-            Tint = al_map_rgb(85, 55, 0) : Tint = al_map_rgb(255, 255, 255);
     }
 
+    UpdateAnimation(deltaTime);
     Sprite::Update(deltaTime);
+}
+
+void Door::UpdateAnimation(float deltaTime) {
+    if (currState == CLOSE) {
+        animationTime += deltaTime;
+
+        std::vector<std::shared_ptr<ALLEGRO_BITMAP>>* currentAnimation = nullptr;
+        currentAnimation = &ActiveAnimation;
+        frameDuration = 0.15f;
+
+        if (animationTime >= frameDuration) {
+            animationTime = 0;
+            currentFrame = (currentFrame + 1) % currentAnimation->size();
+            this->bmp = (*currentAnimation)[currentFrame]; // .get() to access raw pointer
+        }
+    }
+    else {
+        if (horizontal) {
+            bmp = Engine::Resources::GetInstance().GetBitmap("animation/dor1-inactive.png");
+        }
+        else if (!horizontal) {
+            bmp = Engine::Resources::GetInstance().GetBitmap("animation/dor-inactive.png");
+        }
+    }
 }
 
