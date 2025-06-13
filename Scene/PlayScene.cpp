@@ -361,7 +361,7 @@ void PlayScene::Update(float deltaTime) {
 
         int idx = waveEnemy_index;
 
-        if (idx != -1 && ((waveEnemy_delay <= 0 && waveEnemy_spawnCount > 0) || waveEnemy_spawnCount == enemyWave[idx].count)) {
+        if (idx != -1 && idx < enemyWave.size() && ((waveEnemy_delay <= 0 && waveEnemy_spawnCount > 0) || waveEnemy_spawnCount == enemyWave[idx].count)) {
             waveEnemy_delay = enemyWave[idx].cooldown;
             waveEnemy_spawnCount--;
 
@@ -383,10 +383,8 @@ void PlayScene::Update(float deltaTime) {
             default:
                 break;
             }
-            enemy->Draw();
-            enemy->Update(deltaTime);
         }
-        else if (waveEnemy_spawnCount <= 0 && waveEnemy_index < enemyWave.size()) {
+        else if (waveEnemy_spawnCount <= 0 && waveEnemy_index < static_cast<float>(enemyWave.size())) {
             waveEnemy_index++;
             waveEnemy_spawnCount = enemyWave[idx].count;
             waveEnemy_delay = enemyWave[idx].cooldown;
@@ -1358,7 +1356,7 @@ void PlayScene::ReadEnemyWave() {
             ss >> cd &&
             ss >> dir
             ) {
-                enemyWave.push_back( {
+                    enemyWave.push_back( {
                     pos_y,
                     typ,
                     cnt,
