@@ -65,6 +65,7 @@ public:
 
     //so that the enemy only attack the player when in frame
     bool IsInCameraView(float x, float y);
+    bool startChase = false;
 
 };
 #endif   // ENEMY_HPP

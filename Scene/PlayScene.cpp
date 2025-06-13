@@ -378,7 +378,7 @@ void PlayScene::Update(float deltaTime) {
                 EnemyGroup->AddNewObject(enemy = new ArcherSkelly(spawn_x, spawn_y));
                 break;
             case 3:
-                EnemyGroup->AddNewObject(enemy = new MiniEjojo(spawn_x, spawn_y));
+                EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
                 break;
             default:
                 break;
@@ -397,7 +397,6 @@ void PlayScene::Update(float deltaTime) {
             waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
         }
     }
-
 
     if (players.size() == 2) {
         Engine::Point target = (players[0]->Position + players[1]->Position)/2;
