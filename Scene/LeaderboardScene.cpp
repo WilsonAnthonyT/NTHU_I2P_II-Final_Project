@@ -32,6 +32,11 @@ void LeaderboardScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&LeaderboardScene::DontSaveOnClick, this, 0));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Don't Save", "pirulen.ttf", 45, halfW - 2, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+
+    if (!AudioHelper::sharedBGMInstance ||
+    !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
+        AudioHelper::sharedBGMInstance = AudioHelper::PlaySample("Highscores_bgm.mp3", true, AudioHelper::BGMVolume);
+    }
 }
 
 void LeaderboardScene::OnKeyDown(int keyCode) {

@@ -91,6 +91,10 @@ void SelectProfileScene::Initialize() {
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", PlayScene::BlockSize/3, halfW, 6*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 
     //bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    if (!AudioHelper::sharedBGMInstance ||
+    !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
+        AudioHelper::sharedBGMInstance = AudioHelper::PlaySample("Highscores_bgm.mp3", true, AudioHelper::BGMVolume);
+    }
 }
 
 

@@ -12,9 +12,11 @@ public:
     ArcherSkelly(int x, int y);
     void Update(float deltaTime) override;
 
-    void ChasePlayer(const std::vector<Engine::Point> &playerPositions, float deltaTime);
+    void ChasePlayer(const std::vector<Engine::Point> &playerPositions, float deltaTime) override;
 
     void ShootArrow(const Engine::Point &targetPos, PlayScene *scene);
+
+    void OnDeath() override;
 
     // Shooting variables
     float shotCooldown = 0.0f;

@@ -155,6 +155,8 @@ public:
     void SetCharacterUniformScale(const std::string& characterId, float scale);
     void ScaleCharacterTo(const std::string& charId, float targetScaleX, float targetScaleY, float duration);
 
+    void SetTint(const std::string& charId, int r, int g, int b);
+
 private:
     PlayScene *scene;
     // Pause menu

@@ -5,8 +5,10 @@
 
 #include "EjojoBoss.h"
 
-EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 500, 5, 5, 10),
-                                       rng(std::random_device{}()) {
+#include "ArcherSkelly.h"
+
+EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 2, 5, 5, 10),
+                                                      rng(std::random_device{}()) {
     // Base setup - position locked to right side
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
     Position = Engine::Point(PlayScene::GetClientSize().x - PlayScene::BlockSize*3,
@@ -16,9 +18,10 @@ EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 100
     currentPhase = 1;
     maxPhases = 3;
     phaseTransitionHP = {350, 150};
-    phaseTransitionDuration = 0.55f;
+    phaseTransitionDuration = 2.0f;
     phaseTransitionTimer = 0.0f;
     isTransitioning = false;
+    phaseChangedDuringTransition = false;
 
     // Movement - limited vertical movement only
     movementSpeed = PlayScene::BlockSize * 1.5f;
@@ -103,14 +106,20 @@ void EjojoBoss::HandlePhaseTransition(float deltaTime) {
     phaseTransitionTimer += deltaTime;
 
     // Visual effects during transition
-    if (phaseTransitionTimer >= phaseTransitionDuration * 0.5f && currentPhase < maxPhases) {
-        currentPhase++;
+    if (phaseTransitionTimer >= phaseTransitionDuration * 0.5f &&
+        currentPhase < maxPhases &&
+        !phaseChangedDuringTransition) {
+
+        // Only increment by 1 phase
+        currentPhase = std::min(currentPhase + 1, maxPhases);
         SetupPhase(currentPhase);
-    }
+        phaseChangedDuringTransition = true;
+        }
 
     // End transition
     if (phaseTransitionTimer >= phaseTransitionDuration) {
         isTransitioning = false;
+        phaseChangedDuringTransition = false;
         ChooseNextAttack();
     }
 }
@@ -239,7 +248,7 @@ void EjojoBoss::PerformAttack() {
     }
     else if (currentAttack == "WaveAttack") {
         // Wave pattern firing left with slight vertical variation
-        for (int i = -5; i <= 5; i++) {
+        for (int i = -4; i <= 4; i++) {
             float offset = i * 0.2f;
             scene->EnemyBulletGroup->AddNewObject(
                 new EnemyFireBullet(
@@ -267,11 +276,10 @@ void EjojoBoss::PerformAttack() {
     else if (currentAttack == "MiniSpawn") {
         // Spawn minions that attack leftward
         if (currentPhase == 2) {
-            for (int i = 0; i < 2; i++) {
-                float yOffset = (i == 0) ? -100 : 100;
-                auto mini = new MiniEjojo(
+            if (getPlayScene()->TotalArcherSkelly <= 4) {
+                auto mini = new ArcherSkelly(
                     Position.x - Size.x/2,
-                    Position.y + yOffset
+                    Position.y
                 );
                 getPlayScene()->EnemyGroup->AddNewObject(mini);
             }
@@ -281,7 +289,7 @@ void EjojoBoss::PerformAttack() {
         // Dual spiral firing left
         static float spiralAngle1 = 0;
         static float spiralAngle2 = ALLEGRO_PI;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 6; i++) {
             float angle1 = spiralAngle1 + (ALLEGRO_PI/4) * i;
             float angle2 = spiralAngle2 + (ALLEGRO_PI/4) * i;
 
@@ -298,7 +306,6 @@ void EjojoBoss::PerformAttack() {
                     bulletSpeed * 0.9f
                 )
             );
-
             scene->EnemyBulletGroup->AddNewObject(
                 new EnemyFireBullet(
                     Engine::Point(Position.x, Position.y),
@@ -314,7 +321,7 @@ void EjojoBoss::PerformAttack() {
     }
     else if (currentAttack == "BulletHell") {
         // Concentrated leftward bullet hell
-        for (int i = 0; i < 36; i++) {
+        for (int i = 0; i < 18; i++) {
             float angle = (ALLEGRO_PI/12) * i;
             // Convert to leftward cone
             float baseAngle = ALLEGRO_PI + (ALLEGRO_PI/4); // Left + 45 degree cone
@@ -335,7 +342,7 @@ void EjojoBoss::PerformAttack() {
         // Combined leftward assault
         // Bullet rain
         float spacing = Size.y / 8;
-        for (int i = -8; i <= 8; i++) {
+        for (int i = -6; i <= 6; i++) {
             scene->EnemyBulletGroup->AddNewObject(
                 new EnemyFireBullet(
                     Engine::Point(Position.x, Position.y + i*spacing),
@@ -349,7 +356,7 @@ void EjojoBoss::PerformAttack() {
 
         // Tight spiral
         static float spiralAngle = 0;
-        for (int i = 0; i < 24; i++) {
+        for (int i = 0; i < 18; i++) {
             float angle = spiralAngle + (ALLEGRO_PI/6) * i;
             Engine::Point dir(-0.8f - 0.2f*abs(cos(angle)), sin(angle)*0.6f);
 

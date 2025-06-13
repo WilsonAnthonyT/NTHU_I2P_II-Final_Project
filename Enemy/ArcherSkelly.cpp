@@ -6,6 +6,7 @@
 ArcherSkelly::ArcherSkelly(int x, int y)
     : Enemy("play/skeletonbow.png", x, y, 100, PlayScene::BlockSize * 1.25f, 10, 5, 5, 10),
       shootingRange(PlayScene::BlockSize * 4.5f) {
+    getPlayScene()->TotalArcherSkelly++;
 }
 
 void ArcherSkelly::Update(float deltaTime) {
@@ -212,4 +213,9 @@ void ArcherSkelly::ShootArrow(const Engine::Point& targetPos, PlayScene* scene) 
             PlayScene::BlockSize * 5.0f
         )
     );
+}
+
+void ArcherSkelly::OnDeath() {
+    Enemy::OnDeath();
+    getPlayScene()->TotalArcherSkelly--;
 }

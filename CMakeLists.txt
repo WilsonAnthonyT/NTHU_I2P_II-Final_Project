@@ -160,6 +160,8 @@ add_executable(Final-Project
     Enemy/EjojoBoss.h
         Player/JetpackPlayerA.cpp
         Player/JetpackPlayerA.h
+        Player/JetpackPlayerB.cpp
+        Player/JetpackPlayerB.h
 )
 
 IF (WIN32)

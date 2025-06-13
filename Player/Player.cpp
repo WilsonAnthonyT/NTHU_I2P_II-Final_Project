@@ -3,6 +3,8 @@
 #include <iostream>
 #include <allegro5/allegro_primitives.h>
 
+#include "JetpackPlayerA.h"
+#include "JetpackPlayerB.h"
 #include "Enemy/Enemy.hpp"
 #include "EnemyBullet/EnemyBullet.h"
 #include "Engine/IScene.hpp"
@@ -121,7 +123,13 @@ bool Player::IsCollision(float x, float y) {
                     return true;
                 }
                 // Special handling for platforms
-                else if (scene->mapState[yTile][xTile] == PlayScene::TILE_WPLATFORM) {
+                if (scene->mapState[yTile][xTile] == PlayScene::TILE_WPLATFORM) {
+                    JetpackPlayerA *A = dynamic_cast<JetpackPlayerA*>(this);
+                    JetpackPlayerB *B = dynamic_cast<JetpackPlayerB*>(this);
+                    if ((A && A->verticalVelocity < 0) ||
+                    (B && B->verticalVelocity < 0)) {
+                        return false; // Skip this platform tile
+                    }
                     // Only collide if player's bottom is touching the platform's top
                     float platformTop = yTile * PlayScene::BlockSize;
 

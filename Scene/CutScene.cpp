@@ -131,7 +131,12 @@ void CutScene::Initialize() {
     AddNewControlObject(UIGroup = new Group());
 
     // Start BGM
+    if (AudioHelper::sharedBGMInstance) {
+        AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
+        AudioHelper::sharedBGMInstance = nullptr;
+    }
     bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
+    
     CreatePauseUI();
 
     // Initialize dialog system
@@ -404,6 +409,7 @@ void CutScene::Initialize() {
         AddCharacterAnimation("ship", shipFrames, 10.0f, true);
         SetCharacterScale("ship", 8*Blocksize/1024, 4*Blocksize/1024);
         SetCharacterPosition("ship", screenWidth/2, 4.5*Blocksize);
+        SetTint("ship", 178.5  , 127.5 ,76.5);
         std::vector<std::string> tankaFrames = {
             "cut-scene/tankplayera.png"
         };
@@ -440,6 +446,8 @@ void CutScene::Initialize() {
     }
     else if (scene->MapId == 4 ) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/demoneyes.png");
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
         dialogs.push_back({
            "The demons are approaching.",
            3.5f,
@@ -910,6 +918,12 @@ void CutScene::ScaleCharacterTo(const std::string& charId, float targetScaleX, f
         character.scaleY, targetScaleY, duration,
         [](float t) { return t * t * (3 - 2 * t); });
 }
+
+void CutScene::SetTint(const std::string &charId, int r, int g, int b) {
+    if (characterAnimations.find(charId) == characterAnimations.end()) return;
+    characterAnimations[charId].tint = al_map_rgba_f(r, g, b, 1.0f);
+}
+
 
 //-----------For Pause UI-------------------------
 

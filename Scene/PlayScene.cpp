@@ -51,6 +51,7 @@
 #include "InteractiveBlock/Door.h"
 #include "InteractiveBlock/Sensor.h"
 #include "Player/JetpackPlayerA.h"
+#include "Player/JetpackPlayerB.h"
 #include "Player/MazePlayerA.h"
 #include "Player/MazePlayerB.h"
 #include "Player/TankPlayerA.h"
@@ -178,7 +179,12 @@ void PlayScene::Initialize() {
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     // Start BGM.
+    if (AudioHelper::sharedBGMInstance) {
+        AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
+        AudioHelper::sharedBGMInstance = nullptr;
+    }
     bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
+
     CreatePauseUI();
 
     //dialogue=======================================================================
@@ -187,22 +193,54 @@ void PlayScene::Initialize() {
         throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
     }
     std::vector<PlayScene::Dialog> dialogs;
-    dialogs.push_back({
-        "Hello, adventurer!",
-        3.0f,
-        "play/arwen.png",
-        "Arwen"
-    });
-    dialogs.push_back({
-        "The castle is dangerous!",
-        3.0f,
-        "play/bryan.png",
-        "Bryan"
-    });
+    if (MapId == 1) {
+        dialogs.push_back({
+            "Hello, adventurer!",
+            3.0f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "The castle is dangerous!",
+            3.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+    }
+    else if (MapId == 2) {
+        dialogs.push_back({
+            "Hello, adventurer!",
+            3.0f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "The castle is dangerous!",
+            3.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+    }
+    else if (MapId == 3) {
+
+    }
+    else if (MapId == 4) {
+
+    }
+    else if (MapId == 5) {
+
+    }
+    else if (MapId == 6) {
+
+    }
     StartDialog(dialogs, true);
     //================================================================================
     //for transition
     transitionTick = 0.0f;
+
+    //for specific
+    TotalMiniEjojo = 0;
+    TotalArcherSkelly = 0;
 }
 void PlayScene::Terminate() {
     if (dialogFont) {
@@ -314,7 +352,7 @@ void PlayScene::Update(float deltaTime) {
         if (Camera.x < 0)Camera.x = 0;
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
-        if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
+        if (Camera.y >= MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
     }
     else if (players.size() == 1) {
         Engine::Point target = players[0]->Position;
@@ -333,17 +371,20 @@ void PlayScene::Update(float deltaTime) {
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
         if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
-        if (MapId == 3) {
-            MapId++;
+        if (MapId == 3 || MapId == 4 || MapId == 5) {
+            transitionTick += deltaTime;
+            if (transitionTick >= desiredTransitionTick) {
+                MapId++;
 
-            //this 3 lines is for updating the profile.
-            auto* newdata = new SelectProfileScene::textData();
-            newdata->level = MapId;
-            SelectProfileScene::WriteProfileData(newdata);
-            //----------------------------------------
+                //this 3 lines is for updating the profile.
+                auto* newdata = new SelectProfileScene::textData();
+                newdata->level = MapId;
+                SelectProfileScene::WriteProfileData(newdata);
+                //----------------------------------------
 
-            Engine::GameEngine::GetInstance().ChangeScene("story");
-            return;
+                Engine::GameEngine::GetInstance().ChangeScene("story");
+                return;
+            }
         }
         //Engine::GameEngine::GetInstance().ChangeScene("win");
         return;
@@ -493,6 +534,7 @@ void PlayScene::ReadMap() {
             case 's': mapData.push_back('s'); break;
             case 'a': mapData.push_back('a'); break;
             case '<': mapData.push_back('<'); break;
+            case '>': mapData.push_back('>'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -580,7 +622,9 @@ void PlayScene::ReadMap() {
                 case '<':
                     mapState[i][j]=TILE_AIR;
                     break;
-
+                case '>':
+                    mapState[i][j]=TILE_AIR;
+                    break;
                 default:
                     mapState[i][j]=TILE_AIR;
                     break;
@@ -703,6 +747,12 @@ void PlayScene::ReadMap() {
                 player2 = (new JetpackPlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
+            }
+            else if (num == '>') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player1 = (new JetpackPlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player1);
             }
         }
     }
