@@ -83,6 +83,7 @@ void PlayScene::Initialize() {
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
     mask = nullptr;
 
+    isCamLocked = false;
 
     Camera.x=0,Camera.y=0;
     mapState.clear();
@@ -125,6 +126,8 @@ void PlayScene::Initialize() {
     }
 
     ReadEnemyWave();
+    waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
+
     ConstructUI();
 
     if (MapId == 1 || MapId == 2 || MapId == 3 || MapId == 4 || MapId == 5 || MapId == 6 || MapId == 7) {
@@ -217,7 +220,7 @@ void PlayScene::Terminate() {
 }
 void PlayScene::Update(float deltaTime) {
     if (MapId == 1) {
-        if (EnemyGroup->GetObjects().empty()) {
+        if (EnemyGroup->GetObjects().empty() && enemyWave.empty()) {
             transitionTick += deltaTime;
             if (transitionTick >= desiredTransitionTick) {
                 MapId++;
@@ -233,8 +236,7 @@ void PlayScene::Update(float deltaTime) {
         }
     }
 
-    // DoorSensorAssignments.clear();
-    // sensorAssign();
+
 
     UpdatePauseState();
     if (IsPaused) {
@@ -305,9 +307,63 @@ void PlayScene::Update(float deltaTime) {
         }
     }
 
+    const float camLock_x = MapWidth*BlockSize - BlockSize - screenWidth;
+    if (MapId == 1 && EnemyGroup->GetObjects().empty() && Camera.x >= camLock_x && !isCamLocked) {
+        Camera.x = camLock_x;
+        isCamLocked = true;
+    }
+
+    if (isCamLocked && !enemyWave.empty()) {
+        Enemy *enemy;
+        if (waveEnemy_index == -1) waveEnemy_index = 0;
+
+        int idx = waveEnemy_index;
+
+        if (idx != -1 && ((waveEnemy_delay <= 0 && waveEnemy_spawnCount > 0) || waveEnemy_spawnCount == enemyWave[idx].count)) {
+            waveEnemy_delay = enemyWave[idx].cooldown;
+            waveEnemy_spawnCount--;
+
+            float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 1.0f * BlockSize;
+            float spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
+
+            std::cout << "Posisi SPAWN: " << enemyWave[idx].position_y << std::endl;
+
+            switch (static_cast<int>(enemyWave[idx].type)) {
+            case 1:
+                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(spawn_x, spawn_y));
+                break;
+            case 2:
+                EnemyGroup->AddNewObject(enemy = new ArcherSkelly(spawn_x, spawn_y));
+                break;
+            case 3:
+                EnemyGroup->AddNewObject(enemy = new MiniEjojo(spawn_x, spawn_y));
+                break;
+            default:
+                break;
+            }
+            enemy->Draw();
+            enemy->Update(deltaTime);
+        }
+        else if (waveEnemy_spawnCount <= 0 && waveEnemy_index < enemyWave.size()) {
+            waveEnemy_index++;
+            waveEnemy_spawnCount = enemyWave[idx].count;
+            waveEnemy_delay = enemyWave[idx].cooldown;
+        }
+        else if (waveEnemy_delay > 0) {
+            waveEnemy_delay -= deltaTime;
+        }
+        else if (static_cast<int>(waveEnemy_index) == static_cast<int>(enemyWave.size())){
+            enemyWave.clear();
+            waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
+        }
+    }
+
+
     if (players.size() == 2) {
         Engine::Point target = (players[0]->Position + players[1]->Position)/2;
         Camera.x += (target.x - screenWidth / 2 - Camera.x) * 0.1f;
+        if (isCamLocked) Camera.x = camLock_x;
+
         Camera.y += (target.y - screenHeight / 2 - Camera.y) * 0.1f;
         // Camera.x = (target.x - screenWidth / 2);
         // Camera.y = (target.y - screenHeight / 2);
@@ -319,6 +375,8 @@ void PlayScene::Update(float deltaTime) {
     else if (players.size() == 1) {
         Engine::Point target = players[0]->Position;
         Camera.x = (target.x - screenWidth / 2);
+        if (isCamLocked) Camera.x = camLock_x;
+
         Camera.y = (target.y - screenHeight / 2);
         if (Camera.x < 0)Camera.x = 0;
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
@@ -343,10 +401,7 @@ void PlayScene::Update(float deltaTime) {
             //----------------------------------------
 
             Engine::GameEngine::GetInstance().ChangeScene("story");
-            return;
         }
-        //Engine::GameEngine::GetInstance().ChangeScene("win");
-        return;
     }
 }
 void PlayScene::Draw() const {
@@ -1171,14 +1226,6 @@ void PlayScene::FullMap() const {
     Map_btn->Size.y = scaledHeight;
 }
 
-// void PlayScene::FlashLight() const {
-//     //al_clear_to_color(al_map_rgb(0, 0, 0));
-//     al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
-//     al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2), BlockSize, al_map_rgb(255, 255, 255));
-//
-//     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
-// }
-
 void PlayScene::FlashLight() const {
     if (!player1 || !player2) return;
 
@@ -1213,7 +1260,50 @@ void PlayScene::MiniMapOnClick(int stage) {
 }
 
 void PlayScene::ReadEnemyWave() {
+    //spawn point y, type, count, cooldown, left/right (1/0)
+    enemyWave.clear();
+    std::string filename = "Resource/enemy" + std::to_string(MapId) + ".txt";
+    std::ifstream ifs(filename, std::ios_base::in);
 
+    if (ifs.is_open()) {
+        std::string str;
+        while (getline(ifs, str)){
+            if (str[0] == '#' || str.empty()) {
+                str.clear();
+                continue;
+            }
+
+            std::stringstream ss(str);
+            float pos_y, typ, cnt, cd, dir;
+            while (
+            ss >> pos_y &&
+            ss >> typ &&
+            ss >> cnt &&
+            ss >> cd &&
+            ss >> dir
+            ) {
+                enemyWave.push_back( {
+                    pos_y,
+                    typ,
+                    cnt,
+                    cd,
+                    dir
+                });
+
+                pos_y = 0;
+                typ = 0;
+                cnt = 0;
+                cd = 0;
+                dir = 0;
+            }
+
+            str.clear();
+        }
+
+        ifs.close();
+    } else {
+        std::cerr << "[ERROR] Could not open ENEMY WAVE TXT for reading!" << std::endl;
+    }
 }
 void PlayScene::ConstructUI() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;

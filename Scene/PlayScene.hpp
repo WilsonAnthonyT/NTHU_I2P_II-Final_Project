@@ -30,6 +30,18 @@ namespace Engine {
 class Sensor;
 class PlayScene final : public Engine::IScene {
 private:
+    struct Wave {
+        //spawn point y, type, count, cooldown, left/right (1/0)
+        float position_y;
+        float type;
+        float count;
+        float cooldown;
+        float direction;
+    };
+    std::vector<Wave> enemyWave;
+    bool isCamLocked = false;
+    float waveEnemy_spawnCount, waveEnemy_index, waveEnemy_delay;
+
     ALLEGRO_FONT* dialogFont = nullptr;
     struct Dialog {
         std::string text;
@@ -104,8 +116,6 @@ public:
     Engine::Image *imgTarget;
     Engine::Sprite *dangerIndicator;
     std::vector<std::vector<TileType>> mapState;
-    std::vector<std::vector<int>> mapDistance;
-    std::list<std::pair<int, float>> enemyWaveData;
     std::list<int> keyStrokes;
     static Engine::Point GetClientSize();
     explicit PlayScene() = default;
