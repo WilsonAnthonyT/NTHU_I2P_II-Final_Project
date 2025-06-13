@@ -160,6 +160,10 @@ add_executable(Final-Project
     Enemy/EjojoBoss.h
         Player/JetpackPlayerA.cpp
         Player/JetpackPlayerA.h
+        InteractiveBlock/GasMachine.cpp
+        InteractiveBlock/GasMachine.h
+        InteractiveBlock/Gas.cpp
+        InteractiveBlock/Gas.h
 )
 
 IF (WIN32)
