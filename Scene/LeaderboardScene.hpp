@@ -9,6 +9,7 @@ private:
     int tick;
     int score;
     const int maxChar = 14;
+    bool enterPressed = false;
 
 public:
     static int val;
