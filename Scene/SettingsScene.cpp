@@ -18,7 +18,7 @@ void SettingsScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
-
+    backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-1.png");
     Engine::ImageButton *btn;
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
     btn->SetOnClickCallback(std::bind(&SettingsScene::BackOnClick, this, 1));

@@ -27,10 +27,13 @@ std::vector<SelectProfileScene::ProfileData> SelectProfileScene::playerData;
 int SelectProfileScene::profileID = 0;
 
 void SelectProfileScene::Initialize() {
+
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
+    backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-2.png");
+
     Engine::ImageButton *btn;
 
     playerData.clear();
