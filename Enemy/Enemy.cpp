@@ -68,6 +68,8 @@ void Enemy::OnDeath() {
     attackingAnimation.clear();
 
     auto *scene = getPlayScene();
+    scene->EarnMoney(this->money);
+
     scene->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
     scene->EnemyGroup->RemoveObject(GetObjectIterator());
 }
@@ -256,7 +258,7 @@ void Enemy::Update(float deltaTime) {
     }
 
     // Only chase if both enemy and at least one player are in view
-    if (enemyInView) startChase = true;
+    if (enemyInView || scene->isCamLocked) startChase = true;
 
     if (startChase) ChasePlayer(playerPositions, deltaTime);
     else {

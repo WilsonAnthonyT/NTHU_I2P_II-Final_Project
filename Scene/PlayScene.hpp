@@ -39,7 +39,6 @@ private:
         float direction;
     };
     std::vector<Wave> enemyWave;
-    bool isCamLocked = false;
     float waveEnemy_spawnCount, waveEnemy_index, waveEnemy_delay;
 
     ALLEGRO_FONT* dialogFont = nullptr;
@@ -75,10 +74,12 @@ private:
     Engine::Point lastPlayerPosition;
 
 protected:
-    int money;
     int SpeedMult;
     float total_time;
+    int total_money;
 public:
+    bool isCamLocked = false;
+
     enum TileType {
         TILE_AIR,
         TILE_DIRT,
@@ -128,7 +129,7 @@ public:
     void OnMouseUp(int button, int mx, int my) override;
     void OnKeyDown(int keyCode) override;
     int GetMoney() const;
-    void EarnMoney(int money);
+    void EarnMoney(int m);
     void ReadMap();
     void ReadEnemyWave();
     void ConstructUI();

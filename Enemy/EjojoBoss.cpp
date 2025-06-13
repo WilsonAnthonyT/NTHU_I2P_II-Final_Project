@@ -7,7 +7,7 @@
 
 #include "ArcherSkelly.h"
 
-EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 2, 5, 5, 10),
+EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 500, 5, 5, 10),
                                                       rng(std::random_device{}()) {
     // Base setup - position locked to right side
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);

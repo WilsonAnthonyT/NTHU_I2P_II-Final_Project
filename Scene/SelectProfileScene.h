@@ -33,7 +33,6 @@ public:
     struct textData {
         int level;
         int coin_counts;
-        float playtime;
     };
 
     //static textData* ReadProfileData(const int);

@@ -33,8 +33,8 @@ MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryan.png",x,y, PlaySc
     }
     for (int i = 1; i <= 2; i++) {
         idleAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/bryan-idle" + std::to_string(i) + ".png"));
-        jumpAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/bryan-jump" + std::to_string(2) + ".png"));
     }
+    jumpAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/bryan-jump.png"));
 
 }
 
@@ -189,7 +189,7 @@ void MeleePlayer::UpdateAnimation(float deltaTime) {
         case JUMPING:
         case FALLING:
             currentAnimation = &jumpAnimation;
-            frameDuration = 0.45f;
+            frameDuration = 0.15f;
             break;
     }
 

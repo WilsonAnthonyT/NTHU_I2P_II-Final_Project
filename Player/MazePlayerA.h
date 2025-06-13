@@ -14,6 +14,7 @@ public:
     MazePlayerA(float x, float y);
     void Update(float deltaTime) override;
     //void Draw() const override;
+    void UpdateAnimation(float deltaTime);
 };
 
 

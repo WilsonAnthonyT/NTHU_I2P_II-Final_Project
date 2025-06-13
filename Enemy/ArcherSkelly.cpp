@@ -17,12 +17,12 @@ ArcherSkelly::ArcherSkelly(int x, int y)
     attackCooldown = shotCooldown;
     attackInterval = shotInterval;
 
-    // for (int i = 1; i <= 10; i++) {
-    //     walkAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowwalking-" + std::to_string(i) + ".png"));
-    // }
-    // for (int i = 1; i <= 1; i++) {
-    //     idleAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowwalking-" + std::to_string(i) + ".png"));
-    // }
+    for (int i = 1; i <= 10; i++) {
+        walkAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowwalking-" + std::to_string(i) + ".png"));
+    }
+    for (int i = 1; i <= 1; i++) {
+        idleAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowwalking-" + std::to_string(i) + ".png"));
+    }
     for (int i = 1; i <= 4; i++) {
         attackingAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/skeletonbowattack-" + std::to_string(i) + ".png"));
     }
@@ -273,16 +273,16 @@ void ArcherSkelly::UpdateAnimation(float deltaTime) {
         currentFrameDuration = &attackFrameDuration;
         looping = true;  // Attacks shouldn't loop
     }
-    // else if (isJumping || isFalling || std::abs(VelocityX) > 0.1f) {
-    //     currentState = WALKING;
-    //     currentAnimation = &walkAnimation;
-    //     currentFrameDuration = &walkFrameDuration;
-    // }
-    // else {
-    //     currentState = IDLE;
-    //     currentAnimation = &idleAnimation;
-    //     currentFrameDuration = &idleFrameDuration;
-    // }
+    else if (isJumping || isFalling || std::abs(VelocityX) > 0.1f) {
+        currentState = WALKING;
+        currentAnimation = &walkAnimation;
+        currentFrameDuration = &walkFrameDuration;
+    }
+    else {
+        currentState = IDLE;
+        currentAnimation = &idleAnimation;
+        currentFrameDuration = &idleFrameDuration;
+    }
 
     // Update animation frames
     if (currentAnimation && !currentAnimation->empty()) {
