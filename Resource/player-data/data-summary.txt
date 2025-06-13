@@ -2,7 +2,7 @@
 # Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage
 # MAX data 3
 
-+~-~-~-~0~0
+XXXXX~2025/06/14  02:28~2025/06/14  02:28~11.382108~0~1
 +~-~-~-~0~0
 +~-~-~-~0~0
 +~-~-~-~0~0

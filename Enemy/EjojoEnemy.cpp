@@ -107,6 +107,7 @@ void EjojoEnemy::Update(float deltaTime) {
                     if (SelectProfileScene::isSaved) {
                         auto* newdata = new SelectProfileScene::textData();
                         newdata->level = scene->MapId;
+                        newdata->coin_counts = scene->GetMoney();
                         SelectProfileScene::WriteProfileData(newdata);
                         delete newdata;
                     }

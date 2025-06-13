@@ -92,25 +92,75 @@ void SelectProfileScene::Initialize() {
         });
     }
 
-    for (int i = 1; i <= MAXprofile; i++) {
-        btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*3/2, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
-        btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, i));
-        AddNewControlObject(btn);
-        AddNewObject(new Engine::Label(playerData[i-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
-    }
+    //profile 1
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*(3+4/2), 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*4, PlayScene::BlockSize*2);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 1));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label(playerData[1-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize*(4/2), 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 
-    //trash bin
-    for (int i = 1; i <= MAXprofile; i++) {
-        btn = new Engine::ImageButton("start/sampah.png", "stage-select/floor.png", halfW + PlayScene::BlockSize*2, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize, PlayScene::BlockSize);
-        btn->SetOnClickCallback(std::bind(&SelectProfileScene::RemoveOnClick, this, i));
-        AddNewControlObject(btn);
-    }
+    AddNewObject(new Engine::Label("Created     : " + playerData[1-1].Created, "pirulen.ttf", PlayScene::BlockSize/8, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize * 0.5, 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.65), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Last played : " + playerData[1-1].Last_Played, "pirulen.ttf", PlayScene::BlockSize/8, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize * 0.5, 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.90), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Stage       : " + playerData[1-1].Stage, "pirulen.ttf", PlayScene::BlockSize/8, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize * 0.5, 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 1.15), 10, 255, 255, 255, 0.0, 0.5));
+
+    //trash 1
+    btn = new Engine::ImageButton("start/sampah.png", "start/sampah-pressed.png", halfW - PlayScene::BlockSize*(3+4/2) - PlayScene::BlockSize*(1 + 0.0625), 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize/2 , PlayScene::BlockSize, PlayScene::BlockSize);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::RemoveOnClick, this, 1));
+    AddNewControlObject(btn);
 
 
-    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*3/2, 6*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
+    //profile 2
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW + PlayScene::BlockSize*(2/2), 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*4, PlayScene::BlockSize*2);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 2));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label(playerData[2-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize*(4/2), 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
+
+    AddNewObject(new Engine::Label("Created     : " + playerData[2-1].Created, "pirulen.ttf", PlayScene::BlockSize/8, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize * 0.5, 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.65), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Last played : " + playerData[2-1].Last_Played, "pirulen.ttf", PlayScene::BlockSize/8, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize * 0.5, 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.90), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Stage       : " + playerData[2-1].Stage, "pirulen.ttf", PlayScene::BlockSize/8, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize * 0.5, 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 1.15), 10, 255, 255, 255, 0.0, 0.5));
+
+    //trash 2
+    btn = new Engine::ImageButton("start/sampah.png", "start/sampah-pressed.png", halfW + 4*PlayScene::BlockSize*(3/2) + PlayScene::BlockSize*(1 + 0.0625), 1.5*PlayScene::BlockSize + (-0.5)*(h-(7*PlayScene::BlockSize))/5  + PlayScene::BlockSize/2, PlayScene::BlockSize, PlayScene::BlockSize);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::RemoveOnClick, this, 2));
+    AddNewControlObject(btn);
+
+
+    //profile 3
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*(3+4/2), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*4, PlayScene::BlockSize*2);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 3));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label(playerData[3-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize*(4/2), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
+
+    AddNewObject(new Engine::Label("Created     : " + playerData[3-1].Created, "pirulen.ttf", PlayScene::BlockSize/8, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize * 0.5, 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.65), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Last played : " + playerData[3-1].Last_Played, "pirulen.ttf", PlayScene::BlockSize/8, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize * 0.5, 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.90), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Stage       : " + playerData[3-1].Stage, "pirulen.ttf", PlayScene::BlockSize/8, halfW - PlayScene::BlockSize*(3+4/2) + PlayScene::BlockSize * 0.5, 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 1.15), 10, 255, 255, 255, 0.0, 0.5));
+
+    //trash 3
+    btn = new Engine::ImageButton("start/sampah.png", "start/sampah-pressed.png", halfW - PlayScene::BlockSize*(3+4/2) - PlayScene::BlockSize*(1 + 0.0625), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize/2 , PlayScene::BlockSize, PlayScene::BlockSize);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::RemoveOnClick, this, 3));
+    AddNewControlObject(btn);
+
+
+    //profile 4
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW + PlayScene::BlockSize*(2/2), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*4, PlayScene::BlockSize*2);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 2));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label(playerData[4-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize*(4/2), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
+
+    AddNewObject(new Engine::Label("Created     : " + playerData[4-1].Created, "pirulen.ttf", PlayScene::BlockSize/8, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize * 0.5, 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.65), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Last played : " + playerData[4-1].Last_Played, "pirulen.ttf", PlayScene::BlockSize/8, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize * 0.5, 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 0.90), 10, 255, 255, 255, 0.0, 0.5));
+    AddNewObject(new Engine::Label("Stage       : " + playerData[4-1].Stage, "pirulen.ttf", PlayScene::BlockSize/8, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize * 0.5, 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*(0.5 + 1.15), 10, 255, 255, 255, 0.0, 0.5));
+
+    //trash 4
+    btn = new Engine::ImageButton("start/sampah.png", "start/sampah-pressed.png", halfW + 4*PlayScene::BlockSize*(3/2) + PlayScene::BlockSize*(1 + 0.0625), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5  + PlayScene::BlockSize/2, PlayScene::BlockSize, PlayScene::BlockSize);
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::RemoveOnClick, this, 4));
+    AddNewControlObject(btn);
+
+
+    //back button
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*3/2, 5.5*PlayScene::BlockSize + 3.5*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&SelectProfileScene::BackOnClick, this));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Back", "pirulen.ttf", PlayScene::BlockSize/3, halfW, 6*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Back", "pirulen.ttf", PlayScene::BlockSize/3, halfW, 5.5*PlayScene::BlockSize + 3.5*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 
     //bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
     if (!AudioHelper::sharedBGMInstance ||

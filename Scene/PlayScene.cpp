@@ -88,12 +88,13 @@ void PlayScene::Initialize() {
 
     isCamLocked = false;
     total_time = .0f;
+    total_money = 0;
+
     Camera.x=0,Camera.y=0;
     mapState.clear();
     keyStrokes.clear();
     ticks = 0;
     deathCountDown = -1;
-    money = 150;
     SpeedMult = 1;
     Gravity = 18.0f * BlockSize;
 
@@ -274,6 +275,7 @@ void PlayScene::Update(float deltaTime) {
                 if (SelectProfileScene::isSaved) {
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = MapId;
+                    newdata->coin_counts = total_money;
                     SelectProfileScene::WriteProfileData(newdata);
                     delete newdata;
                 }
@@ -447,6 +449,7 @@ void PlayScene::Update(float deltaTime) {
                 if (SelectProfileScene::isSaved) {
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = MapId;
+                    newdata->coin_counts = total_money;
                     SelectProfileScene::WriteProfileData(newdata);
                     delete newdata;
                 }
@@ -560,13 +563,15 @@ void PlayScene::OnKeyDown(int keyCode) {
         }
     }
 }
+
 int PlayScene::GetMoney() const {
-    return money;
+    return total_money;
 }
-void PlayScene::EarnMoney(int money) {
-    this->money += money;
-    UIMoney->Text = std::string("$") + std::to_string(this->money);
+
+void PlayScene::EarnMoney(int m) {
+    this->total_money += m;
 }
+
 void PlayScene::ReadMap() {
     if (MapId==5)MazeCreator();
     std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
