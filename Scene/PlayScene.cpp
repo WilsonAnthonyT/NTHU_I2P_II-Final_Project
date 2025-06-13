@@ -266,8 +266,7 @@ void PlayScene::Initialize() {
     }
 
     else if (MapId == 3) {
-        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-1.png");
-        backgroundIMG2 = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-2.png");
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
         dialogs.push_back({
             "Wow, this ship is enormous!",
             3.0f,
