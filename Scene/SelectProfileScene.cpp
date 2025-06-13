@@ -79,12 +79,13 @@ void SelectProfileScene::Initialize() {
 
     while (playerData.size() < MAXprofile) {
         playerData.push_back( {
-                    "+",
-                    "-",
-                    "-",
-                    "-",
-                    "0",
-                });
+            "+",
+            "-",
+            "-",
+            "-",
+            "0",
+            "0"
+        });
     }
 
     for (int i = 1; i <= MAXprofile; i++) {
@@ -130,12 +131,10 @@ void SelectProfileScene::RemoveOnClick(int ID) {
     playerData[ID-1].Created = "-";
     playerData[ID-1].Last_Played = "-";
     playerData[ID-1].Duration = "-";
+    playerData[ID-1].Coins = "0";
+    playerData[ID-1].Stage = "0";
 
-    auto *newdata = new textData();
-    newdata->level = 0;
-
-    WriteProfileData(newdata);
-    delete newdata;
+    WriteProfileData(nullptr);
 
     Engine::GameEngine::GetInstance().ChangeScene("profile-select");
 }
@@ -199,7 +198,10 @@ void SelectProfileScene::WriteProfileData(textData* allplayers) {
         << "# MAX data 3" << std::endl
         << std::endl;
 
-        playerData[profileID-1].Stage = std::to_string(allplayers->level);
+        if (allplayers) {
+            playerData[profileID-1].Stage = std::to_string(allplayers->level);
+            playerData[profileID-1].Coins = std::to_string(std::stoi(playerData[profileID-1].Coins) + allplayers->coin_counts);
+        }
 
         for (auto& it : SelectProfileScene::playerData) {
             ofs
@@ -207,6 +209,7 @@ void SelectProfileScene::WriteProfileData(textData* allplayers) {
             << it.Created << "~"
             << it.Last_Played << "~"
             << it.Duration << "~"
+            << it.Coins << "~"
             << it.Stage << std::endl;
         }
 

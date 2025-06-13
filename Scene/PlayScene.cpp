@@ -29,6 +29,7 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "SelectProfileScene.h"
+#include "StageSelectScene.hpp"
 #include "Enemy/EjojoBoss.h"
 #include "Enemy/ArcherSkelly.h"
 #include "Enemy/EjojoEnemy.h"
@@ -87,6 +88,7 @@ void PlayScene::Initialize() {
 
     isCamLocked = false;
 
+    total_time = .0f;
     Camera.x=0,Camera.y=0;
     mapState.clear();
     keyStrokes.clear();
@@ -258,6 +260,9 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
+    float clampedDT = std::min(deltaTime, Engine::GameEngine::GetInstance().GetDeltaTimeThreshold());
+    total_time += clampedDT;
+
     if (MapId == 1) {
         if (EnemyGroup->GetObjects().empty() && enemyWave.empty()) {
             transitionTick += deltaTime;
@@ -442,11 +447,6 @@ void PlayScene::Update(float deltaTime) {
                     SelectProfileScene::WriteProfileData(newdata);
                     delete newdata;
                 }
-                //----------------------------------------
-                //this 3 lines is for updating the profile.
-                auto* newdata = new SelectProfileScene::textData();
-                newdata->level = MapId;
-                SelectProfileScene::WriteProfileData(newdata);
                 //----------------------------------------
 
                 Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -1498,6 +1498,27 @@ void PlayScene::CreatePauseUI() {
 
 //-------For Exit, restart, and Continue Button------------------
 void PlayScene::BackOnClick(int state) {
+
+    std::time_t now = std::time(nullptr);
+
+    // Convert to local time
+    std::tm tm{};
+
+    #ifdef _WIN32
+        localtime_s(&tm, &now);  // Windows
+    #else
+        localtime_r(&now, &tm);  // Linux / macOS
+    #endif
+
+    // Format date with slashes: YYYY/MM/DD
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+    std::string date_time = oss.str();
+
+    SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Last_Played = date_time;
+    SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration = std::to_string(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration) + total_time);
+    SelectProfileScene::WriteProfileData(nullptr);
+
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
 

@@ -77,7 +77,7 @@ private:
 protected:
     int money;
     int SpeedMult;
-
+    float total_time;
 public:
     enum TileType {
         TILE_AIR,

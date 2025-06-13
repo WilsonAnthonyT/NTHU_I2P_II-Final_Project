@@ -103,7 +103,7 @@ void LeaderboardScene::Update(float deltaTime) {
         std::time_t now = std::time(nullptr);
 
         // Convert to local time
-        std::tm tm;
+        std::tm tm{};
         #ifdef _WIN32
                 localtime_s(&tm, &now);  // Windows
         #else
@@ -115,12 +115,13 @@ void LeaderboardScene::Update(float deltaTime) {
         oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
         dateNtime = oss.str();
 
-        auto& it = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1];
-        it.Name = Name;
-        it.Created = dateNtime;
-        it.Last_Played = "-";
-        it.Duration = "0";
-        it.Stage = "1";
+        auto& player_data = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1];
+        player_data.Name = Name;
+        player_data.Created = dateNtime;
+        player_data.Last_Played = "-";
+        player_data.Duration = "0";
+        player_data.Coins = "0";
+        player_data.Stage = "1";
 
         Name.clear();
         dateNtime.clear();
@@ -142,18 +143,9 @@ void LeaderboardScene::Update(float deltaTime) {
                 << it.Created << "~"
                 << it.Last_Played << "~"
                 << it.Duration << "~"
+                << it.Coins << "~"
                 << it.Stage << std::endl;
             }
-
-            for (auto& it : SelectProfileScene::playerData) {
-                std::cout
-                << it.Name << "."
-                << it.Created << "."
-                << it.Last_Played << "."
-                << it.Duration << "."
-                << it.Stage << std::endl;
-            }
-
 
             ofs.close();
 

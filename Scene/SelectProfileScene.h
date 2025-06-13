@@ -18,6 +18,7 @@ public:
         std::string Created;
         std::string Last_Played;
         std::string Duration;
+        std::string Coins;
         std::string Stage;
     };
     static std::vector<ProfileData> playerData;
@@ -31,6 +32,8 @@ public:
 
     struct textData {
         int level;
+        int coin_counts;
+        float playtime;
     };
 
     //static textData* ReadProfileData(const int);

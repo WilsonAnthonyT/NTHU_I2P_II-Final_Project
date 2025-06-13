@@ -68,6 +68,11 @@ namespace Engine {
         }
 
         al_set_window_title(display, title);
+        if (icon) {
+            static std::shared_ptr<ALLEGRO_BITMAP> iconReference = Resources::GetInstance().GetBitmap(icon);
+            al_set_display_icon(display, iconReference.get());
+            LOG(INFO) << "Loaded window icon from: " << icon;
+        }
 
         // Set alpha blending mode.
         al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
@@ -294,43 +299,64 @@ namespace Engine {
 
     void GameEngine::ToggleFullscreen() {
         GameEngine& engine = GetInstance();
-        al_destroy_display(engine.display);
 
+        // Remove only the display event source
+        al_unregister_event_source(engine.event_queue, al_get_display_event_source(engine.display));
+
+        // Save old state
+        bool wasFullscreen = fullscreen;
         fullscreen = !fullscreen;
 
+        // Get monitor info
         ALLEGRO_MONITOR_INFO info;
         al_get_monitor_info(0, &info);
 
-        // Calculate centered position for windowed mode
+        // Compute new dimensions
         int displayWidth = fullscreen ? (info.x2 - info.x1) : screenW;
         int displayHeight = fullscreen ? (info.y2 - info.y1) : screenH;
 
+        // Set flags and position
         al_set_new_display_flags(fullscreen ? ALLEGRO_FULLSCREEN_WINDOW : ALLEGRO_WINDOWED);
+
+        if (!fullscreen) {
+            int windowX = info.x1 + ((info.x2 - info.x1) - screenW) / 2;
+            int windowY = info.y1 + ((info.y2 - info.y1) - screenH) / 2;
+            al_set_new_window_position(windowX, windowY);
+        }
+
+        // Destroy old display
+        int prev_screenW = screenW;
+        int prev_screenH = screenH;
+        al_destroy_display(engine.display);
 
         // Create new display
         engine.display = al_create_display(displayWidth, displayHeight);
         if (!engine.display) {
-            // If failed, revert to previous state
-            fullscreen = !fullscreen;
+            // Try to restore previous state
+            fullscreen = wasFullscreen;
             al_set_new_display_flags(fullscreen ? ALLEGRO_FULLSCREEN_WINDOW : ALLEGRO_WINDOWED);
-            engine.display = al_create_display(engine.screenW, engine.screenH);
+            engine.display = al_create_display(prev_screenW, prev_screenH);
             if (!engine.display) {
-                throw Allegro5Exception("Failed to recreate display");
+                throw Allegro5Exception("Failed to recreate display after fullscreen toggle");
             }
         }
 
-        // Restore window properties
+        // Restore window title
         al_set_window_title(engine.display, engine.title);
-
-        if (!fullscreen) {
-            // Center the window
-            int windowX = info.x1 + (info.x2 - info.x1 - screenW) / 2;
-            int windowY = info.y1 + (info.y2 - info.y1 - screenH) / 2;
-            al_set_new_window_position(windowX, windowY);
+        if (icon) {
+            static std::shared_ptr<ALLEGRO_BITMAP> iconReference = Resources::GetInstance().GetBitmap(icon);
+            al_set_display_icon(display, iconReference.get());
+            LOG(INFO) << "Loaded window icon from: " << icon;
         }
-        else al_set_window_position(engine.display, 0, 0);
 
+        // Reset blender
         al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+
+        // Register new display event source
         al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
+
+        // Re-register other known sources if necessary
+        al_register_event_source(engine.event_queue, al_get_keyboard_event_source());
+        al_register_event_source(engine.event_queue, al_get_mouse_event_source());
     }
 }
