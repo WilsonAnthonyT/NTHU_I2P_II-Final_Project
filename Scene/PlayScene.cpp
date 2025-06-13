@@ -438,21 +438,22 @@ void PlayScene::Update(float deltaTime) {
             if (transitionTick >= desiredTransitionTick) {
                 MapId++;
 
-            //this 3 lines is for updating the profile.
-            if (SelectProfileScene::isSaved) {
-                auto* newdata = new SelectProfileScene::textData();
-                newdata->level = MapId;
-                SelectProfileScene::WriteProfileData(newdata);
-                delete newdata;
-            }
-            //----------------------------------------
+                //this 3 lines is for updating the profile.
+                if (SelectProfileScene::isSaved) {
+                    auto* newdata = new SelectProfileScene::textData();
+                    newdata->level = MapId;
+                    SelectProfileScene::WriteProfileData(newdata);
+                    delete newdata;
+                }
+                //----------------------------------------
                 //this 3 lines is for updating the profile.
                 auto* newdata = new SelectProfileScene::textData();
                 newdata->level = MapId;
                 SelectProfileScene::WriteProfileData(newdata);
                 //----------------------------------------
 
-            Engine::GameEngine::GetInstance().ChangeScene("story");
+                Engine::GameEngine::GetInstance().ChangeScene("story");
+            }
         }
     }
 }
