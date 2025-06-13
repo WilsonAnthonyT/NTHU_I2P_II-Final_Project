@@ -49,8 +49,10 @@
 #include "InteractiveBlock/Buton.h"
 #include "InteractiveBlock/Portal.h"
 #include "InteractiveBlock/Door.h"
+#include "InteractiveBlock/GasMachine.h"
 #include "InteractiveBlock/Sensor.h"
 #include "Player/JetpackPlayerA.h"
+#include "Player/JetpackPlayerB.h"
 #include "Player/MazePlayerA.h"
 #include "Player/MazePlayerB.h"
 #include "Player/TankPlayerA.h"
@@ -181,7 +183,12 @@ void PlayScene::Initialize() {
     deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
     Engine::Resources::GetInstance().GetBitmap("lose/benjamin-happy.png");
     // Start BGM.
+    if (AudioHelper::sharedBGMInstance) {
+        AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
+        AudioHelper::sharedBGMInstance = nullptr;
+    }
     bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
+
     CreatePauseUI();
 
     //dialogue=======================================================================
@@ -190,22 +197,54 @@ void PlayScene::Initialize() {
         throw std::runtime_error("Failed to load font: Resource/fonts/pirulen.ttf");
     }
     std::vector<PlayScene::Dialog> dialogs;
-    dialogs.push_back({
-        "Hello, adventurer!",
-        3.0f,
-        "play/arwen.png",
-        "Arwen"
-    });
-    dialogs.push_back({
-        "The castle is dangerous!",
-        3.0f,
-        "play/bryan.png",
-        "Bryan"
-    });
+    if (MapId == 1) {
+        dialogs.push_back({
+            "Hello, adventurer!",
+            3.0f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "The castle is dangerous!",
+            3.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+    }
+    else if (MapId == 2) {
+        dialogs.push_back({
+            "Hello, adventurer!",
+            3.0f,
+            "play/arwen.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "The castle is dangerous!",
+            3.0f,
+            "play/bryan.png",
+            "Bryan"
+        });
+    }
+    else if (MapId == 3) {
+
+    }
+    else if (MapId == 4) {
+
+    }
+    else if (MapId == 5) {
+
+    }
+    else if (MapId == 6) {
+
+    }
     StartDialog(dialogs, true);
     //================================================================================
     //for transition
     transitionTick = 0.0f;
+
+    //for specific
+    TotalMiniEjojo = 0;
+    TotalArcherSkelly = 0;
 }
 void PlayScene::Terminate() {
     if (dialogFont) {
@@ -226,9 +265,12 @@ void PlayScene::Update(float deltaTime) {
                 MapId++;
 
                 //this 3 lines is for updating the profile.
-                auto* newdata = new SelectProfileScene::textData();
-                newdata->level = MapId;
-                SelectProfileScene::WriteProfileData(newdata);
+                if (SelectProfileScene::isSaved) {
+                    auto* newdata = new SelectProfileScene::textData();
+                    newdata->level = MapId;
+                    SelectProfileScene::WriteProfileData(newdata);
+                    delete newdata;
+                }
                 //----------------------------------------
 
                 Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -391,14 +433,24 @@ void PlayScene::Update(float deltaTime) {
         if (Camera.x > MapWidth * BlockSize - screenWidth)Camera.x = MapWidth * BlockSize - screenWidth;
         if (Camera.y < 0)Camera.y = 0;
         if (Camera.y > MapHeight * BlockSize - screenHeight)Camera.y = MapHeight * BlockSize - screenHeight;
-        if (MapId == 3) {
-            MapId++;
+        if (MapId == 3 || MapId == 4 || MapId == 5) {
+            transitionTick += deltaTime;
+            if (transitionTick >= desiredTransitionTick) {
+                MapId++;
 
             //this 3 lines is for updating the profile.
-            auto* newdata = new SelectProfileScene::textData();
-            newdata->level = MapId;
-            SelectProfileScene::WriteProfileData(newdata);
+            if (SelectProfileScene::isSaved) {
+                auto* newdata = new SelectProfileScene::textData();
+                newdata->level = MapId;
+                SelectProfileScene::WriteProfileData(newdata);
+                delete newdata;
+            }
             //----------------------------------------
+                //this 3 lines is for updating the profile.
+                auto* newdata = new SelectProfileScene::textData();
+                newdata->level = MapId;
+                SelectProfileScene::WriteProfileData(newdata);
+                //----------------------------------------
 
             Engine::GameEngine::GetInstance().ChangeScene("story");
         }
@@ -548,6 +600,8 @@ void PlayScene::ReadMap() {
             case 's': mapData.push_back('s'); break;
             case 'a': mapData.push_back('a'); break;
             case '<': mapData.push_back('<'); break;
+            case 'g': mapData.push_back('g'); break;
+            case '>': mapData.push_back('>'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -635,6 +689,12 @@ void PlayScene::ReadMap() {
                 case '<':
                     mapState[i][j]=TILE_AIR;
                     break;
+                case '>':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case 'g':
+                    mapState[i][j]=TILE_AIR;
+                    break;
 
                 default:
                     mapState[i][j]=TILE_AIR;
@@ -712,9 +772,13 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }else if (num == 'D') {
-                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                InteractiveBlockGroup->AddNewObject(new Door("play/enemy-11.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE));
+                if (mapData[idx-1]=='0') {
+                    InteractiveBlockGroup->AddNewObject(new Door("play/dor.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE,false));
+                }else if (mapData[idx-MapWidth]=='0') {
+                    InteractiveBlockGroup->AddNewObject(new Door("play/dor1.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE,true));
+                }
             }else if (num == 'N') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
@@ -753,11 +817,22 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new ArcherSkelly(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
             }
+            else if (num == 'g') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new GasMachine("play/gaschamber.png",SpawnCoordinate.x, SpawnCoordinate.y));
+            }
             else if (num == '<') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player2 = (new JetpackPlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
+            }
+            else if (num == '>') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                player1 = (new JetpackPlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                PlayerGroup->AddNewObject(player1);
             }
         }
     }
@@ -1305,6 +1380,7 @@ void PlayScene::ReadEnemyWave() {
         std::cerr << "[ERROR] Could not open ENEMY WAVE TXT for reading!" << std::endl;
     }
 }
+
 void PlayScene::ConstructUI() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;

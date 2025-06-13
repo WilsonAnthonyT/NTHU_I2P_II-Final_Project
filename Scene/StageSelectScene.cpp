@@ -73,11 +73,15 @@ void StageSelectScene::Initialize() {
     // sliderSFX->SetValue(AudioHelper::SFXVolume);
 
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
-    bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    // bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    if (!AudioHelper::sharedBGMInstance ||
+    !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
+        AudioHelper::sharedBGMInstance = AudioHelper::PlaySample("Highscores_bgm.mp3", true, AudioHelper::BGMVolume);
+    }
 }
 void StageSelectScene::Terminate() {
-    AudioHelper::StopSample(bgmInstance);
-    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    // AudioHelper::StopSample(bgmInstance);
+    // bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
     IScene::Terminate();
 }
 void StageSelectScene::BackOnClick() {

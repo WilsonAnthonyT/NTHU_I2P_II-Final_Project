@@ -83,6 +83,7 @@ private:
     float phaseTransitionDuration = 0;
     float phaseTransitionTimer = 0;
     bool isTransitioning = 0;
+    bool phaseChangedDuringTransition = false;
 
     // Movement
     Engine::Point movementBounds;

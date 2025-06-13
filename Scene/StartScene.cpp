@@ -14,6 +14,9 @@
 #include "Engine/Resources.hpp"
 #include "PlayScene.hpp"
 #include "Scene/StartScene.h"
+
+#include <iostream>
+
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
@@ -79,6 +82,12 @@ void StartScene::Initialize() {
         AddNewControlObject(btn);
     }
     AddNewObject(new Engine::Image("play/brywen.png",w,h,PlayScene::BlockSize*6.5,PlayScene::BlockSize*6.5,1,1));
+
+    if (!AudioHelper::sharedBGMInstance ||
+    !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
+        AudioHelper::sharedBGMInstance = AudioHelper::PlaySample("Highscores_bgm.mp3", true, AudioHelper::BGMVolume);
+    }
+
 }
 void StartScene::Terminate() {
     IScene::Terminate();

@@ -59,7 +59,7 @@ bool Bullet::IsCollision(float x, float y) {
         if (EnemyLeft < bulletRight &&
             EnemyRight > bulletLeft &&
             EnemyTop < bulletBottom &&
-            EnemyBottom > bulletTop) {
+            EnemyBottom > bulletTop && enemy->getHp() > 0) {
             OnExplode(enemy);
             enemy->Hit(damage, Position.x, "range");
             return true;

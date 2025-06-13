@@ -5,11 +5,10 @@
 #include "LOG.hpp"
 #include "Resources.hpp"
 
-// float AudioHelper::BGMVolume = 0.01;
-// float AudioHelper::SFXVolume = 0.01;
+std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> AudioHelper::sharedBGMInstance = nullptr;
 
-float AudioHelper::BGMVolume = 0.05;
-float AudioHelper::SFXVolume = 0.05;
+float AudioHelper::BGMVolume = 0.01f;
+float AudioHelper::SFXVolume = 0.01f;
 ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string &audio) {
     ALLEGRO_SAMPLE *sample = Engine::Resources::GetInstance().GetSample(audio).get();
     ALLEGRO_SAMPLE_ID id;
@@ -73,4 +72,13 @@ void AudioHelper::StopSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_ins
         Engine::LOG(Engine::INFO) << "failed to stop audio (sample)";
     else
         Engine::LOG(Engine::INFO) << "stopped audio (sample)";
+}
+
+//for pause and resume
+void AudioHelper::PauseSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance) {
+    if (sample_instance) al_set_sample_instance_playing(sample_instance.get(), false);
+}
+
+void AudioHelper::ResumeSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance) {
+    if (sample_instance) al_set_sample_instance_playing(sample_instance.get(), true);
 }

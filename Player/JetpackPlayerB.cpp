@@ -2,7 +2,7 @@
 // Created by User on 13/06/2025.
 //
 
-#include "JetpackPlayerA.h"
+#include "JetpackPlayerB.h"
 #include "RangePlayer.hpp"
 
 #include <string>
@@ -15,11 +15,11 @@
 #include "Scene/PlayScene.hpp"
 #include "Weapon/RangeWeapon.h"
 
-JetpackPlayerA::JetpackPlayerA(float x, float y) : Player("play/jetpackA-inactive.png",x,y, PlayScene::BlockSize * 2.25,100) {
+JetpackPlayerB::JetpackPlayerB(float x, float y) : Player("play/jetpackB-inactive.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
-    weapon = new RangeWeapon("play/guns.png",x,y * 1.25f,.4,30,this, PlayScene::BlockSize*11);
+    weapon = new RangeWeapon("play/guns.png",x,y * 1.5f,.4,30,this, PlayScene::BlockSize*11);
     scene->WeaponGroup->AddNewObject(weapon);
-    Size = Engine::Point(PlayScene::BlockSize * 0.48, PlayScene::BlockSize * 0.66);
+    Size = Engine::Point(PlayScene::BlockSize * 0.55, PlayScene::BlockSize * 0.71);
 
     // Jetpack-specific properties
     jetpackForce = PlayScene::BlockSize * 3;          // Upward force when jetpack is active
@@ -28,13 +28,13 @@ JetpackPlayerA::JetpackPlayerA(float x, float y) : Player("play/jetpackA-inactiv
     fuelRechargeRate = 1.5f;        // Fuel recharge rate per second
     fuelRechargeDelay = 1.0f;       // Delay before recharging starts after last use
     fuelRechargeTimer = 0.0f;       // Timer for recharging delay
-    gravityScale = 1.0f;            // Normal gravity when not using jetpack
+    gravityScale = PlayScene::Gravity;            // Normal gravity when not using jetpack
     horizontalSpeed = PlayScene::BlockSize * 2.125f;       // Horizontal movement speed
     fallSpeed = PlayScene::BlockSize * 3;             // Maximum falling speed
 }
 
 
-void JetpackPlayerA::Update(float deltaTime) {
+void JetpackPlayerB::Update(float deltaTime) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (!scene) return;
 
@@ -48,10 +48,9 @@ void JetpackPlayerA::Update(float deltaTime) {
 
     // Horizontal movement
     if (movementEnabled) {
-        if (al_key_down(&keyState, ALLEGRO_KEY_A)) inputVelocity.x -= 1;
-        if (al_key_down(&keyState, ALLEGRO_KEY_D)) inputVelocity.x += 1;
-
-        if (al_key_down(&keyState, ALLEGRO_KEY_S)) {
+        if (al_key_down(&keyState, ALLEGRO_KEY_J)) inputVelocity.x -= 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_L)) inputVelocity.x += 1;
+        if (al_key_down(&keyState, ALLEGRO_KEY_K)) {
             goDown = true;
             goDownTimer = 0.2f; // Reset timer to 0.5 seconds
         }
@@ -88,14 +87,14 @@ void JetpackPlayerA::Update(float deltaTime) {
 
     // Jetpack control
     bool jetpackActive = false;
-    if (movementEnabled && al_key_down(&keyState, ALLEGRO_KEY_W) && jetpackFuel > 0) {
-        this->bmp = Engine::Resources::GetInstance().GetBitmap("play/jetpackA-active.png");
+    if (movementEnabled && al_key_down(&keyState, ALLEGRO_KEY_I) && jetpackFuel > 0) {
+        this->bmp = Engine::Resources::GetInstance().GetBitmap("play/jetpackB-active.png");
         jetpackActive = true;
         verticalVelocity = -jetpackForce; // Apply upward force
         jetpackFuel -= deltaTime; // Consume fuel
         fuelRechargeTimer = fuelRechargeDelay; // Reset recharge timer
     } else {
-        this->bmp = Engine::Resources::GetInstance().GetBitmap("play/jetpackA-inactive.png");
+        this->bmp = Engine::Resources::GetInstance().GetBitmap("play/jetpackB-inactive.png");
         // Apply gravity when jetpack is not active
         verticalVelocity += PlayScene::Gravity * gravityScale * deltaTime;
 
@@ -163,7 +162,7 @@ void JetpackPlayerA::Update(float deltaTime) {
     }
 }
 
-void JetpackPlayerA::Draw() const {
+void JetpackPlayerB::Draw() const {
     Player::Draw();
     if (Engine::IScene::DebugMode) {
         const float healthBarWidth = abs(Size.x*3/4);

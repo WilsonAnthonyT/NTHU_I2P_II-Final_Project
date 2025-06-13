@@ -104,9 +104,12 @@ void EjojoEnemy::Update(float deltaTime) {
                     scene->MapId++;
 
                     //this 3 lines is for updating the profile.
-                    auto* newdata = new SelectProfileScene::textData();
-                    newdata->level = scene->MapId;
-                    SelectProfileScene::WriteProfileData(newdata);
+                    if (SelectProfileScene::isSaved) {
+                        auto* newdata = new SelectProfileScene::textData();
+                        newdata->level = scene->MapId;
+                        SelectProfileScene::WriteProfileData(newdata);
+                        delete newdata;
+                    }
                     //----------------------------------------
 
                     Engine::GameEngine::GetInstance().ChangeScene("story");

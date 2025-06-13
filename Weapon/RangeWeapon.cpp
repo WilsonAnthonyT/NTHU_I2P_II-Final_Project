@@ -12,6 +12,7 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/Sprite.hpp"
 #include "Player/JetpackPlayerA.h"
+#include "Player/JetpackPlayerB.h"
 #include "Player/MeleePlayer.hpp"
 #include "Player/RangePlayer.hpp"
 #include "Scene/PlayScene.hpp"
@@ -24,9 +25,11 @@ RangeWeapon::RangeWeapon(std::string img, float x, float y, float fr, int magazi
 
 void RangeWeapon::Update(float deltaTime) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
+
     Position.y=player->Position.y+PlayScene::BlockSize*0.05;
     if (player->Visible) this->Visible = true;
     else this->Visible = false;
+
     flipped=player->flipped;
     if (flipped) {
         Size.x = -fabs(Size.x);
@@ -40,6 +43,7 @@ void RangeWeapon::Update(float deltaTime) {
     MeleePlayer *player1 = dynamic_cast<MeleePlayer *>(player);
     RangePlayer *player2 = dynamic_cast<RangePlayer *>(player);
     JetpackPlayerA *player3 = dynamic_cast<JetpackPlayerA *>(player);
+    JetpackPlayerB *player4 = dynamic_cast<JetpackPlayerB *>(player);
 
     if (al_key_down(&keyState, ALLEGRO_KEY_C) && Cooldown<=0 && (player2||player3)) {
         AudioHelper::PlayAudio("laser.wav");
@@ -50,7 +54,7 @@ void RangeWeapon::Update(float deltaTime) {
         Cooldown-=deltaTime;
     }
 
-    if (al_key_down(&keyState, ALLEGRO_KEY_N) && Cooldown<=0 && player1) {
+    if (al_key_down(&keyState, ALLEGRO_KEY_N) && Cooldown<=0 && (player1||player4)) {
         AudioHelper::PlayAudio("laser.wav");
         Cooldown = FireRate;
         float bulletdir = abs(Size.x/2) * (flipped? -1.0f : 1.0f);

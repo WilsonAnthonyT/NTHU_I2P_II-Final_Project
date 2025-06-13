@@ -158,8 +158,14 @@ add_executable(Final-Project
     EnemyBullet/ArrowBullet.h
     Enemy/EjojoBoss.cpp
     Enemy/EjojoBoss.h
-        Player/JetpackPlayerA.cpp
-        Player/JetpackPlayerA.h
+    Player/JetpackPlayerA.cpp
+    Player/JetpackPlayerA.h
+    Player/JetpackPlayerB.cpp
+    Player/JetpackPlayerB.h
+    InteractiveBlock/GasMachine.cpp
+    InteractiveBlock/GasMachine.h
+    InteractiveBlock/Gas.cpp
+    InteractiveBlock/Gas.h
 )
 
 IF (WIN32)

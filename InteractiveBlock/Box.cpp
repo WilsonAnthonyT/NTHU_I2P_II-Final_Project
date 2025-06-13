@@ -114,24 +114,34 @@ bool Box::IsCollision(float x, float y) {
     }
 
     for (auto& it : scene->InteractiveBlockGroup->GetObjects()) {
-        Box* friends = dynamic_cast<Box*>(it);
+        Box* box = dynamic_cast<Box*>(it);
+        Door* dor = dynamic_cast<Door*>(it);
         // Skip if enemy is not visible, is the healer itself, or invalid
-        if (!friends || !friends->Visible || friends == this) continue;
-        int half_P2 = abs(friends->Size.x) / 2;
+        if ((box && box->Visible && box != this) || (dor && dor->Visible && dor->currState == Door::CLOSE)) {
+            float objleft;
+            float objright;
+            float objtop;
+            float objbottom;
+            if (box) {
+                objleft = box->Position.x - box->Size.x/2 + PlayScene::BlockSize/16;
+                objright = box->Position.x + box->Size.x/2 - PlayScene::BlockSize/16;
+                objtop = box->Position.y;
+                objbottom = box->Position.y + box->Size.y;
+            }
+            if (dor) {
+                objleft = dor->Position.x - dor->Size.x/2 + PlayScene::BlockSize/16;
+                objright = dor->Position.x + dor->Size.x/2 - PlayScene::BlockSize/16;
+                objtop = dor->Position.y - dor->Size.y/2;
+                objbottom = dor->Position.y + dor->Size.y/2;
+            }
 
-        float p2_Left = friends->Position.x - half_P2;
-        float p2_Right = friends->Position.x + half_P2;
-        float p2_Top = friends->Position.y;
-        float p2_Bottom = friends->Position.y + friends->Size.y;
 
-        bool overlapX = left < p2_Right && right > p2_Left;
-        bool overlapY = top < p2_Bottom && bottom > p2_Top;
+            bool overlapX = left < objright && right > objleft;
+            bool overlapY = top < objbottom && bottom > objtop;
 
-        if (overlapX && overlapY) {
-            return true;
+            if (overlapX && overlapY) return true;
         }
     }
-
     return false;
 }
 

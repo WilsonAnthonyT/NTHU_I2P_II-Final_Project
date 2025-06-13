@@ -191,6 +191,8 @@ public:
 
     //for level 2 only
     int TotalMiniEjojo = 0;
+    //for boss only
+    int TotalArcherSkelly = 0;
 
     //for transition
     float transitionTick = 0.0f;

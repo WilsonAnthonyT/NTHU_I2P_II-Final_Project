@@ -19,5 +19,14 @@ public:
     static void ChangeSampleVolume(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float volume);
     static void ChangeSamplePosition(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance, float position);
     static unsigned int GetSampleLength(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance);
+
+    //trying this
+    static void PauseSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance);
+    static void ResumeSample(std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sample_instance);
+
+    //trying
+    static std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> sharedBGMInstance;
+
+
 };
 #endif   // AUDIOHELPER_HPP

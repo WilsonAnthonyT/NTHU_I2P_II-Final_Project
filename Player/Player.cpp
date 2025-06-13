@@ -3,6 +3,8 @@
 #include <iostream>
 #include <allegro5/allegro_primitives.h>
 
+#include "JetpackPlayerA.h"
+#include "JetpackPlayerB.h"
 #include "Enemy/Enemy.hpp"
 #include "EnemyBullet/EnemyBullet.h"
 #include "Engine/IScene.hpp"
@@ -121,7 +123,13 @@ bool Player::IsCollision(float x, float y) {
                     return true;
                 }
                 // Special handling for platforms
-                else if (scene->mapState[yTile][xTile] == PlayScene::TILE_WPLATFORM) {
+                if (scene->mapState[yTile][xTile] == PlayScene::TILE_WPLATFORM) {
+                    JetpackPlayerA *A = dynamic_cast<JetpackPlayerA*>(this);
+                    JetpackPlayerB *B = dynamic_cast<JetpackPlayerB*>(this);
+                    if ((A && A->verticalVelocity < 0) ||
+                    (B && B->verticalVelocity < 0)) {
+                        return false; // Skip this platform tile
+                    }
                     // Only collide if player's bottom is touching the platform's top
                     float platformTop = yTile * PlayScene::BlockSize;
 
@@ -146,16 +154,18 @@ bool Player::IsCollision(float x, float y) {
             float objright;
             float objtop;
             float objbottom;
+            
             if (block) {
                 objleft = block->Position.x - block->Size.x/2 + PlayScene::BlockSize/16;
                 objright = block->Position.x + block->Size.x/2 - PlayScene::BlockSize/16;
                 objtop = block->Position.y;
                 objbottom = block->Position.y + block->Size.y;
-            } else if (dor) {
+            }
+            if (dor) {
                 objleft = dor->Position.x - dor->Size.x/2 + PlayScene::BlockSize/16;
                 objright = dor->Position.x + dor->Size.x/2 - PlayScene::BlockSize/16;
-                objtop = dor->Position.y;
-                objbottom = dor->Position.y + dor->Size.y;
+                objtop = dor->Position.y - dor->Size.y/2;
+                objbottom = dor->Position.y + dor->Size.y/2;
             }
 
 

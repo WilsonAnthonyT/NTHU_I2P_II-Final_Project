@@ -19,6 +19,7 @@
 #include "SelectProfileScene.h"
 
 int LeaderboardScene::val = 0;
+bool SelectProfileScene::isSaved = false;
 
 void LeaderboardScene::Initialize() {
     int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
@@ -32,6 +33,11 @@ void LeaderboardScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&LeaderboardScene::DontSaveOnClick, this, 0));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Don't Save", "pirulen.ttf", 45, halfW - 2, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+
+    if (!AudioHelper::sharedBGMInstance ||
+    !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
+        AudioHelper::sharedBGMInstance = AudioHelper::PlaySample("Highscores_bgm.mp3", true, AudioHelper::BGMVolume);
+    }
 }
 
 void LeaderboardScene::OnKeyDown(int keyCode) {
@@ -150,6 +156,8 @@ void LeaderboardScene::Update(float deltaTime) {
 
 
             ofs.close();
+
+            SelectProfileScene::isSaved = true;
             auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
             scene->MapId = 1;
             Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -192,5 +200,8 @@ void LeaderboardScene::Terminate() {
 
 void LeaderboardScene::DontSaveOnClick(int stage) {
     // Change to select scene.
-    Engine::GameEngine::GetInstance().ChangeScene("start");
+    SelectProfileScene::isSaved = false;
+    auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+    scene->MapId = 1;
+    Engine::GameEngine::GetInstance().ChangeScene("story");
 }
