@@ -749,6 +749,8 @@ void PlayScene::ReadMap() {
             case '<': mapData.push_back('<'); break;
             case 'g': mapData.push_back('g'); break;
             case '>': mapData.push_back('>'); break;
+            case '8': mapData.push_back('8'); break;
+            case '9': mapData.push_back('9'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -842,6 +844,12 @@ void PlayScene::ReadMap() {
                 case 'g':
                     mapState[i][j]=TILE_AIR;
                     break;
+                case '8':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+                case '9':
+                    mapState[i][j]=TILE_DIRT;
+                    break;
 
                 default:
                     mapState[i][j]=TILE_AIR;
@@ -929,13 +937,13 @@ void PlayScene::ReadMap() {
             }else if (num == 'N') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player1);
             }
             else if (num == 'T') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player2 = (new MazePlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
-                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
             } else if (num=='3'){
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
@@ -943,11 +951,11 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }else if (num=='5'){
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
-                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Buton("play/button.png",SpawnCoordinate.x, SpawnCoordinate.y));
             } else if (num=='6') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
-                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image(MapId==5?"play/floortile.png":"play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Portal("play/portal.png",SpawnCoordinate.x, SpawnCoordinate.y));
             } else if (num == 'L') {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
@@ -980,6 +988,78 @@ void PlayScene::ReadMap() {
                 player1 = (new JetpackPlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player1);
+            } else if (num=='8'){
+                TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }else if (num == '9') {
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] != '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] == '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] != '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx+MapWidth] == '9' && mapData[idx-1]!='9' && mapData[idx+1]!='9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] != '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-4.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] == '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] == '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-6.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] == '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] == '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-15.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] != '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] == '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-16.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] == '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] == '9')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-17.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] == '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-9.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] != '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-19.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] == '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-20.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] == '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] == '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-18.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] == '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] == '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-21.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] == '9' && mapData[idx-1] != '9' && mapData[idx+1] == '9' && mapData[idx+MapWidth] == '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-22.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (mapData[idx-MapWidth] != '9' && mapData[idx-1] != '9' && mapData[idx+1] != '9' && mapData[idx+MapWidth] != '9'
+                    && idx%MapWidth!=0 && idx%MapWidth!=MapWidth-1 && idx>MapWidth && idx<MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-23.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+
+                if (idx==0)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-7.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx==MapWidth)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-8.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx<MapWidth && idx!=0 && mapData[idx+MapWidth]!='9')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-5.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx%MapWidth == 0 && idx!= 0 && mapData[idx+1]!='9')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-10.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx%MapWidth == MapWidth-1 && mapData[idx-1]!='9')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-11.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx%MapWidth == 0 && idx!= 0 && mapData[idx+1]=='9')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-25.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx%MapWidth == MapWidth-1 && mapData[idx-1]=='9')
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-24.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+
+                if (idx>MapWidth*(MapHeight-1) && idx!=MapWidth*MapHeight)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-12.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx==MapWidth*MapHeight)
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-13.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                if (idx==MapWidth*(MapHeight-1))
+                    TileMapGroup->AddNewObject(new Engine::Image("play/wall-14.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
         }
     }
@@ -1746,7 +1826,7 @@ void PlayScene::MazeCreator() {
     std::string filename = "Resource/map5.txt";
     const int width = 25;
     const int height = 25;
-    std::vector<std::string> map(height, std::string(width, '4'));
+    std::vector<std::string> map(height, std::string(width, '9'));
 
     // Random engine
     std::mt19937 rng(static_cast<unsigned>(time(0)));
@@ -1755,7 +1835,7 @@ void PlayScene::MazeCreator() {
     std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, false));
     std::function<void(int, int)> dfs = [&](int x, int y) {
         visited[y][x] = true;
-        map[y][x] = '3'; // Mark path
+        map[y][x] = '8'; // Mark path
 
         std::vector<std::pair<int, int>> directions = {{0, -2}, {-2, 0}, {0, 2}, {2, 0}};
         std::shuffle(directions.begin(), directions.end(), rng);
@@ -1763,7 +1843,7 @@ void PlayScene::MazeCreator() {
         for (auto [dx, dy] : directions) {
             int nx = x + dx, ny = y + dy;
             if (nx > 0 && ny > 0 && nx < width - 1 && ny < height - 1 && !visited[ny][nx]) {
-                map[y + dy / 2][x + dx / 2] = '3'; // Remove wall between
+                map[y + dy / 2][x + dx / 2] = '8'; // Remove wall between
                 dfs(nx, ny);
             }
         }
@@ -1773,12 +1853,12 @@ void PlayScene::MazeCreator() {
 
     // Set wall borders
     for (int i = 0; i < width; ++i) {
-        map[0][i] = '4';
-        map[height - 1][i] = '4';
+        map[0][i] = '9';
+        map[height - 1][i] = '9';
     }
     for (int i = 0; i < height; ++i) {
-        map[i][0] = '4';
-        map[i][width - 1] = '4';
+        map[i][0] = '9';
+        map[i][width - 1] = '9';
     }
 
     // Place players at top-left
@@ -1789,7 +1869,7 @@ void PlayScene::MazeCreator() {
     std::vector<std::pair<int, int>> openTiles;
     for (int y = 1; y < height - 1; ++y) {
         for (int x = 1; x < width - 1; ++x) {
-            if (map[y][x] == '3')
+            if (map[y][x] == '8')
                 openTiles.emplace_back(y, x);
         }
     }
@@ -1809,7 +1889,7 @@ void PlayScene::MazeCreator() {
     // Place portal as far from start as possible (bottom-right bias)
     bool portalPlaced = false;
     for (const auto& [y, x] : openTiles) {
-        if (map[y][x] == '3' && y > height / 2 && x > width / 2) {
+        if (map[y][x] == '8' && y > height / 2 && x > width / 2) {
             map[y][x] = '6';
             portalPlaced = true;
             break;
@@ -1818,7 +1898,7 @@ void PlayScene::MazeCreator() {
 
     if (!portalPlaced) {
         for (const auto& [y, x] : openTiles) {
-            if (map[y][x] == '3') {
+            if (map[y][x] == '8') {
                 map[y][x] = '6';
                 break;
             }
