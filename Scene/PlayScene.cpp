@@ -337,6 +337,8 @@ void PlayScene::Update(float deltaTime) {
         Player *player = dynamic_cast<Player *>(it);
         if (player && player->Visible) {
             players.push_back(player);
+
+            if (EnemyGroup->GetObjects().empty()) player->Tint = al_map_rgb(255,255,255);
         }
     }
 
@@ -381,7 +383,7 @@ void PlayScene::Update(float deltaTime) {
                 EnemyGroup->AddNewObject(enemy = new SoldierEnemy(spawn_x, spawn_y));
                 break;
             case 2:
-                EnemyGroup->AddNewObject(enemy = new ArcherSkelly(spawn_x, spawn_y));
+                EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
                 break;
             case 3:
                 EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));

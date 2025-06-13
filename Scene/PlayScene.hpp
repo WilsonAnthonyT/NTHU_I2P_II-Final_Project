@@ -39,7 +39,6 @@ private:
         float direction;
     };
     std::vector<Wave> enemyWave;
-    bool isCamLocked = false;
     float waveEnemy_spawnCount, waveEnemy_index, waveEnemy_delay;
 
     ALLEGRO_FONT* dialogFont = nullptr;
@@ -79,6 +78,8 @@ protected:
     int SpeedMult;
     float total_time;
 public:
+    bool isCamLocked = false;
+
     enum TileType {
         TILE_AIR,
         TILE_DIRT,

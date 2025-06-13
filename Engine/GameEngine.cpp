@@ -300,9 +300,6 @@ namespace Engine {
     void GameEngine::ToggleFullscreen() {
         GameEngine& engine = GetInstance();
 
-        // Remove only the display event source
-        al_unregister_event_source(engine.event_queue, al_get_display_event_source(engine.display));
-
         // Save old state
         bool wasFullscreen = fullscreen;
         fullscreen = !fullscreen;
@@ -349,8 +346,8 @@ namespace Engine {
             LOG(INFO) << "Loaded window icon from: " << icon;
         }
 
-        // Reset blender
-        al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+        // Remove only the display event source
+        al_unregister_event_source(engine.event_queue, al_get_display_event_source(engine.display));
 
         // Register new display event source
         al_register_event_source(engine.event_queue, al_get_display_event_source(engine.display));
@@ -358,5 +355,8 @@ namespace Engine {
         // Re-register other known sources if necessary
         al_register_event_source(engine.event_queue, al_get_keyboard_event_source());
         al_register_event_source(engine.event_queue, al_get_mouse_event_source());
+
+        // Reset blender
+        al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     }
 }

@@ -32,7 +32,9 @@ Player::Player(std::string img, float x, float y, float speed, float hp): Sprite
     armor = 0.0f;
 }
 
-void Player::Update(float deltaTime) {}
+void Player::Update(float deltaTime) {
+
+}
 
 void Player::Draw() const {
     Sprite::Draw();
@@ -190,7 +192,10 @@ void Player::PlayerEnemyCollision(Player *player, float time) {
 
     for (auto &it : scene->EnemyGroup->GetObjects()) {
         Enemy* enemy = dynamic_cast<Enemy*>(it);
-        if (!enemy) continue;
+        if (!enemy) {
+            Tint = al_map_rgb(255,255,255);
+            continue;
+        }
 
         if (enemy->getHp() <= 0) {
             enemy = nullptr;
@@ -224,7 +229,7 @@ void Player::PlayerEnemyCollision(Player *player, float time) {
                 player->knockbackVelocityX *= -0.3f;
             }
             player->knockbackTimer -= time;
-            if (player->knockbackTimer <= 0) {
+            if (player->knockbackTimer <= 0 || scene->EnemyGroup->GetObjects().empty()) {
                 player->isKnockedback = false;
                 player->knockbackVelocityX = 0;
                 player->Tint = al_map_rgb(255, 255, 255);

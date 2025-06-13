@@ -2,7 +2,7 @@
 # Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage
 # MAX data 3
 
-+~-~-~0~0~0
-+~-~-~0~0~0
-+~-~-~0~0~0
-+~-~-~0~0~0
++~-~-~-~0~0
++~-~-~-~0~0
++~-~-~-~0~0
++~-~-~-~0~0

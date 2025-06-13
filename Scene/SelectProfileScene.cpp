@@ -47,12 +47,13 @@ void SelectProfileScene::Initialize() {
             }
 
             std::stringstream ss(str);
-            std::string name, made, last, dur, level;
+            std::string name, made, last, dur, cc, level;
             while (
             getline(ss, name, '~') &&
             getline(ss, made, '~') &&
             getline(ss, last, '~') &&
             getline(ss, dur, '~') &&
+            getline(ss, cc, '~') &&
             getline(ss, level)
             ) {
                 playerData.push_back( {
@@ -60,13 +61,16 @@ void SelectProfileScene::Initialize() {
                     made,
                     last,
                     dur,
-                    level,
+                    cc,
+                    level
                 });
 
                 name.clear();
                 made.clear();
                 last.clear();
                 dur.clear();
+                cc.clear();
+                level.clear();
             }
 
             str.clear();
@@ -211,6 +215,16 @@ void SelectProfileScene::WriteProfileData(textData* allplayers) {
             << it.Duration << "~"
             << it.Coins << "~"
             << it.Stage << std::endl;
+
+            // ofs << it.Name << "~"
+            //     << it.Created << "~"
+            //     << it.Last_Played << "~";
+            //
+            // // Set precision for the Duration value (0.00f)
+            // ofs << std::fixed << std::setprecision(2) << std::stod(it.Duration) << "~";
+            //
+            // ofs << it.Coins << "~"
+            //     << it.Stage << std::endl;
         }
 
         ofs.close();

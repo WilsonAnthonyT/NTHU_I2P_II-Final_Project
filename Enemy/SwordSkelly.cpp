@@ -94,15 +94,15 @@ void SwordSkelly::UpdateAnimation(float deltaTime) {
             }
 
             // Update bitmap
-            if (currentFrame >= 0 && currentFrame < currentAnimation->size()) {
-                bmp = (*currentAnimation)[currentFrame];
-            } else {
-                currentFrame = 0;  // Reset to safe value
-                if (!currentAnimation->empty()) {
-                    bmp = (*currentAnimation)[0];
-                }
-            }
-
+            // if (currentFrame >= 0 && currentFrame < currentAnimation->size()) {
+            //     bmp = (*currentAnimation)[currentFrame];
+            // } else {
+            //     currentFrame = 0;  // Reset to safe value
+            //     if (!currentAnimation->empty()) {
+            //         bmp = (*currentAnimation)[0];
+            //     }
+            // }
+            bmp = (*currentAnimation)[currentFrame];
             // Handle direction
 
         }
