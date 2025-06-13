@@ -17,10 +17,6 @@ add_executable(Final-Project
     Bullet/Bullet.hpp
     Bullet/FireBullet.cpp
     Bullet/FireBullet.hpp
-#    Bullet/LaserBullet.cpp
-#    Bullet/LaserBullet.hpp
-#    Bullet/BeamBullet.cpp
-#    Bullet/BeamBullet.hpp
 
     Enemy/Enemy.cpp
     Enemy/Enemy.hpp
@@ -91,10 +87,14 @@ add_executable(Final-Project
 
     Player/Player.cpp
     Player/Player.h
-    PLayer/MeleePlayer.cpp
-    PLayer/MeleePlayer.hpp
-    PLayer/RangePlayer.cpp
-    PLayer/RangePlayer.hpp
+    Player/MeleePlayer.cpp
+    Player/MeleePlayer.hpp
+    Player/RangePlayer.cpp
+    Player/RangePlayer.hpp
+    Player/TankPlayerB.cpp
+    Player/TankPlayerB.h
+    Player/TankPlayerA.cpp
+    Player/TankPlayerA.h
 
     main.cpp
 
@@ -116,10 +116,6 @@ add_executable(Final-Project
     InteractiveBlock/Box.h
     InteractiveBlock/Box.cpp
 
-    Player/TankPlayerB.cpp
-    Player/TankPlayerB.h
-    Player/TankPlayerA.cpp
-    Player/TankPlayerA.h
     Enemy/EjojoEnemy.h
     Enemy/EjojoEnemy.cpp
     Enemy/FlyingEnemy.cpp

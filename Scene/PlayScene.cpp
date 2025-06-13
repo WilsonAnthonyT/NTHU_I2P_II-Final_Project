@@ -85,9 +85,9 @@ void PlayScene::Initialize() {
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
     mask = nullptr;
+    player1 = player2 = nullptr;
 
     isCamLocked = false;
-
     total_time = .0f;
     Camera.x=0,Camera.y=0;
     mapState.clear();
@@ -253,6 +253,8 @@ void PlayScene::Terminate() {
         al_destroy_font(dialogFont);
         dialogFont = nullptr;
     }
+
+    player1 = player2 = nullptr;
 
     AudioHelper::StopSample(bgmInstance);
     AudioHelper::StopSample(deathBGMInstance);
@@ -1335,7 +1337,7 @@ void PlayScene::MiniMapOnClick(int stage) {
 void PlayScene::ReadEnemyWave() {
     //spawn point y, type, count, cooldown, left/right (1/0)
     enemyWave.clear();
-    std::string filename = "Resource/enemy" + std::to_string(MapId) + ".txt";
+    std::string filename = "../Resource/enemy" + std::to_string(MapId) + ".txt";
     std::ifstream ifs(filename, std::ios_base::in);
 
     if (ifs.is_open()) {
@@ -1499,25 +1501,27 @@ void PlayScene::CreatePauseUI() {
 //-------For Exit, restart, and Continue Button------------------
 void PlayScene::BackOnClick(int state) {
 
-    std::time_t now = std::time(nullptr);
+    if (SelectProfileScene::isSaved) {
+        std::time_t now = std::time(nullptr);
 
-    // Convert to local time
-    std::tm tm{};
+        // Convert to local time
+        std::tm tm{};
 
-    #ifdef _WIN32
-        localtime_s(&tm, &now);  // Windows
-    #else
-        localtime_r(&now, &tm);  // Linux / macOS
-    #endif
+        #ifdef _WIN32
+            localtime_s(&tm, &now);  // Windows
+        #else
+            localtime_r(&now, &tm);  // Linux / macOS
+        #endif
 
-    // Format date with slashes: YYYY/MM/DD
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
-    std::string date_time = oss.str();
+        // Format date with slashes: YYYY/MM/DD
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+        std::string date_time = oss.str();
 
-    SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Last_Played = date_time;
-    SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration = std::to_string(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration) + total_time);
-    SelectProfileScene::WriteProfileData(nullptr);
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Last_Played = date_time;
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration = std::to_string(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration) + total_time);
+        SelectProfileScene::WriteProfileData(nullptr);
+    }
 
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }

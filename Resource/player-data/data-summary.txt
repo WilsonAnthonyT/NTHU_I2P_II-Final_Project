@@ -1,8 +1,8 @@
 # everything related to the profile will be saved here
-# Name ~ date created ~ last played ~ Screen time ~ last stage
+# Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage
 # MAX data 3
 
-MIHU21~2025/06/13  21:14~2025/06/13  21:15~2.475151~0~1
-+~-~-~-~0~0~~
-+~-~-~-~0~0~~
-+~-~-~-~0~0~~
++~-~-~0~0~0
++~-~-~0~0~0
++~-~-~0~0~0
++~-~-~0~0~0

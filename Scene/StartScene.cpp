@@ -89,6 +89,7 @@ void StartScene::Initialize() {
     }
 
 }
+
 void StartScene::Terminate() {
     IScene::Terminate();
 }

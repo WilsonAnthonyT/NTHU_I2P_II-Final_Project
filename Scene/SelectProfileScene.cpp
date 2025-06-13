@@ -194,7 +194,7 @@ void SelectProfileScene::WriteProfileData(textData* allplayers) {
     if (ofs.is_open()) {
         ofs
         << "# everything related to the profile will be saved here" << std::endl
-        << "# Name ~ date created ~ last played ~ Screen time ~ last stage" << std::endl
+        << "# Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage" << std::endl
         << "# MAX data 3" << std::endl
         << std::endl;
 
