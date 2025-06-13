@@ -201,20 +201,174 @@ void PlayScene::Initialize() {
     std::vector<PlayScene::Dialog> dialogs;
     if (MapId == 1) {
         dialogs.push_back({
-            "Hello, adventurer!",
+            "Monsters everywhere! This is insane!",
             3.0f,
-            "play/arwen.png",
+            "play/arwenDialog.png",
             "Arwen"
         });
         dialogs.push_back({
-            "The castle is dangerous!",
+            "Yeah, what the heck is going on? Skeletons?",
             3.0f,
-            "play/bryan.png",
+            "play/bryanDialog.png",
             "Bryan"
+        });
+        dialogs.push_back({
+            "No idea, but we need to deal with this!",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Alright, let's take them down!",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Controls: Arwen -> WASD, Bryan -> IJKL",
+            4.0f,
+            "play/Control.png",
+            "Control"
+        });
+        dialogs.push_back({
+            "Attack: Arwen -> C, Bryan -> N",
+            4.0f,
+            "play/Control.png",
+            "Control"
+        });
+        dialogs.push_back({
+            "Tip: Stay close to each other to survive!",
+            4.0f,
+            "play/tool-base.png",
+            "SYSTEM"
         });
     }
     else if (MapId == 2) {
         dialogs.push_back({
+            "The tank can only shoot upwards.",
+            4.0f,
+            "play/Control.png",
+            "Control"
+        });
+        dialogs.push_back({
+            "Same controls, but no jumping this time!",
+            4.0f,
+            "play/Control.png",
+            "Control"
+        });
+        dialogs.push_back({
+            "Good luck!",
+            4.0f,
+            "play/tool-base.png",
+            "SYSTEM"
+        });
+    }
+
+    else if (MapId == 3) {
+        dialogs.push_back({
+            "Wow, this ship is enormous!",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "What's with all this advanced tech?",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "I have no idea.",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Let's uncover the mystery behind it all.",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Tip: Try interacting with any unusual objects.",
+            3.0f,
+            "play/tool-base.png",
+            "SYSTEM"
+        });
+    }
+
+    else if (MapId == 4) {
+        dialogs.push_back({
+            "The whole thing was confusing..",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Don't worry you got genius beside you",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Shut up DumbBoy",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Anyway, what are we up to",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Are you blind? look at those things over there",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "---/---",
+            3.0f,
+            "play/tool-base.png",
+            "SYSTEM"
+        });
+    }
+    else if (MapId == 5) {
+        dialogs.push_back({
+            "Fortunately we brought our own flashlight",
+            3.0f,
+            "play/ArwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Can we both walk together? please... I don't like this",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Hell no you coward..",
+            3.0f,
+            "play/ArwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "Fine...What are we even suppose to do anyway?",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "I don't know, just keep moving..",
+            3.0f,
+            "play/ArwenDialog.png",
+            "Arwen"
+        });
+    }
+    else if (MapId == 6) {
+        dialogs.push_back({
             "Hello, adventurer!",
             3.0f,
             "play/arwen.png",
@@ -226,18 +380,6 @@ void PlayScene::Initialize() {
             "play/bryan.png",
             "Bryan"
         });
-    }
-    else if (MapId == 3) {
-
-    }
-    else if (MapId == 4) {
-
-    }
-    else if (MapId == 5) {
-
-    }
-    else if (MapId == 6) {
-
     }
     StartDialog(dialogs, true);
     //================================================================================
@@ -382,11 +524,7 @@ void PlayScene::Update(float deltaTime) {
 
             switch (static_cast<int>(enemyWave[idx].type)) {
             case 1:
-                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(spawn_x, spawn_y));
-                break;
             case 2:
-                EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
-                break;
             case 3:
                 EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
                 break;
@@ -1711,8 +1849,8 @@ void PlayScene::RenderDialog() const {
         auto speakerImg = Engine::Resources::GetInstance().GetBitmap(currentSpeakerImagePath).get();
         if (speakerImg) {
             // Calculate position and size (adjust these values as needed)
-            const float imgWidth = PlayScene::BlockSize;
-            const float imgHeight = PlayScene::BlockSize;
+            const float imgWidth = BlockSize * 1.5f;
+            const float imgHeight = BlockSize * 1.8f;
             const float imgX = screenW * 0.1f - imgWidth - 10; // Left of dialog box
             const float imgY = screenH * 0.8f;
             al_draw_scaled_bitmap(speakerImg,
@@ -1731,7 +1869,7 @@ void PlayScene::RenderDialog() const {
     // Draw dialog text
     if (dialogFont) {
         al_draw_text(dialogFont, al_map_rgb(255, 255, 255),
-                    screenW * 0.5, screenH * 0.825,
+                    screenW * 0.5, screenH * 0.85,
                     ALLEGRO_ALIGN_CENTER, currentDialogText.c_str());
     }
     if (dialogSkippable && dialogFont) {
@@ -1739,7 +1877,7 @@ void PlayScene::RenderDialog() const {
             "Press to skip >>" : "Press to continue...";
 
         al_draw_text(dialogFont, al_map_rgba(200, 200, 200, 200),
-                    screenW * 0.88, screenH * 0.92,
+                    screenW * 0.88, screenH * 0.91,
                     ALLEGRO_ALIGN_RIGHT, hint.c_str());
     }
 }
