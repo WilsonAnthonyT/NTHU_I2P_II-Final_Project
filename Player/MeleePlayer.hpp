@@ -7,6 +7,7 @@
 class MeleeWeapon;
 class LinkWeapon;
 class MeleePlayer : public Player {
+
 public:
     MeleePlayer(float x, float y);
     void Update(float deltaTime) override;
@@ -16,5 +17,6 @@ public:
 
     void ChangeWeapon(MeleeWeapon * newWeapon);
     void ChangeShield(MeleeShield * newShield);
+    void UpdateAnimation(float deltaTime);
 };
 #endif   // MELEEPLAYER_HPP

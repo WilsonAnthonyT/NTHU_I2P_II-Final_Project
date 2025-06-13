@@ -29,7 +29,6 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "SelectProfileScene.h"
-#include "StageSelectScene.hpp"
 #include "Enemy/EjojoBoss.h"
 #include "Enemy/ArcherSkelly.h"
 #include "Enemy/EjojoEnemy.h"
@@ -1083,7 +1082,7 @@ void PlayScene::MiniMap() const {
             float sx = door->Size.x * xScale;
             float sy = door->Size.y * yScale;
             px -= sx / 2;
-            py += sy;
+            py -= sy / 2;
             if (bmp) {
                 al_draw_scaled_bitmap(
                 bmp,
@@ -1337,7 +1336,7 @@ void PlayScene::MiniMapOnClick(int stage) {
 void PlayScene::ReadEnemyWave() {
     //spawn point y, type, count, cooldown, left/right (1/0)
     enemyWave.clear();
-    std::string filename = "../Resource/enemy" + std::to_string(MapId) + ".txt";
+    std::string filename = "Resource/enemy" + std::to_string(MapId) + ".txt";
     std::ifstream ifs(filename, std::ios_base::in);
 
     if (ifs.is_open()) {

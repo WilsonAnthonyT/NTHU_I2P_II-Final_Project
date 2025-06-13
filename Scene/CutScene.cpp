@@ -332,9 +332,10 @@ void CutScene::Initialize() {
         SetCharacterScale("tankb", 2*Blocksize/438, 2*Blocksize/438);
         SetCharacterPosition("tankb", screenWidth-3*Blocksize, Blocksize * 5);
         
-        std::vector<std::string> bryanFrames = {
-            "cut-scene/bryan.png"
-        };
+        std::vector<std::string> bryanFrames;
+        for (int i = 1; i <= 4; i++) {
+            bryanFrames.push_back("animation/bryan-walk" + std::to_string(i) + ".png");
+        }
         AddCharacterAnimation("bryan", bryanFrames, 10.0f, true);
         SetCharacterScale("bryan", 0.45*Blocksize/38, 0.70*Blocksize/64);
         SetCharacterPosition("bryan", Blocksize*3 - 0.45*Blocksize, Blocksize * 7-0.70*Blocksize);

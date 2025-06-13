@@ -96,8 +96,8 @@ public:
     static Engine::Point SpawnGridPoint;
     static const std::vector<int> code;
     int MapId;
-    float ticks;
-    float deathCountDown;
+    float ticks = 0;
+    float deathCountDown = 0;
     // Map tiles.
     Group *TileMapGroup;
     Group *GroundEffectGroup;

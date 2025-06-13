@@ -23,6 +23,21 @@ protected:
     float armor;
     bool movementEnabled = true;
     int TintCounter = 0;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> idleAnimation;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> walkAnimation;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> jumpAnimation;
+    float animationTime = 0;
+    float frameDuration = 0.75f; // Time between frames in seconds
+    int currentFrame = 0;
+
+    enum PlayerState {
+        IDLE,
+        WALKING,
+        JUMPING,
+        FALLING
+    };
+    PlayerState currentState = IDLE;
+
 public:
     float hp;
     float speed;

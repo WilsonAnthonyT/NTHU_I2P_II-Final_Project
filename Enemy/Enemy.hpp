@@ -34,6 +34,29 @@ protected:
     float tolerance;
     float VelocityX;
     float damage;
+    float AttackRange = 0.0f;
+
+
+    //for animation
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> idleAnimation;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> walkAnimation;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> attackingAnimation;
+    std::vector<std::shared_ptr<ALLEGRO_BITMAP>> deathAnimation;
+
+    float animationTime = 0;
+    int currentFrame = 0;
+    float idleFrameDuration = 0.15f;
+    float walkFrameDuration = 0.1f;
+    float attackFrameDuration = 0.08f;
+    float deathFrameDuration = 0.12f;
+    bool isAttacking = false;
+    enum EnemyState {
+        IDLE,
+        WALKING,
+        ATTACKING,
+        DEAD
+    };
+    EnemyState currentState = IDLE;
 
 public:
     int getDamage(){return damage;};
@@ -49,6 +72,7 @@ public:
     void Update(float deltaTime) override;
     void Draw() const override;
     virtual bool IsCollision(float x, float y, bool checkWallsOnly);
+    bool IsPlayerInRange(float x, float y, float AttackRange);
 
 
     //I add this
@@ -66,6 +90,8 @@ public:
     //so that the enemy only attack the player when in frame
     bool IsInCameraView(float x, float y);
     bool startChase = false;
+
+    virtual void UpdateAnimation(float deltaTime);
 
 };
 #endif   // ENEMY_HPP
