@@ -57,6 +57,7 @@ Enemy::Enemy(std::string img, float x, float y, float radius, float speed, float
     Anchor = Engine::Point(0.5, 0);
     tolerance = 1.0 / 64.0 * PlayScene::BlockSize;
     VelocityX = speed;
+    startChase = false;
 }
 
 //trying
@@ -247,18 +248,19 @@ void Enemy::Update(float deltaTime) {
 
     // Get player positions and check if any are in view
     std::vector<Engine::Point> playerPositions;
-    bool anyPlayerInView = false;
 
     for (auto& player : scene->PlayerGroup->GetObjects()) {
         if (player->Visible) {
-            bool playerInView = IsInCameraView(player->Position.x, player->Position.y);
-            anyPlayerInView = anyPlayerInView || playerInView;
             playerPositions.push_back(player->Position);
         }
     }
 
     // Only chase if both enemy and at least one player are in view
-    if (enemyInView && anyPlayerInView) {
+    if (enemyInView) startChase = true;
+
+    if (startChase) ChasePlayer(playerPositions, deltaTime);
+    else {
+        playerPositions.clear();
         ChasePlayer(playerPositions, deltaTime);
     }
 
@@ -270,7 +272,7 @@ void Enemy::Update(float deltaTime) {
 
     // Horizontal movement and wall detection
     float newX = Position.x;
-    if (this->getHp() > 0) newX += VelocityX * deltaTime;
+    if (startChase && this->getHp() > 0)  newX += VelocityX * deltaTime;
     bool hitWall = !IsCollision(newX, Position.y, true) && IsCollision(newX, Position.y,false);
 
     if (!IsCollision(newX, Position.y,false)) {

@@ -67,7 +67,6 @@ public:
     virtual void OnDeath();
     virtual void Hit(float damage, float PosX, std::string type);
 
-    void UpdatePath(const std::vector<std::vector<int>> &mapDistance);
     virtual void ChasePlayer(const std::vector<Engine::Point>& playerPositions, float deltaTime);
 
     void Update(float deltaTime) override;
@@ -90,6 +89,7 @@ public:
 
     //so that the enemy only attack the player when in frame
     bool IsInCameraView(float x, float y);
+    bool startChase = false;
 
     virtual void UpdateAnimation(float deltaTime);
 
