@@ -77,11 +77,28 @@ void SelectProfileScene::Initialize() {
         std::cerr << "[ERROR] Could not open DATA SUMMARY for reading!" << std::endl;
     }
 
-    for (int i = 1; i <= 3; i++) {
+    while (playerData.size() < MAXprofile) {
+        playerData.push_back( {
+                    "+",
+                    "-",
+                    "-",
+                    "-",
+                    "0",
+                });
+    }
+
+    for (int i = 1; i <= MAXprofile; i++) {
         btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - PlayScene::BlockSize*3/2, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*3, PlayScene::BlockSize);
         btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, i));
         AddNewControlObject(btn);
         AddNewObject(new Engine::Label(playerData[i-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
+    }
+
+    //trash bin
+    for (int i = 1; i <= MAXprofile; i++) {
+        btn = new Engine::ImageButton("start/sampah.png", "stage-select/floor.png", halfW + PlayScene::BlockSize*2, i*PlayScene::BlockSize + (h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize, PlayScene::BlockSize);
+        btn->SetOnClickCallback(std::bind(&SelectProfileScene::RemoveOnClick, this, i));
+        AddNewControlObject(btn);
     }
 
 
@@ -102,6 +119,23 @@ void SelectProfileScene::Terminate() {
 void SelectProfileScene::BackOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("start");
 }
+void SelectProfileScene::RemoveOnClick(int ID) {
+    profileID = ID;
+
+    playerData[ID-1].Name = "+";
+    playerData[ID-1].Created = "-";
+    playerData[ID-1].Last_Played = "-";
+    playerData[ID-1].Duration = "-";
+
+    auto *newdata = new textData();
+    newdata->level = 0;
+
+    WriteProfileData(newdata);
+    delete newdata;
+
+    Engine::GameEngine::GetInstance().ChangeScene("profile-select");
+}
+
 void SelectProfileScene::PlayOnClick(int ID) {
     profileID = ID;
 

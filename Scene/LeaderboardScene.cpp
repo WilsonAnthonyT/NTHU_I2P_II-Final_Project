@@ -19,6 +19,7 @@
 #include "SelectProfileScene.h"
 
 int LeaderboardScene::val = 0;
+bool SelectProfileScene::isSaved = false;
 
 void LeaderboardScene::Initialize() {
     int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
@@ -150,6 +151,8 @@ void LeaderboardScene::Update(float deltaTime) {
 
 
             ofs.close();
+
+            SelectProfileScene::isSaved = true;
             auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
             scene->MapId = 1;
             Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -192,5 +195,8 @@ void LeaderboardScene::Terminate() {
 
 void LeaderboardScene::DontSaveOnClick(int stage) {
     // Change to select scene.
-    Engine::GameEngine::GetInstance().ChangeScene("start");
+    SelectProfileScene::isSaved = false;
+    auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+    scene->MapId = 1;
+    Engine::GameEngine::GetInstance().ChangeScene("story");
 }

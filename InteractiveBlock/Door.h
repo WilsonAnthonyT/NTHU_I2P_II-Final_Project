@@ -25,9 +25,9 @@ public:
         CLOSE,
     };
     DoorState currState, initState;
-    Door(std::string, float, float, DoorState);
+    bool horizontal;
+    Door(std::string, float, float, DoorState,bool horizontal);
     void Update(float deltaTime) override;
-    bool IsCollision(float x, float y);
     std::shared_ptr<ALLEGRO_BITMAP> Bitmap;
 };
 

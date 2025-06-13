@@ -224,9 +224,12 @@ void PlayScene::Update(float deltaTime) {
                 MapId++;
 
                 //this 3 lines is for updating the profile.
-                auto* newdata = new SelectProfileScene::textData();
-                newdata->level = MapId;
-                SelectProfileScene::WriteProfileData(newdata);
+                if (SelectProfileScene::isSaved) {
+                    auto* newdata = new SelectProfileScene::textData();
+                    newdata->level = MapId;
+                    SelectProfileScene::WriteProfileData(newdata);
+                    delete newdata;
+                }
                 //----------------------------------------
 
                 Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -338,9 +341,12 @@ void PlayScene::Update(float deltaTime) {
             MapId++;
 
             //this 3 lines is for updating the profile.
-            auto* newdata = new SelectProfileScene::textData();
-            newdata->level = MapId;
-            SelectProfileScene::WriteProfileData(newdata);
+            if (SelectProfileScene::isSaved) {
+                auto* newdata = new SelectProfileScene::textData();
+                newdata->level = MapId;
+                SelectProfileScene::WriteProfileData(newdata);
+                delete newdata;
+            }
             //----------------------------------------
 
             Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -662,9 +668,13 @@ void PlayScene::ReadMap() {
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 InteractiveBlockGroup->AddNewObject(new Sensor("play/sensor.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }else if (num == 'D') {
-                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                InteractiveBlockGroup->AddNewObject(new Door("play/enemy-11.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE));
+                if (mapData[idx-1]=='0') {
+                    InteractiveBlockGroup->AddNewObject(new Door("play/dor.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE,false));
+                }else if (mapData[idx-MapWidth]=='0') {
+                    InteractiveBlockGroup->AddNewObject(new Door("play/dor1.png",SpawnCoordinate.x, SpawnCoordinate.y, Door::CLOSE,true));
+                }
             }else if (num == 'N') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
