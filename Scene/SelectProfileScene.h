@@ -9,7 +9,7 @@
 
 class SelectProfileScene final : public Engine::IScene {
 
-    static constexpr int MAXprofile = 3;
+    static constexpr int MAXprofile = 4;
     static int profileID;
 
 public:
@@ -26,6 +26,7 @@ public:
     void Initialize() override;
     void Terminate() override;
     void PlayOnClick(int);
+    void RemoveOnClick(int);
     void BackOnClick();
 
     struct textData {
@@ -36,6 +37,7 @@ public:
     static void WriteProfileData(textData*);
     static int getProfileID() {return profileID;}
     static int getMAXprofile() {return MAXprofile;}
+    static bool isSaved;
 
     // void BGMSlideOnValueChanged(float value);
     // void SFXSlideOnValueChanged(float value);

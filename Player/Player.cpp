@@ -154,16 +154,18 @@ bool Player::IsCollision(float x, float y) {
             float objright;
             float objtop;
             float objbottom;
+            
             if (block) {
                 objleft = block->Position.x - block->Size.x/2 + PlayScene::BlockSize/16;
                 objright = block->Position.x + block->Size.x/2 - PlayScene::BlockSize/16;
                 objtop = block->Position.y;
                 objbottom = block->Position.y + block->Size.y;
-            } else if (dor) {
+            }
+            if (dor) {
                 objleft = dor->Position.x - dor->Size.x/2 + PlayScene::BlockSize/16;
                 objright = dor->Position.x + dor->Size.x/2 - PlayScene::BlockSize/16;
-                objtop = dor->Position.y;
-                objbottom = dor->Position.y + dor->Size.y;
+                objtop = dor->Position.y - dor->Size.y/2;
+                objbottom = dor->Position.y + dor->Size.y/2;
             }
 
 
