@@ -38,13 +38,73 @@ void LeaderboardScene::Initialize() {
     !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
         AudioHelper::sharedBGMInstance = AudioHelper::PlaySample("Highscores_bgm.mp3", true, AudioHelper::BGMVolume);
     }
+
+    enterPressed = false;
 }
 
 void LeaderboardScene::OnKeyDown(int keyCode) {
+    if (enterPressed) return;
+
     IScene::OnKeyDown(keyCode);
     int length = strlen(al_keycode_to_name(keyCode));
     if (keyCode == ALLEGRO_KEY_ENTER && !Name.empty()) {
         tick = 120;
+        enterPressed = true;
+        // Get current time
+        std::time_t now = std::time(nullptr);
+
+        // Convert to local time
+        std::tm tm{};
+        #ifdef _WIN32
+            localtime_s(&tm, &now);  // Windows
+        #else
+            localtime_r(&now, &tm);  // Linux / macOS
+        #endif
+
+        // Format date with slashes: YYYY/MM/DD
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+        dateNtime = oss.str();
+
+        auto& player_data = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1];
+        player_data.Name = Name;
+        player_data.Created = dateNtime;
+        player_data.Last_Played = "-";
+        player_data.Duration = "0";
+        player_data.Coins = "0";
+        player_data.Stage = "1";
+
+        Name.clear();
+        dateNtime.clear();
+
+        std::string filename = "../Resource/player-data/data-summary.txt";
+        std::ofstream ofs(filename, std::ios_base::out);
+
+        if (ofs.is_open()) {
+            ofs
+            << "# everything related to the profile will be saved here" << std::endl
+            << "# Name ~ date created ~ last played ~ Screen time ~ last stage" << std::endl
+            << "# MAX data 3" << std::endl
+            << std::endl;
+
+
+            for (auto& it : SelectProfileScene::playerData) {
+                ofs
+                << it.Name << "~"
+                << it.Created << "~"
+                << it.Last_Played << "~"
+                << it.Duration << "~"
+                << it.Coins << "~"
+                << it.Stage << std::endl;
+            }
+
+            ofs.close();
+
+            SelectProfileScene::isSaved = true;
+        }
+        else {
+            std::cerr << "[ERROR] Could not open DATA SUMMARY for INITIAL WRITING!" << std::endl;
+        }
     } else if (keyCode == ALLEGRO_KEY_BACKSPACE && !Name.empty()){
         Name.pop_back();
     } else if (length == 1 && Name.length() <= maxChar) {
@@ -99,64 +159,9 @@ void LeaderboardScene::Update(float deltaTime) {
     else if (tick == 1) {
         tick = 0;
 
-        // Get current time
-        std::time_t now = std::time(nullptr);
-
-        // Convert to local time
-        std::tm tm{};
-        #ifdef _WIN32
-                localtime_s(&tm, &now);  // Windows
-        #else
-                localtime_r(&now, &tm);  // Linux / macOS
-        #endif
-
-        // Format date with slashes: YYYY/MM/DD
-        std::ostringstream oss;
-        oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
-        dateNtime = oss.str();
-
-        auto& player_data = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1];
-        player_data.Name = Name;
-        player_data.Created = dateNtime;
-        player_data.Last_Played = "-";
-        player_data.Duration = "0";
-        player_data.Coins = "0";
-        player_data.Stage = "1";
-
-        Name.clear();
-        dateNtime.clear();
-
-        std::string filename = "../Resource/player-data/data-summary.txt";
-        std::ofstream ofs(filename, std::ios_base::out);
-
-        if (ofs.is_open()) {
-            ofs
-            << "# everything related to the profile will be saved here" << std::endl
-            << "# Name ~ date created ~ last played ~ Screen time ~ last stage" << std::endl
-            << "# MAX data 3" << std::endl
-            << std::endl;
-
-
-            for (auto& it : SelectProfileScene::playerData) {
-                ofs
-                << it.Name << "~"
-                << it.Created << "~"
-                << it.Last_Played << "~"
-                << it.Duration << "~"
-                << it.Coins << "~"
-                << it.Stage << std::endl;
-            }
-
-            ofs.close();
-
-            SelectProfileScene::isSaved = true;
-            auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
-            scene->MapId = 1;
-            Engine::GameEngine::GetInstance().ChangeScene("story");
-        }
-        else {
-            std::cerr << "[ERROR] Could not open DATA SUMMARY for INITIAL WRITING!" << std::endl;
-        }
+        auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+        scene->MapId = 1;
+        Engine::GameEngine::GetInstance().ChangeScene("story");
     }
 }
 
