@@ -49,6 +49,7 @@
 #include "InteractiveBlock/Buton.h"
 #include "InteractiveBlock/Portal.h"
 #include "InteractiveBlock/Door.h"
+#include "InteractiveBlock/GasMachine.h"
 #include "InteractiveBlock/Sensor.h"
 #include "Player/JetpackPlayerA.h"
 #include "Player/JetpackPlayerB.h"
@@ -534,6 +535,7 @@ void PlayScene::ReadMap() {
             case 's': mapData.push_back('s'); break;
             case 'a': mapData.push_back('a'); break;
             case '<': mapData.push_back('<'); break;
+            case 'g': mapData.push_back('g'); break;
             case '>': mapData.push_back('>'); break;
             case '\n':
             case '\r':
@@ -625,6 +627,10 @@ void PlayScene::ReadMap() {
                 case '>':
                     mapState[i][j]=TILE_AIR;
                     break;
+                case 'g':
+                    mapState[i][j]=TILE_AIR;
+                    break;
+
                 default:
                     mapState[i][j]=TILE_AIR;
                     break;
@@ -741,6 +747,11 @@ void PlayScene::ReadMap() {
                 Engine::Point EnemySpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 EnemyGroup->AddNewObject(new ArcherSkelly(EnemySpawnCoordinate.x, EnemySpawnCoordinate.y));
+            }
+            else if (num == 'g') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new GasMachine("play/gaschamber.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }
             else if (num == '<') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
