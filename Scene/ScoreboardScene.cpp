@@ -53,11 +53,11 @@ void ScoreboardScene::Initialize() {
     Engine::ImageButton *btn;
 
     // Sort By
-    btn = new Engine::ImageButton("start/button.png", "start/button.png", PlayScene::BlockSize/3, 7*PlayScene::BlockSize/12, 11*PlayScene::BlockSize/8, PlayScene::BlockSize/2);
+    btn = new Engine::ImageButton("start/button.png", "start/button.png", PlayScene::BlockSize/3, 7*PlayScene::BlockSize/12, 13*PlayScene::BlockSize/8, PlayScene::BlockSize/2);
     btn->SetOnClickCallback(std::bind(&ScoreboardScene::SortOnClick, this, 0));
     AddNewControlObject(btn);
 
-    SortLabel = new Engine::Label(Stype, "pirulen.ttf", PlayScene::BlockSize/5, PlayScene::BlockSize/3 + 11*PlayScene::BlockSize/16, 7*PlayScene::BlockSize/12 + PlayScene::BlockSize/4, 10, 255, 255, 255, 0.5, 0.5);
+    SortLabel = new Engine::Label(Stype, "pirulen.ttf", PlayScene::BlockSize/5, PlayScene::BlockSize/3 + 13*PlayScene::BlockSize/16 - 3, 7*PlayScene::BlockSize/12 + PlayScene::BlockSize/4, 10, 255, 255, 255, 0.5, 0.5);
     AddNewObject(SortLabel);
 
     // Close Button
