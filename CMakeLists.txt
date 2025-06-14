@@ -162,6 +162,8 @@ add_executable(Final-Project
     InteractiveBlock/GasMachine.h
     InteractiveBlock/Gas.cpp
     InteractiveBlock/Gas.h
+        Scene/CreditScene.cpp
+        Scene/CreditScene.h
 )
 
 IF (WIN32)

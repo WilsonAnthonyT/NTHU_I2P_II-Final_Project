@@ -23,10 +23,6 @@
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
 
-std::vector<SelectProfileScene::ProfileData> SelectProfileScene::playerData;
-int SelectProfileScene::profileID = 0;
-int PlayScene::total_money = 0;
-
 void SelectProfileScene::Initialize() {
 
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -212,6 +208,7 @@ void SelectProfileScene::PlayOnClick(int ID) {
     else {
         PlayScene *scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
         if (!playerData[ID-1].isWin) {
+            isSaved = true;
             PlayScene::total_money = std::stoi(playerData[ID-1].Coins);
             scene->MapId = stoi(playerData[ID-1].Stage);
             Engine::GameEngine::GetInstance().ChangeScene("story");

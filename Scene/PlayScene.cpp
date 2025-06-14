@@ -465,7 +465,7 @@ void PlayScene::Update(float deltaTime) {
                 }
                 //----------------------------------------
 
-                if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                if (SelectProfileScene::playerData.size() <= 0 || SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) Engine::GameEngine::GetInstance().ChangeScene("story");
                 else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
 
                 return;
@@ -664,7 +664,7 @@ void PlayScene::Update(float deltaTime) {
                 }
                 //----------------------------------------
 
-                if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) Engine::GameEngine::GetInstance().ChangeScene("story");
                 else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
             }
         }

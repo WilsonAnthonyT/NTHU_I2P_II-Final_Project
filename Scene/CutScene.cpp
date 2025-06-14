@@ -388,7 +388,7 @@ void CutScene::Initialize() {
         StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
-        sceneTransition.targetScene = "win";
+        sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
     }
@@ -666,10 +666,69 @@ void CutScene::Initialize() {
         sceneTransition.duration = 1.001f;
     }
     else if (scene->MapId == 7 ) {
-        sceneTransition.delay = 0.001f;
-        sceneTransition.targetScene = "start";
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
+        PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
+        PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
+        // Example animation
+        dialogs.push_back({
+    "Ughhh... I can't believe this...",
+    3.5f,
+    "play/tool-base.png",
+    "Ejojo"
+        });
+        dialogs.push_back({
+            "You dare defeat me?!",
+            2.0f,
+            "play/tool-base.png",
+            "Ejojo"
+        });
+        dialogs.push_back({
+            "This isn't over... not by a long shot.",
+            2.0f,
+            "play/tool-base.png",
+            "Ejojo"
+        });
+        dialogs.push_back({
+            "My family will *not* let this go unpunished.",
+            2.0f,
+            "play/tool-base.png",
+            "Ejojo"
+        });
+        dialogs.push_back({
+            "My brother... Adu Du... will come for you.",
+            2.0f,
+            "play/tool-base.png",
+            "Ejojo"
+        });
+        dialogs.push_back({
+            "You'd better watch your back.",
+            3.0f,
+            "play/tool-base.png",
+            "Ejojo"
+        });
+
+        // Easter egg credit
+        dialogs.push_back({
+            "Featuring Bryan and Arwen.",
+            4.0f,
+            "play/tool-base.png",
+            " "
+        });
+        //Char 1 ship
+        std::vector<std::string> EjojoFrames = {
+            "play/EjojoBoss-death.png"
+        };
+        AddCharacterAnimation("Ejojo", EjojoFrames, 1.0f, true);
+        SetCharacterScale("Ejojo", 4*Blocksize/810, 4 * Blocksize/810);
+        SetCharacterPosition("Ejojo", screenWidth/2+2*Blocksize, Blocksize * 3);
+        MoveCharacterTo("Ejojo", screenWidth/2 - Blocksize * 3, Blocksize * 3, 6.0f);
+        ScaleCharacterTo("Ejojo", 0.01f, 0.01f, 0.1f);
+
+        sceneTransition.delay = 100.00f;
+        sceneTransition.targetScene = "win";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
+        sceneTransition.duration = 1.001f;
     }
 }
 

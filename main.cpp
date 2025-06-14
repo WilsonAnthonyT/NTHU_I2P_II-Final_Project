@@ -3,6 +3,7 @@
 // You can register your scenes here, and start the game.
 #include "Engine/GameEngine.hpp"
 #include "Engine/LOG.hpp"
+#include "Scene/CreditScene.h"
 #include "Scene/CutScene.h"
 #include "Scene/LoseScene.hpp"
 #include "Scene/PlayScene.hpp"
@@ -30,6 +31,7 @@ int main(int argc, char **argv) {
 	game.AddNewScene("leaderboard", new LeaderboardScene());	//ADDED
 	game.AddNewScene("scoreboard", new ScoreboardScene());	//ADDED
 	game.AddNewScene("profile-select", new SelectProfileScene());
+	game.AddNewScene("credit", new CreditScene());
 
     // TODO HACKATHON-1 (1/1): Change the start scene
 

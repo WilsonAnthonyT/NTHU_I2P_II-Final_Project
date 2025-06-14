@@ -80,7 +80,7 @@ void ScoreboardScene::Initialize() {
     //AddNewObject(new Engine::Label("1ABC", "pirulen.ttf", PlayScene::BlockSize, 3*PlayScene::BlockSize, 1.5*PlayScene::BlockSize, 255, 255, 255, 255, 0, 0.5));
     AddNewObject(new Engine::Image("scoreboard/bryanmedal.png",W,halfH+PlayScene::BlockSize,PlayScene::BlockSize*3.5,PlayScene::BlockSize*5,1,0.5));
     AddNewObject(new Engine::Image("scoreboard/arwenmedal.png",0,halfH+PlayScene::BlockSize,PlayScene::BlockSize*3.5,PlayScene::BlockSize*5,0,0.5));
-    Spacing = (5-(10/6))*PlayScene::BlockSize/11;
+    Spacing = ((H-(4*PlayScene::BlockSize))-(10*PlayScene::BlockSize/6))/11;
 }
 
 void ScoreboardScene::OnKeyDown(int keyCode) {
@@ -105,28 +105,28 @@ void ScoreboardScene::Draw() const {
         if (i + point < static_cast<int>(Data.size())) {
             al_draw_textf(
                 Numfont, al_map_rgb(255, 255, 255),
-                PlayScene::BlockSize*3.5, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 - i*PlayScene::BlockSize/480 + (i+1) * Spacing,
+                PlayScene::BlockSize*3.5, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/6 - i*PlayScene::BlockSize/360 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_CENTRE,
                 "%d.", i + point + 1
             );
 
             al_draw_textf(
                 font, al_map_rgb(255, 255, 255),
-                PlayScene::BlockSize*4, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
+                PlayScene::BlockSize*4, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/6 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
                 "%s", (Data[i + point].name).c_str()
             );
 
             al_draw_textf(
                 font, al_map_rgb(255, 255, 255),
-                halfW - PlayScene::BlockSize/2, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
+                halfW - PlayScene::BlockSize/2, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/6 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
                 "%d", Data[i + point].scores
             );
 
             al_draw_textf(
                 font, al_map_rgb(255,255,255),
-                halfW + PlayScene::BlockSize*3, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
+                halfW + PlayScene::BlockSize*3, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/6 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
                 "%.3f", (Data[i + point].duration)
             );

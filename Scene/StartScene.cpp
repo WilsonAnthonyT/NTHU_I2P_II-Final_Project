@@ -17,9 +17,14 @@
 
 #include <iostream>
 
+#include "SelectProfileScene.h"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "UI/Component/Slider.hpp"
+
+std::vector<SelectProfileScene::ProfileData> SelectProfileScene::playerData;
+int SelectProfileScene::profileID = 0;
+int PlayScene::total_money = 0;
 
 bool Engine::IScene::DebugMode = false;
 void StartScene::Initialize() {
@@ -98,7 +103,7 @@ void StartScene::PlayOnClick(int stage) {
 }
 
 void StartScene::CreditOnClick(int stage) {
-    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    Engine::GameEngine::GetInstance().ChangeScene("credit");
 }
 
 void StartScene::SettingsOnClick(int stage) {

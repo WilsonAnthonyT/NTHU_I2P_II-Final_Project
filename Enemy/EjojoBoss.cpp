@@ -617,13 +617,12 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
             // Countdown to removal
             crashShakeTimer -= deltaTime;
             if (crashShakeTimer <= 0) {
-                getPlayScene()->MapId++;
-
-                PlayScene::total_money += this->money;
+                auto scene = getPlayScene();
+                scene->MapId++;
 
                 //this 3 lines is for updating the profile.
-                auto scene = getPlayScene();
                 if (SelectProfileScene::isSaved && !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) {
+                    PlayScene::total_money += this->money;
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = scene->MapId;
                     newdata->coin_counts = PlayScene::total_money;
@@ -631,27 +630,26 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
                 }
                 //----------------------------------------
 
-                if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                scene->EnemyGroup->RemoveObject(GetObjectIterator());
+                if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) Engine::GameEngine::GetInstance().ChangeScene("story");
                 else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
-
-                return;
             }
         }
     }
     // ... (keep your existing crash sequence code)
     // Add Cuphead-style victory effects when boss is finally defeated
-    if (crashShakeTimer <= 0) {
-        // Victory fanfare
-        // getPlayScene()->PlaySample("victory.wav");
-
-        // Soul contract effect (Cuphead-style)
-        // getPlayScene()->EffectGroup->AddNewObject(
-        //     new ContractEffect(Position.x, Position.y - 100)
-        // );
-
-        // Transition to next level after delay
-        Engine::GameEngine::GetInstance().ChangeScene("start");
-    }
+    // if (crashShakeTimer <= 0) {
+    //     // Victory fanfare
+    //     // getPlayScene()->PlaySample("victory.wav");
+    //
+    //     // Soul contract effect (Cuphead-style)
+    //     // getPlayScene()->EffectGroup->AddNewObject(
+    //     //     new ContractEffect(Position.x, Position.y - 100)
+    //     // );
+    //
+    //     // Transition to next level after delay
+    //     Engine::GameEngine::GetInstance().ChangeScene("story");
+    // }
 }
 
 void EjojoBoss::UpdateAnimation(float deltaTime) {
