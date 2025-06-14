@@ -121,6 +121,7 @@ public:
     void Update(float deltaTime) override;
     void Draw() const override;
     void OnDeath() override;
+    void UpdateAnimation(float deltaTime) override;
 };
 
 #endif // EJOJO_BOSS_H

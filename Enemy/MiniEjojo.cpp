@@ -11,6 +11,8 @@
 #include "UI/Animation/LightEffect.h"
 
 MiniEjojo::MiniEjojo(int x, int y) : EjojoEnemy("play/EjojoMini.png",x, y) {
+    hp = EjojoEnemy::hp /2;
+    MaxHp = hp;
     Size = Engine::Point(PlayScene::BlockSize*1, PlayScene::BlockSize*1);
     fixedAltitude = PlayScene::BlockSize * 6;
     Position.y = PlayScene::GetClientSize().y - fixedAltitude;

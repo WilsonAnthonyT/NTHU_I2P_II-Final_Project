@@ -309,6 +309,10 @@ void Enemy::Update(float deltaTime) {
     if (isKnockedback) {
         float newX = Position.x + knockbackVelocityX * deltaTime;
 
+        // Clamp X position to within map bounds
+        float minX = 0;
+        float maxX = scene->MapWidth * PlayScene::BlockSize - this->Size.x;
+
         // Only move if not colliding with wall
         if (!IsCollision(newX, Position.y, true)) {
             Position.x = newX;
@@ -458,8 +462,6 @@ bool Enemy::IsPlayerInRange(float x, float y, float AttackRange) {
 void Enemy::UpdateAnimation(float deltaTime) {
 
 }
-
-
 
 //return HP (for missile)
 float Enemy::getHp() const {

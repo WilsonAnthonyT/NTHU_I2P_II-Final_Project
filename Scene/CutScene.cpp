@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <random>
 #include <allegro5/allegro_primitives.h>
 #include "StageSelectScene.hpp"
 #include "Engine/GameEngine.hpp"
@@ -125,6 +126,28 @@ void CutScene::Initialize() {
         al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
         al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
     }
+
+
+    //for rain
+    // if (scene->MapId == 1) {
+    //     rainParticles.clear();
+    //     std::random_device rd;
+    //     std::mt19937 gen(rd());
+    //     std::uniform_int_distribution<> distX(0, PlayScene::MapWidth * PlayScene::BlockSize);
+    //     std::uniform_real_distribution<> distSpeed(5.0f, 15.0f);
+    //     std::uniform_real_distribution<> distLength(10.0f, 30.0f);
+    //     rainEnabled = true;
+    //
+    //
+    //     for (int i = 0; i < count; ++i) {
+    //         RainParticle p;
+    //         p.x = distX(gen);
+    //         p.y = static_cast<float>(distX(gen) % (PlayScene::MapHeight * PlayScene::BlockSize));
+    //         p.speed = distSpeed(gen);
+    //         p.length = distLength(gen);
+    //         rainParticles.push_back(p);
+    //     }
+    // }
 
     // Add groups from bottom to top
     AddNewObject(AnimationGroup = new Group());
@@ -764,6 +787,16 @@ void CutScene::Update(float deltaTime) {
             StartFadeOut();
         }
     }
+
+    // if (scene->MapId == 2) {
+    //     for (auto& p : rainParticles) {
+    //         p.y += p.speed * deltaTime * PlayScene::BlockSize; // Animates properly with deltaTime
+    //         if (p.y > screenWidth * PlayScene::BlockSize * 2) {
+    //             p.y = -p.length; // Reset above  the screen
+    //             p.x = rand() % (screenWidth * PlayScene::BlockSize);
+    //         }
+    //     }
+    // }
 
     AnimationGroup->Update(deltaTime);
 }

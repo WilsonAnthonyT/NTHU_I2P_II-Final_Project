@@ -130,9 +130,10 @@ void PlayScene::Initialize() {
         }
     }
 
-    // ReadEnemyWave();
-    // waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
-
+    if (MapId == 1) {
+        ReadEnemyWave();
+        waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
+    }
     ConstructUI();
 
     if (MapId == 1 || MapId == 2) {
@@ -440,6 +441,7 @@ void PlayScene::Terminate() {
     AudioHelper::StopSample(bgmInstance);
     AudioHelper::StopSample(deathBGMInstance);
     deathBGMInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    rainParticles.clear();
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
@@ -451,8 +453,6 @@ void PlayScene::Update(float deltaTime) {
             transitionTick += deltaTime;
             if (transitionTick >= desiredTransitionTick) {
                 MapId++;
-
-                //this 3 lines is for updating the profile.
                 if (SelectProfileScene::isSaved) {
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = MapId;
@@ -461,8 +461,8 @@ void PlayScene::Update(float deltaTime) {
                     delete newdata;
                 }
                 //----------------------------------------
-
                 Engine::GameEngine::GetInstance().ChangeScene("story");
+                return;
             }
         }
     }
