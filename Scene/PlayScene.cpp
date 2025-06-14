@@ -303,6 +303,7 @@ void PlayScene::Initialize() {
     }
 
     else if (MapId == 4) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
         dialogs.push_back({
             "The whole thing was confusing..",
             3.0f,
