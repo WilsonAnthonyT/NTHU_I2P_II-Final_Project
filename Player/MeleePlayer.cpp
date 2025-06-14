@@ -17,8 +17,8 @@
 MeleePlayer::MeleePlayer(float x, float y) : Player("play/bryan.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (scene->MapId != 6) {
-        weapon = new BasicSword(x, y, this);
-        shield = new BasicShield(x, y, this);
+        weapon = new LinkWeapon(x, y, this);
+        shield = new LinkShield(x, y, this);
         scene->WeaponGroup->AddNewObject(weapon);
         scene->WeaponGroup->AddNewObject(shield);
     }

@@ -215,6 +215,8 @@ private:
     Engine::Label *BGMSlider;
     Engine::Label *SFXSlider;
     Slider *sliderBGM, *sliderSFX;
+    Engine::Label *BGMval;
+    Engine::Label *SFXval;
 
     // Callbacks
     void BackOnClick(int state);

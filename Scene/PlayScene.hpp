@@ -174,6 +174,8 @@ public:
     Engine::Label *enable2ndLabel;
 
     Slider *sliderBGM, *sliderSFX;
+    Engine::Label *BGMval;
+    Engine::Label *SFXval;
     //----
     void BackOnClick(int state);
     void ContinueOnClick(int state);

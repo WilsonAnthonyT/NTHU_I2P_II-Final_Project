@@ -547,100 +547,77 @@ void CutScene::Initialize() {
         sceneTransition.duration = 0.001f;
     }
     else if (scene->MapId == 6 ) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/captainroom.png");
         PlayScene::Camera.x = 0;
         PlayScene::Camera.y = 0;
         PlayScene::MapWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
         PlayScene::MapHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
         // Example animation
         dialogs.push_back({
-    "Warning! Unidentified ships have breached our defense.",
-    3.5f,
-    "play/tool-base.png",
-    "System"
-});
+        "Well-well-well....",
+        3.5f,
+        "animation/EjojoBoss-1.png",
+        "Ejojo"
+        });
         dialogs.push_back({
-            "Scanners detect alien signatures. ",
+        "Look who is here now",
+        3.5f,
+        "animation/EjojoBoss-1.png",
+        "Ejojo"
+        });
+        dialogs.push_back({
+        "two little freak who have the courage.",
+        3.5f,
+        "animation/EjojoBoss-1.png",
+        "Ejojo"
+        });
+        dialogs.push_back({
+        "To destroy MY FREAKING SHIP",
+        3.5f,
+        "animation/EjojoBoss-1.png",
+        "Ejojo"
+        });
+        dialogs.push_back({
+            "You two are going to see the end of the light",
             2.0f,
-            "play/tool-base.png",
-            "System"
+            "animation/EjojoBoss-1.png",
+            "Ejojo"
         });
         dialogs.push_back({
-            "They descended without any prior signal..",
-            2.0f,
-            "play/tool-base.png",
-            "System"
-        });
-        dialogs.push_back({
-            "These ships are not alone—",
-            2.0f,
-            "play/tool-base.png",
-            "System"
-        });
-        dialogs.push_back({
-            "They carry portals to summon otherworldly creatures.",
-            2.0f,
-            "play/tool-base.png",
-            "System"
-        });
-        dialogs.push_back({
-            "The invaders’ motives are unknown.",
+            "so it's YOU who's behind all of this fiasco.",
             3.0f,
-            "play/tool-base.png",
-            "System"
+            "play/bryanDialog.png",
+            "Bryan"
         });
         dialogs.push_back({
-            "but we believe their goal is to colonize us .",
+            "Yeah, what the heck have you done??",
             3.0f,
-            "play/tool-base.png",
-            "System"
+            "play/arwenDialog.png",
+            "Arwen"
         });
         dialogs.push_back({
-            "This is not just an invasion. It's an extermination.",
+            "Do you think I'm dumb enough to tell you my plan?",
             3.0f,
-            "play/tool-base.png",
-            "System"
+            "animation/EjojoBoss-1.png",
+            "Ejojo"
         });
         dialogs.push_back({
-            "We need to act fast. Deploying our elite fighters.",
+            "Come defeat me if you can!!HAHA",
             3.0f,
-            "play/sir.png",
-            "Lieutenant"
+            "animation/EjojoBoss-1.png",
+            "Ejojo"
         });
         dialogs.push_back({
-            "Bryan and Arwen, the best we've got.",
+            "I guess we gonna end it all here..",
             3.0f,
-            "play/sir.png",
-            "Lieutenant"
+            "play/bryanDialog.png",
+            "Bryan"
         });
         dialogs.push_back({
-            "Bryan specializes in sword technique; ",
+            "Let's go..",
             3.0f,
-            "play/sir.png",
-            "Lieutenant"
-        });
-        dialogs.push_back({
-            "Arwen's skills lie in gun's specialization.",
-            3.0f,
-            "play/sir.png",
-            "Lieutenant"
-        });
-        dialogs.push_back({
-            "They’re humanity’s last hope. ",
-            2.0f,
-            "play/sir.png",
-            "Lieutenant"
-        });
-        dialogs.push_back({
-            "If anyone can turn the tide, it’s them.",
-            2.0f,
-            "play/sir.png",
-            "Lieutenant"
-        });
-        dialogs.push_back({
-            "Good luck out there. We’re counting on you.",
-            4.0f,
-            "play/sir.png",
-            "Lieutenant"
+            "play/arwenDialog.png",
+            "Arwen"
         });
 
         //tumbal ga bakal kepake
@@ -650,26 +627,82 @@ void CutScene::Initialize() {
             "play/tool-base.png",
             " "
         });
-        //Char 1 ship
-        std::vector<std::string> FlashFrames = {
-            "cut-scene/flash.png"
-        };
-        AddCharacterAnimation("flash", FlashFrames, 10.0f, true);
-        SetCharacterScale("flash", Blocksize/1920, Blocksize/1200);
-        SetCharacterPosition("flash", screenWidth/2 + 1, Blocksize * 3);
-        MoveCharacterTo("flash", screenWidth/2 - Blocksize * 3, Blocksize * 3, 6.0f);
-        ScaleCharacterTo("flash", 0.8f, 0.8f, 6.0f);
 
-        sceneTransition.delay = 10.001f;
+        //Char 1 ship
+        std::vector<std::string> EjojoFrames = {
+            "animation/EjojoBoss-1.png"
+        };
+        AddCharacterAnimation("Ejojo", EjojoFrames, 10.0f, true);
+        SetCharacterScale("Ejojo", 0.9f, 0.9f);
+        SetCharacterPosition("Ejojo", screenWidth, Blocksize * 7 - 5*Blocksize);
+        MoveCharacterTo("Ejojo", screenWidth/1.5, Blocksize * 7-5*Blocksize, 6.0f);
+        ScaleCharacterTo("Ejojo", 0.7f, 0.7f, 6.0f);
+
+        std::vector<std::string> bryanFrames;
+        for (int i = 1; i <= 4; i++) {
+            bryanFrames.push_back("animation/bryan-walk" + std::to_string(i) + ".png");
+        }
+
+        AddCharacterAnimation("bryan", bryanFrames, 10.0f, true);
+        SetCharacterScale("bryan", 0.48*Blocksize/38, 0.70*Blocksize/64);
+        SetCharacterPosition("bryan", Blocksize*4 - 0.45*Blocksize, Blocksize * 7-0.70*Blocksize);
+        MoveCharacterTo("bryan", screenWidth/2, Blocksize * 7-0.70*Blocksize, 6.0f);
+        ScaleCharacterTo("bryan", 0.45*Blocksize/35 + 0.01, 0.70*Blocksize/64, 6.0f);
+
+        std::vector<std::string> arwenFrames;
+        for (int i = 1; i <= 4; i++) {
+            arwenFrames.push_back("animation/arwen-walk-" + std::to_string(i) + ".png");
+        }
+        AddCharacterAnimation("arwen", arwenFrames, 10.0f, true);
+        SetCharacterScale("arwen", 0.43*Blocksize/35, 0.65*Blocksize/64);
+        SetCharacterPosition("arwen", Blocksize*2-0.4*Blocksize, Blocksize * 7-0.65*Blocksize);
+        MoveCharacterTo("arwen", screenWidth/2 - Blocksize, Blocksize * 7-0.65*Blocksize, 6.0f);
+        ScaleCharacterTo("arwen", 0.45*Blocksize/35 + 0.01, 0.65*Blocksize/64, 6.0f);
+
+        sceneTransition.delay = 100.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 1.001f;
+        sceneTransition.duration = 1.0f;
     }
     else if (scene->MapId == 7 ) {
-        sceneTransition.delay = 0.001f;
-        sceneTransition.targetScene = "start";
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/black.png");
+        PlayScene::Camera.x = 0;
+        PlayScene::Camera.y = 0;
+        dialogs.push_back({
+            "Congratulations!!",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "You (guys) beat the game...",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+        dialogs.push_back({
+            "Thank you for playing!!",
+            3.0f,
+            "play/tool-base.png",
+            "System"
+        });
+
+        //tumbal
+        dialogs.push_back({
+            "tumbal",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        StartDialog(dialogs, true);
+        sceneTransition.delay = 7.0f;
+        sceneTransition.targetScene = "win";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
+        // sceneTransition.duration = 0.001f;
+        // sceneTransition.delay = 0.001f;
+        // sceneTransition.targetScene = "start";
+        // sceneTransition.transitionType = AnimationType::FADE_OUT;
+        // sceneTransition.duration = 0.001f;
     }
 }
 
@@ -692,6 +725,8 @@ void CutScene::Terminate() {
 void CutScene::Update(float deltaTime) {
     UpdatePauseState();
     if (IsPaused) {
+        BGMval->Text = std::to_string((int)(AudioHelper::BGMVolume/1.0f * 100)) + "%";
+        SFXval->Text = std::to_string((int)(AudioHelper::SFXVolume / 1.0f * 100)) + "%";
         UIGroup->Update(deltaTime);
         return;
     }
@@ -742,14 +777,14 @@ void CutScene::Update(float deltaTime) {
                 if (allAnimationsDone) {
                     isAnimationPhaseDone = true;
                     std::cout << "Animations finished" << std::endl;
-                    if (scene->MapId == 1) {
+                    if (scene->MapId == 1 || scene->MapId == 6) {
                         StartDialog(dialogs, true);
                         isDialogStarted = true;
                     }
                 }
             }
             if (isAnimationPhaseDone) {
-                if (scene->MapId == 1) {
+                if (scene->MapId == 1 || scene->MapId == 6) {
                     if (!isDialogStarted) {
                         currentState = GameState::Dialog;
                         isDialogStarted = true;
@@ -769,6 +804,15 @@ void CutScene::Update(float deltaTime) {
 
         //only for lv 1=================================
         if (scene->MapId == 1) {
+            if (transitionTimer >= 6.0f && !isDialogStarted) {
+                StartDialog(dialogs, true);
+                isDialogStarted = true;
+            }
+            if (isDialogFinished) {
+                sceneTransition.delay = 0.1f;
+            }
+        }
+        else if (scene->MapId == 6) {
             if (transitionTimer >= 6.0f && !isDialogStarted) {
                 StartDialog(dialogs, true);
                 isDialogStarted = true;
@@ -816,7 +860,7 @@ void CutScene::Draw() const {
 
     switch (currentState) {
         case GameState::Dialog:
-            if (scene->MapId == 1) {
+            if (scene->MapId == 1 || scene->MapId == 6) {
                 for (const auto& [id, character] : characterAnimations) {
                     if (character.animation) {
                         character.animation->SetFlip(character.flipHorizontal);
@@ -879,7 +923,7 @@ void CutScene::OnMouseDown(int button, int mx, int my) {
     }
     if (currentState == GameState::Normal && !isAnimationPhaseDone) {
         isAnimationPhaseDone = true; // Skip animations
-        if (scene->MapId == 1) StartDialog(dialogs, true); // Start dialog
+        if (scene->MapId == 1 || scene->MapId == 6) StartDialog(dialogs, true); // Start dialog
     }
 }
 
@@ -899,7 +943,7 @@ void CutScene::OnKeyDown(int keyCode) {
     }
     if (currentState == GameState::Normal && !isAnimationPhaseDone) {
         if (keyCode == ALLEGRO_KEY_SPACE) isAnimationPhaseDone = true; // Skip animations
-        if (scene->MapId == 1) {
+        if (scene->MapId == 1 || scene->MapId == 6) {
             StartDialog(dialogs, true);
             isDialogStarted = true;
         }
@@ -1007,76 +1051,72 @@ void CutScene::CreatePauseUI() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2, halfH = h / 2;
-
-    //for I forgot
-    int h_margin = 150;
-    int w_obj = 600, h_obj = 500 + h_margin;
-
-    //button position
-    int btnPosX = (w - 400) / 2;
-    int btnPosY = (h - h_obj) / 2 + h_margin;
-
-    //label position
-    int lblPosX = w/2;
-    int lblPosY = (h - h_obj) / 2 + h_margin;
+    float BlockSize = w / 16;
 
 
     //outer box bbc and text
-    pauseOverlay = new Engine::Image("play/sand.png", (w - w_obj) / 2, (h - h_obj) / 2, w_obj, h_obj);
+    pauseOverlay = new Engine::Image("play/pausebox.png", halfW, halfH, 5*BlockSize,5.4*BlockSize,0.5, 0.5);
     pauseOverlay->Visible = false;
     UIGroup->AddNewObject(pauseOverlay);
 
-    pauseText = new Engine::Label("PAUSED", "pirulen.ttf", 48, lblPosX, lblPosY - 100, 0, 0, 100, 255, 0.5, 0.5);
+    pauseText = new Engine::Label("PAUSED", "pirulen.ttf", 2*BlockSize/5, halfW, halfH-2*BlockSize, 10, 255, 255, 255, 0.5, 0.5);
     pauseText->Visible = false;
     UIGroup->AddNewObject(pauseText);
 
-    //to continue perchance
-    continueButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 100, 400, 100);
+    //to continue perhaps
+    continueButton = new Engine::ImageButton("play/pausebutton.png", "stage-select/floor.png", halfW-1.5*BlockSize, halfH+ BlockSize/2 -(5*BlockSize/12), 3*BlockSize, 5*BlockSize/6);
     continueButton->Visible = false;
     continueButton->Enabled = false;
     UIGroup->AddNewControlObject(continueButton);
     continueButton->SetOnClickCallback(std::bind(&CutScene::ContinueOnClick, this, 1));
 
     //exit to stage scene
-    exitButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 360, 400, 100);
+    exitButton = new Engine::ImageButton("play/pausebutton.png", "stage-select/floor.png", halfW-1.5*BlockSize, halfH + 1.5* BlockSize -(5*BlockSize/12), 3*BlockSize, 5*BlockSize/6);
     exitButton->Visible = false;
     exitButton->Enabled = false;
     UIGroup->AddNewControlObject(exitButton);
     exitButton->SetOnClickCallback(std::bind(&CutScene::BackOnClick, this, 1));
 
     //the label
-    continueLabel = new Engine::Label("Continue", "pirulen.ttf", 48, lblPosX, lblPosY + 150, 0, 0, 0, 255, 0.5, 0.5);
+    continueLabel = new Engine::Label("Continue", "pirulen.ttf", 2*BlockSize/5, halfW, halfH+BlockSize/2, 10, 255, 255, 255, 0.5, 0.5);
     continueLabel->Visible = false;
     UIGroup->AddNewObject(continueLabel);
 
-    exitLabel = new Engine::Label("Exit", "pirulen.ttf", 48, lblPosX, lblPosY + 410, 0, 0, 0, 255, 0.5, 0.5);
+    exitLabel = new Engine::Label("Exit", "pirulen.ttf", 2*BlockSize/5, halfW, halfH+1.5*BlockSize, 10, 255, 255, 255, 0.5, 0.5);
     exitLabel->Visible = false;
     UIGroup->AddNewObject(exitLabel);
 
     //slider
-    sliderBGM = new Slider(40 + halfW - 95, halfH - 200 - 2, 190, 4);
+    sliderBGM = new Slider(halfW - BlockSize, halfH - 5*BlockSize/4, 2.1*BlockSize, BlockSize/30);
     sliderBGM->Visible = false;
     sliderBGM->Enabled = false;
     sliderBGM->SetValue(AudioHelper::BGMVolume);
     sliderBGM->SetOnValueChangedCallback(std::bind(&CutScene::BGMSlideOnValueChanged, this, std::placeholders::_1));
     UIGroup->AddNewControlObject(sliderBGM);
 
-    BGMSlider = new Engine::Label("BGM: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 200, 0, 0, 0, 255, 0.5, 0.5);
+    BGMSlider = new Engine::Label("BGM: ", "pirulen.ttf", 7*BlockSize/30, halfW-1 * BlockSize, halfH - BlockSize - BlockSize/4, 255, 255, 255, 255, 1, 0.5);
     BGMSlider->Visible = false;
     UIGroup->AddNewObject(BGMSlider);
 
+    BGMval = new Engine::Label(std::to_string((int)(AudioHelper::BGMVolume / 1.0f) * 100) + "%", "pirulen.ttf", 7*BlockSize/30, halfW+1.65 * BlockSize, halfH - BlockSize - BlockSize/4, 255, 255, 255, 255, 0.5, 0.5);
+    BGMval->Visible = false;
+    UIGroup->AddNewObject(BGMval);
+
     //slider
-    sliderSFX = new Slider(40 + halfW - 95, halfH - 150 + 2, 190, 4);
+    sliderSFX = new Slider(halfW - BlockSize, halfH - 3*BlockSize/4, 2.1*BlockSize, BlockSize/30);
     sliderSFX->Visible = false;
     sliderSFX->Enabled = false;
     sliderSFX->SetValue(AudioHelper::SFXVolume);
     sliderSFX->SetOnValueChangedCallback(std::bind(&CutScene::SFXSlideOnValueChanged, this, std::placeholders::_1));
     UIGroup->AddNewControlObject(sliderSFX);
 
-    SFXSlider = new Engine::Label("SFX: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 150, 0, 0, 0, 255, 0.5, 0.5);
+    SFXSlider = new Engine::Label("SFX: ", "pirulen.ttf", 7*BlockSize/30, halfW - 1 * BlockSize, halfH - BlockSize + BlockSize/4, 255, 255, 255, 255, 1, 0.5);
     SFXSlider->Visible = false;
     UIGroup->AddNewObject(SFXSlider);
 
+    SFXval = new Engine::Label(std::to_string((int)(AudioHelper::SFXVolume / 1.0f * 100)) + "%", "pirulen.ttf", 7*BlockSize/30, halfW+1.65 * BlockSize, halfH - BlockSize + BlockSize/4, 255, 255, 255, 255, 0.5, 0.5);
+    SFXval->Visible = false;
+    UIGroup->AddNewObject(SFXval);
 }
 
 //-------For Exit, restart, and Continue Button------------------
@@ -1116,11 +1156,13 @@ void CutScene::UpdatePauseState() {
         sliderBGM->Visible = show;
         sliderBGM->Enabled = show;
         BGMSlider->Visible = show;
+        BGMval->Visible = show;
     }
     if (sliderSFX) {
         sliderSFX->Visible = show;
         sliderSFX->Enabled = show;
         SFXSlider->Visible = show;
+        SFXval->Visible = show;
     }
 }
 

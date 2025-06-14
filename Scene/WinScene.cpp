@@ -16,13 +16,15 @@ void WinScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
-    AddNewObject(new Engine::Image("win/benjamin-sad.png", halfW, halfH, 0, 0, 0.5, 0.5));
-    AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 58, halfW, halfH / 4, 255, 255, 255, 255, 0.5, 0.5));
+    PlayScene::Camera.x = 0;
+    PlayScene::Camera.y = 0;
+    AddNewObject(new Engine::Image("win/trophy.png", halfW, halfH, PlayScene::BlockSize*8, PlayScene::BlockSize*5.5, 0.5, 0.5));
+    AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 29*PlayScene::BlockSize/60, halfW, halfH / 4, 255, 215,  0, 255, 0.5, 0.5));
     Engine::ImageButton *btn;
-    btn = new Engine::ImageButton("win/dirt.png", "win/floor.png", halfW - 200, halfH * 7 / 4 - 50, 400, 100);
+    btn = new Engine::ImageButton("start/button.png", "win/floor.png", halfW - 1.5*PlayScene::BlockSize, h-1.5*PlayScene::BlockSize, 3*PlayScene::BlockSize, PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&WinScene::ReturnOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Return", "pirulen.ttf", 48, halfW, halfH * 7 / 4, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Return", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, w-PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
     bgmId = AudioHelper::PlayAudio("win.wav");
 }
 void WinScene::Terminate() {

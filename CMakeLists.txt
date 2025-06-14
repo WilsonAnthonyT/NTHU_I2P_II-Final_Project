@@ -162,6 +162,12 @@ add_executable(Final-Project
     InteractiveBlock/GasMachine.h
     InteractiveBlock/Gas.cpp
     InteractiveBlock/Gas.h
+        InteractiveBlock/Doraemon.cpp
+        InteractiveBlock/Doraemon.h
+        Bullet/RedBullet.cpp
+        Bullet/RedBullet.h
+        EnemyBullet/EnemyRedBullet.cpp
+        EnemyBullet/EnemyRedBullet.h
 )
 
 IF (WIN32)

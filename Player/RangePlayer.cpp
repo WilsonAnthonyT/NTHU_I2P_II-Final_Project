@@ -12,7 +12,7 @@
 RangePlayer::RangePlayer(float x, float y) : Player("play/arwen.png",x,y, PlayScene::BlockSize * 2.25,100) {
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetActiveScene());
     if (scene->MapId != 6) {
-        weapon = new RangeWeapon("play/pistol.png",x,y,.4,30,this, PlayScene::BlockSize*11);
+        weapon = new RangeWeapon("play/pistol.png",x,y,0.75,30,this, PlayScene::BlockSize*11);
     }
     else {
         weapon = new RangeWeapon("play/guns.png",x,y,.4,30,this, PlayScene::BlockSize*11);

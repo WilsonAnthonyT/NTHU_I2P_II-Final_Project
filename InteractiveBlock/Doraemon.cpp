@@ -1,26 +1,33 @@
 //
-// Created by MiHu on 6/13/2025.
+// Created by MiHu on 6/14/2025.
 //
 
-#include "Gas.h"
+#include "../InteractiveBlock/Doraemon.h"
+
 #include "Engine/GameEngine.hpp"
 
-PlayScene *Gas::getPlayScene() {
+PlayScene *Doraemon::getPlayScene() {
     return dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
 }
 
-Gas::Gas(std::string img, float x, float y) :Sprite(img, x, y){
+Doraemon::Doraemon(std::string img, float x, float y) : Sprite(img, x, y) {
     Anchor = Engine::Point(0.5, 0);
-    Size.x=3*PlayScene::BlockSize,Size.y=PlayScene::BlockSize;
+    Size.x = PlayScene::BlockSize, Size.y = PlayScene::BlockSize;
 }
 
-void Gas::Update(float deltaTime) {
-    IsCollision(Position.x, Position.y);
-}
-
-void Gas::IsCollision(float x, float y) {
-    PlayScene* scene = getPlayScene();
+void Doraemon::Update(float deltaTime) {
+    auto scene = getPlayScene();
     if (!scene) return;
+
+    // Check if player is colliding to collect
+    if (IsCollision(Position.x, Position.y)) {
+
+    }
+}
+
+bool Doraemon::IsCollision(float x, float y) {
+    PlayScene* scene = getPlayScene();
+    if (!scene) return false;
 
     // Calculate hitbox based on object size
     float left = x - Size.x/2;
@@ -42,13 +49,8 @@ void Gas::IsCollision(float x, float y) {
         bool overlapY = top < p_Bottom && bottom > p_Top;
 
         if (overlapX && overlapY) {
-            player->Hit(1);
-            player->Tint = al_map_rgba(180, 255, 180, 200);
-        }
-        else {
-            player->Tint = al_map_rgba(255, 255, 255, 255);
+            return true;
         }
     }
-
-    return;
+    return false;
 }
