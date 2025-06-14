@@ -7,7 +7,7 @@
 
 std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> AudioHelper::sharedBGMInstance = nullptr;
 
-float AudioHelper::BGMVolume = 0.01f;
+float AudioHelper::BGMVolume = 0.5f;
 float AudioHelper::SFXVolume = 0.1f;
 ALLEGRO_SAMPLE_ID AudioHelper::PlayAudio(const std::string &audio) {
     ALLEGRO_SAMPLE *sample = Engine::Resources::GetInstance().GetSample(audio).get();

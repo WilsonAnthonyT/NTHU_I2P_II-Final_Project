@@ -158,7 +158,6 @@ void CutScene::Initialize() {
         AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
         AudioHelper::sharedBGMInstance = nullptr;
     }
-    bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
     
     CreatePauseUI();
 
@@ -388,7 +387,7 @@ void CutScene::Initialize() {
         StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
-        sceneTransition.targetScene = "play";
+        sceneTransition.targetScene = "win";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
     }
@@ -542,6 +541,10 @@ void CutScene::Initialize() {
         });
         StartDialog(dialogs, true);
         sceneTransition.delay = 7.0f;
+        sceneTransition.targetScene = "play";
+        sceneTransition.transitionType = AnimationType::FADE_OUT;
+        sceneTransition.duration = 0.001f;
+        sceneTransition.delay = 0.01f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 0.001f;
@@ -715,6 +718,7 @@ void CutScene::Initialize() {
             "play/tool-base.png",
             " "
         });
+        StartDialog(dialogs, true);
         //Char 1 ship
         std::vector<std::string> EjojoFrames = {
             "play/EjojoBoss-death.png"
@@ -722,8 +726,8 @@ void CutScene::Initialize() {
         AddCharacterAnimation("Ejojo", EjojoFrames, 1.0f, true);
         SetCharacterScale("Ejojo", 4*Blocksize/810, 4 * Blocksize/810);
         SetCharacterPosition("Ejojo", screenWidth/2+2*Blocksize, Blocksize * 3);
-        MoveCharacterTo("Ejojo", screenWidth/2 - Blocksize * 3, Blocksize * 3, 6.0f);
-        ScaleCharacterTo("Ejojo", 0.01f, 0.01f, 0.1f);
+        MoveCharacterTo("Ejojo", screenWidth/2+2*Blocksize + 1, Blocksize * 3, 6.0f);
+        ScaleCharacterTo("Ejojo", 0.99f, 0.99f, 0.1f);
 
         sceneTransition.delay = 100.00f;
         sceneTransition.targetScene = "win";
@@ -737,7 +741,7 @@ void CutScene::Terminate() {
         al_destroy_font(dialogFont);
         dialogFont = nullptr;
     }
-    AudioHelper::StopSample(bgmInstance);
+    // AudioHelper::StopSample(bgmInstance);
 
     characterAnimations.clear();
     characterPositions.clear();

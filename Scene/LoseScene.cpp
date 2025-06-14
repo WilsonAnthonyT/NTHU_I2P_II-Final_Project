@@ -26,7 +26,7 @@ void LoseScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&LoseScene::BackOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, h-PlayScene::BlockSize, 10,255, 255, 255, 0.5, 0.5));
-    bgmInstance = AudioHelper::PlaySample("astronomia.ogg", false, AudioHelper::BGMVolume, PlayScene::DangerTime);
+    bgmInstance = AudioHelper::PlaySample("losing.mp3", false, AudioHelper::BGMVolume, PlayScene::DangerTime);
 }
 void LoseScene::Terminate() {
     AudioHelper::StopSample(bgmInstance);

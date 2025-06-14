@@ -191,7 +191,6 @@ void PlayScene::Initialize() {
         AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
         AudioHelper::sharedBGMInstance = nullptr;
     }
-    bgmInstance = AudioHelper::PlaySample("play.ogg", true, AudioHelper::BGMVolume);
 
     CreatePauseUI();
 
@@ -203,6 +202,7 @@ void PlayScene::Initialize() {
     std::vector<PlayScene::Dialog> dialogs;
     if (MapId == 1) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
+        bgmInstance = AudioHelper::PlaySample("bgm1.mp3", true, AudioHelper::BGMVolume);
         dialogs.push_back({
             "Monsters everywhere! This is insane!",
             3.0f,
@@ -248,6 +248,7 @@ void PlayScene::Initialize() {
     }
     else if (MapId == 2) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/background1.png");
+        bgmInstance = AudioHelper::PlaySample("bgm2.mp3", true, AudioHelper::BGMVolume);
         dialogs.push_back({
             "The tank can only shoot upwards.",
             4.0f,
@@ -270,6 +271,7 @@ void PlayScene::Initialize() {
 
     else if (MapId == 3) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
+        bgmInstance = AudioHelper::PlaySample("bgm3.mp3", true, AudioHelper::BGMVolume);
         dialogs.push_back({
             "Did we just get teleported here",
             3.0f,
@@ -322,6 +324,7 @@ void PlayScene::Initialize() {
 
     else if (MapId == 4) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
+        bgmInstance = AudioHelper::PlaySample("bgm4.mp3", true, AudioHelper::BGMVolume);
         dialogs.push_back({
             "The whole thing was confusing..",
             3.0f,
@@ -360,6 +363,7 @@ void PlayScene::Initialize() {
         });
     }
     else if (MapId == 5) {
+        bgmInstance = AudioHelper::PlaySample("bgm5.mp3", true, AudioHelper::BGMVolume);
         dialogs.push_back({
             "Fortunately we brought our own flashlight",
             3.0f,
@@ -393,6 +397,7 @@ void PlayScene::Initialize() {
     }
     else if (MapId == 6) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/captainbackground.png");
+        bgmInstance = AudioHelper::PlaySample("bgm6.mp3", true, AudioHelper::BGMVolume);
         dialogs.push_back({
             "Note: Players are equipped with ak and jetpack",
             3.0f,
@@ -483,6 +488,7 @@ void PlayScene::Update(float deltaTime) {
                     newdata->coin_counts = total_money;
                     SelectProfileScene::WriteProfileData(newdata);
                 }
+
                 //----------------------------------------
 
                 if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) Engine::GameEngine::GetInstance().ChangeScene("story");
@@ -697,9 +703,15 @@ void PlayScene::Update(float deltaTime) {
                      newdata->coin_counts = total_money;
                      SelectProfileScene::WriteProfileData(newdata);
                  }
+                std::cout << "hello1" << std::endl;
                 //----------------------------------------
-                if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) Engine::GameEngine::GetInstance().ChangeScene("story");
-                else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+                if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) {
+                    Engine::GameEngine::GetInstance().ChangeScene("story");
+                }
+                else {
+                    std::cout << "hello3" << std::endl;
+                    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+                }
             }
         }
     }

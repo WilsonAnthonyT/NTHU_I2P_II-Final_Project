@@ -32,11 +32,11 @@ void WinScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&WinScene::ReturnOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Return", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, w-PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
-    bgmId = AudioHelper::PlayAudio("win.wav");
+    bgmId = AudioHelper::PlayAudio("winning.mp3");
 }
 void WinScene::Terminate() {
-    IScene::Terminate();
     AudioHelper::StopBGM(bgmId);
+    IScene::Terminate();
 }
 void WinScene::Update(float deltaTime) {
     ticks += deltaTime;

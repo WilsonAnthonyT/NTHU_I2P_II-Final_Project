@@ -10,7 +10,7 @@
 #include "Engine/Resources.hpp"
 #include "Scene/SelectProfileScene.h"
 
-EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBoss.png", x, y, 1000, 100.0f, 500, 5, 5, 10),
+EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBoss.png", x, y, 1000, 100.0f, 20, 5, 5, 10),
                                                       rng(std::random_device{}()) {
     // Base setup - position locked to right side
     Size = Engine::Point(PlayScene::BlockSize*3, PlayScene::BlockSize*3);
@@ -627,13 +627,6 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
             // Countdown to removal
             crashShakeTimer -= deltaTime;
             if (crashShakeTimer <= 0) {
-                getPlayScene()->MapId++;
-                getPlayScene()->EnemyGroup->RemoveObject(GetObjectIterator());
-                Engine::GameEngine::GetInstance().ChangeScene("story");
-
-                PlayScene::total_money += this->money;
-
-                //this 3 lines is for updating the profile.
                 auto scene = getPlayScene();
                 scene->MapId++;
 
@@ -648,8 +641,14 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
                 //----------------------------------------
 
                 scene->EnemyGroup->RemoveObject(GetObjectIterator());
-                if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) Engine::GameEngine::GetInstance().ChangeScene("story");
-                else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+                if (SelectProfileScene::playerData.size() <= 0 || !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin || !SelectProfileScene::isSaved) {
+                    Engine::GameEngine::GetInstance().ChangeScene("story");
+                    return;
+                }
+                else {
+                    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+                    return;
+                }
             }
         }
     }
