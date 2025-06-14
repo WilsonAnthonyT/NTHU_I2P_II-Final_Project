@@ -13,7 +13,7 @@
 
 class Player;
 
-FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Sprite *parent, float speed) : Bullet("play/bullet-1.png", speed, 2, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
+FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Sprite *parent, float speed) : Bullet("play/bullet-1.png", speed, 10, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
 }
 void FireBullet::OnExplode(Enemy *enemy) {
     // std::random_device dev;

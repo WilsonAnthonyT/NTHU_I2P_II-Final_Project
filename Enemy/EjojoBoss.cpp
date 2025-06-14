@@ -6,8 +6,9 @@
 #include "EjojoBoss.h"
 
 #include "ArcherSkelly.h"
+#include "Engine/Resources.hpp"
 
-EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 1000, 100.0f, 500, 5, 5, 10),
+EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBoss.png", x, y, 1000, 100.0f, 500, 5, 5, 10),
                                                       rng(std::random_device{}()) {
     // Base setup - position locked to right side
     Size = Engine::Point(PlayScene::BlockSize*3, PlayScene::BlockSize*3);
@@ -62,6 +63,14 @@ EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy(img, x, y, 100
     telegraphDuration = 0.75f;
 
     SetupPhase(currentPhase);
+
+    //animation
+    for (int i = 1; i <= 4; i++) {
+        walkAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/EjojoBoss-" + std::to_string(i) + ".png"));
+    }
+    for (int i = 1; i <= 4; i++) {
+        idleAnimation.push_back(Engine::Resources::GetInstance().GetBitmap("animation/EjojoBoss-" + std::to_string(i) + ".png"));
+    }
 }
 
 void EjojoBoss::SetupPhase(int phase) {
@@ -424,6 +433,7 @@ void EjojoBoss::Update(float deltaTime) {
 
     // Update visual effects
     UpdateVisualEffects(deltaTime);
+    UpdateAnimation(deltaTime);
 
     Sprite::Update(deltaTime);
 }
@@ -545,6 +555,7 @@ void EjojoBoss::OnDeath() {
 
 void EjojoBoss::HandleCrashSequence(float deltaTime) {
     if (isFalling) {
+        bmp = Engine::Resources::GetInstance().GetBitmap("play/EjojoBoss-death.png");
         crashProgress = crashShakeTimer > 0 ? 1.0f :
                             std::max(0.5f, 1.0f - ((Position.y) / (getPlayScene()->MapHeight * PlayScene::BlockSize)));
 
@@ -627,3 +638,56 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
     }
 }
 
+void EjojoBoss::UpdateAnimation(float deltaTime) {
+    if (hp > 0) {
+        animationTime += deltaTime;
+
+        std::vector<std::shared_ptr<ALLEGRO_BITMAP>>* currentAnimation = nullptr;
+        float* currentFrameDuration = nullptr;
+        bool looping = true;
+
+        if (std::abs(VelocityY) > 0.01f) {
+            currentState = WALKING;
+            currentAnimation = &walkAnimation;
+            currentFrameDuration = &walkFrameDuration;
+        }
+        else {
+            currentState = IDLE;
+            currentAnimation = &idleAnimation;
+            currentFrameDuration = &idleFrameDuration;
+        }
+
+        // Update animation frames
+        if (currentAnimation && !currentAnimation->empty()) {
+            if (animationTime >= *currentFrameDuration) {
+                animationTime = 0;
+
+                if (looping) {
+                    currentFrame = (currentFrame + 1) % currentAnimation->size();
+                }
+                else if (currentFrame < currentAnimation->size() - 1) {
+                    currentFrame++;
+                }
+
+                // Update bitmap
+                // if (currentFrame >= 0 && currentFrame < currentAnimation->size()) {
+                //     bmp = (*currentAnimation)[currentFrame];
+                // } else {
+                //     currentFrame = 0;  // Reset to safe value
+                //     if (!currentAnimation->empty()) {
+                //         bmp = (*currentAnimation)[0];
+                //     }
+                // }
+                bmp = (*currentAnimation)[currentFrame];
+                // Handle direction
+
+            }
+        }
+        // Handle attack completion
+        // Handle death completion
+    }
+    else {
+
+    }
+
+}
