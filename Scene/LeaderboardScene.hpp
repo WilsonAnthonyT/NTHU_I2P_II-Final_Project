@@ -8,7 +8,7 @@ private:
     std::string Name, dateNtime;
     int tick;
     int score;
-    const int maxChar = 14;
+    const int maxChar = 10;
     bool enterPressed = false;
 
 public:

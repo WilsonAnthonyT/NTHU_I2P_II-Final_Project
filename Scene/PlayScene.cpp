@@ -112,6 +112,7 @@ void PlayScene::Initialize() {
     AddNewObject(EnemyBulletGroup = new Group());
     AddNewObject(DamageTextGroup = new Group());
     AddNewObject(InteractiveBlockGroup = new Group());
+    AddNewObject(HealthBarGroup = new Group());
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
@@ -129,8 +130,8 @@ void PlayScene::Initialize() {
         }
     }
 
-    ReadEnemyWave();
-    waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
+    // ReadEnemyWave();
+    // waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
 
     ConstructUI();
 
@@ -392,6 +393,42 @@ void PlayScene::Initialize() {
     //for specific
     TotalMiniEjojo = 0;
     TotalArcherSkelly = 0;
+    const float healthBarWidth = 200;
+    const float healthBarHeight = 20;
+    const float padding = 10;
+    const float headSize = 40;
+
+    if (MapId == 1 || MapId == 2 || MapId == 4 || MapId == 6) {
+        // Player 1 health bar
+        if (player1) {
+            healthBarP1.head = new Engine::Image("play/bryanhead.png", 0, 0, headSize, headSize);
+            healthBarP1.fg = new Engine::Image("play/green.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP1.bg = new Engine::Image("play/red.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP1.player = player1;
+            healthBarP1.isPlayer1 = true;
+
+            HealthBarGroup->AddNewObject(healthBarP1.bg);
+            HealthBarGroup->AddNewObject(healthBarP1.fg);
+            HealthBarGroup->AddNewObject(healthBarP1.head);
+        }
+
+        // Player 2 health bar
+        if (player2) {
+            healthBarP2.head = new Engine::Image("play/arwenhead.png", 0, 0, headSize, headSize);
+            healthBarP2.fg = new Engine::Image("play/green.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP2.bg = new Engine::Image("play/red.png", 0, 0, healthBarWidth, healthBarHeight);
+
+            healthBarP2.player = player2;
+            healthBarP2.isPlayer1 = false;
+
+            HealthBarGroup->AddNewObject(healthBarP2.bg);
+            HealthBarGroup->AddNewObject(healthBarP2.fg);
+            HealthBarGroup->AddNewObject(healthBarP2.head);
+        }
+
+        // Initial positioning
+        UpdateHealthBarPositions();
+    }
 }
 void PlayScene::Terminate() {
     if (dialogFont) {
@@ -477,6 +514,8 @@ void PlayScene::Update(float deltaTime) {
     DamageTextGroup->Update(deltaTime);
     EffectGroup->Update(deltaTime);
     InteractiveBlockGroup->Update(deltaTime);
+
+    UpdateHealthBarPositions();
 
     //players
     std::vector<Player*> players;
@@ -600,6 +639,33 @@ void PlayScene::Update(float deltaTime) {
             }
         }
     }
+    const float healthBarWidth = 200; // Match initialization width
+
+    // Player 1 health bar update
+    if (player1 && healthBarP1.fg) {
+        float healthRatio = player1->hp / player1->MaxHp;
+        healthRatio = std::max(0.0f, std::min(1.0f, healthRatio)); // Clamp between 0-1
+        healthBarP1.fg->Size.x = healthBarWidth * healthRatio;
+
+        // Update visibility based on player state
+        bool shouldShow = player1->Visible && player1->hp > 0;
+        healthBarP1.head->Visible = shouldShow;
+        healthBarP1.bg->Visible = shouldShow;
+        healthBarP1.fg->Visible = shouldShow;
+    }
+
+    // Player 2 health bar update
+    if (player2 && healthBarP2.fg) {
+        float healthRatio = player2->hp / player2->MaxHp;
+        healthRatio = std::max(0.0f, std::min(1.0f, healthRatio)); // Clamp between 0-1
+        healthBarP2.fg->Size.x = healthBarWidth * healthRatio;
+
+        // Update visibility based on player state
+        bool shouldShow = player2->Visible && player2->hp > 0;
+        healthBarP2.head->Visible = shouldShow;
+        healthBarP2.bg->Visible = shouldShow;
+        healthBarP2.fg->Visible = shouldShow;
+    }
 }
 void PlayScene::Draw() const {
     if (IsPaused) {
@@ -620,10 +686,12 @@ void PlayScene::Draw() const {
     WeaponGroup->Draw();
     EffectGroup->Draw();
     EnemyBulletGroup->Draw();
-
+    HealthBarGroup->Draw();
     al_identity_transform(&trans);
     al_use_transform(&trans);
+    // Draw UI elements (health bars, minimap, etc.)
 
+     // Draws all health bar components
     //for map debug
     if((MapId == 5 && DebugMode) || (MapId != 5)) {
         Map_btn->Enabled = true;
@@ -936,19 +1004,19 @@ void PlayScene::ReadMap() {
                 }
             }else if (num == 'N') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                player1 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
+                player2 = (new MazePlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player1);
+                PlayerGroup->AddNewObject(player2);
             }
             else if (num == 'T') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
-                player2 = (new MazePlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
+                player1 = (new MazePlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-                PlayerGroup->AddNewObject(player2);
+                PlayerGroup->AddNewObject(player1);
             } else if (num=='3'){
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             } else if (num=='4') {
-                TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                TileMapGroup->AddNewObject(new Engine::Image("play/blocktile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }else if (num=='5'){
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize + BlockSize/2);
                 TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
@@ -2038,4 +2106,39 @@ void PlayScene::RemovePlayer(Player* player) {
     if (player == player1) player1 = nullptr;
     if (player == player2) player2 = nullptr;
     delete player;
+}
+
+void PlayScene::UpdateHealthBarPositions() {
+    const float padding = 10;
+    const float headSize = 40;
+    const float healthBarWidth = 200;
+    const float healthBarHeight = 20;
+
+    float yPos = padding;
+
+    // Update Player 1 health bar
+    if (player1) {
+        healthBarP1.head->Position = Engine::Point(Camera.x+padding, Camera.y+yPos);
+        healthBarP1.bg->Position = Engine::Point(Camera.x+padding + headSize + padding,Camera.y+ yPos + (headSize - healthBarHeight)/2);
+        healthBarP1.fg->Position = healthBarP1.bg->Position;
+        healthBarP1.fg->Size.x = healthBarWidth * (player1->hp / player1->MaxHp);
+
+        healthBarP1.head->Visible = player1->Visible;
+        healthBarP1.bg->Visible = player1->Visible;
+        healthBarP1.fg->Visible = player1->Visible;
+
+        yPos += headSize + padding;
+    }
+
+    // Update Player 2 health bar
+    if (player2) {
+        healthBarP2.head->Position = Engine::Point(Camera.x+padding, Camera.y+yPos);
+        healthBarP2.bg->Position = Engine::Point(Camera.x+padding + headSize + padding, Camera.y+yPos + (headSize - healthBarHeight)/2);
+        healthBarP2.fg->Position = healthBarP2.bg->Position;
+        healthBarP2.fg->Size.x = healthBarWidth * (player2->hp / player2->MaxHp);
+
+        healthBarP2.head->Visible = player2->Visible;
+        healthBarP2.bg->Visible = player2->Visible;
+        healthBarP2.fg->Visible = player2->Visible;
+    }
 }

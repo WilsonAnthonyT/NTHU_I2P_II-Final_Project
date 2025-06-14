@@ -13,7 +13,6 @@ class PlayScene;
 class Player : public Engine::Sprite{
 
 protected:
-    float MaxHp;
     float TintTimer;
     PlayScene *Play;
     float jumpForce;
@@ -39,6 +38,7 @@ protected:
     PlayerState currentState = IDLE;
 
 public:
+    float MaxHp;
     float hp;
     float speed;
     float verticalVelocity;

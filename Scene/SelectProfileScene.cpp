@@ -145,7 +145,7 @@ void SelectProfileScene::Initialize() {
 
     //profile 4
     btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW + PlayScene::BlockSize*(2/2), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 , PlayScene::BlockSize*4, PlayScene::BlockSize*2);
-    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 2));
+    btn->SetOnClickCallback(std::bind(&SelectProfileScene::PlayOnClick, this, 4));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label(playerData[4-1].Name, "pirulen.ttf", PlayScene::BlockSize/3, halfW + PlayScene::BlockSize*(2/2) + PlayScene::BlockSize*(4/2), 3.25*PlayScene::BlockSize + (1.25)*(h-(7*PlayScene::BlockSize))/5 + PlayScene::BlockSize*0.5, 10, 255, 255, 255, 0.5, 0.5));
 

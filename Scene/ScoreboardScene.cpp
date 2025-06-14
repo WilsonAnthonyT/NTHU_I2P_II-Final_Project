@@ -36,43 +36,48 @@ void ScoreboardScene::Initialize() {
     // Count pages needed to display data
     MAXPAGES = (static_cast<int>(Data.size()) + List_per_Page-1) / List_per_Page;
     sortData(sortType);
-
+    int W = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int H = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
     int halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
-
-    AddNewObject(new Engine::Label("LEADERBOARD", "pirulen.ttf", 60, halfW, halfH / 4 - 20, 255, 255, 255, 255, 0.5, 0.5));
-    AddNewObject(new Engine::Label("Sort By:", "pirulen.ttf", 20, 40, 40, 240, 240, 240, 225, 0.0, 0.0));
-    AddNewObject(new Engine::Label("Name", "pirulen.ttf", 25, halfW - 500 - 10, halfH / 4 + 70, 215, 215, 215, 255, 0.5, 0.5));
-    AddNewObject(new Engine::Label("Score", "pirulen.ttf", 25, halfW - 30, halfH / 4 + 70, 215, 215, 215, 255, 0.5, 0.5));
-    AddNewObject(new Engine::Label("Date & Time", "pirulen.ttf", 25, halfW + 500 - 30, halfH / 4 + 70, 215, 215, 215, 255, 0.5, 0.5));
+    backgroundIMG = Engine::Resources::GetInstance().GetBitmap("scoreboard/sboardbg.png");
+    AddNewObject(new Engine::Label("LEADERBOARD", "pirulen.ttf", PlayScene::BlockSize/2, halfW, PlayScene::BlockSize*1, 255, 255, 255, 255, 0.5, 0));
+    AddNewObject(new Engine::Label("Sort By:", "pirulen.ttf", PlayScene::BlockSize/6,PlayScene::BlockSize/3 , PlayScene::BlockSize/3, 240, 240, 240, 225, 0.0, 0.0));
+    AddNewObject(new Engine::Label("Name", "pirulen.ttf", PlayScene::BlockSize*5/24, PlayScene::BlockSize*4, PlayScene::BlockSize*2, 215, 215, 215, 255, 0, 1));
+    AddNewObject(new Engine::Label("Score", "pirulen.ttf", PlayScene::BlockSize*5/24, halfW, PlayScene::BlockSize*2, 215, 215, 215, 255, 0.5,1));
+    AddNewObject(new Engine::Label("Duration", "pirulen.ttf", PlayScene::BlockSize*5/24, halfW + PlayScene::BlockSize*3, PlayScene::BlockSize*2, 215, 215, 215, 255, 0, 1));
 
     Engine::ImageButton *btn;
 
     // Sort By
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/dirt.png", 40, 70, 165, 60);
+    btn = new Engine::ImageButton("start/button.png", "start/button.png", PlayScene::BlockSize/3, 7*PlayScene::BlockSize/12, 11*PlayScene::BlockSize/8, PlayScene::BlockSize/2);
     btn->SetOnClickCallback(std::bind(&ScoreboardScene::SortOnClick, this, 0));
     AddNewControlObject(btn);
 
-    SortLabel = new Engine::Label(Stype, "pirulen.ttf", 24, 122, 98, 20, 20, 20, 255, 0.5, 0.5);
+    SortLabel = new Engine::Label(Stype, "pirulen.ttf", PlayScene::BlockSize/5, PlayScene::BlockSize/3 + 11*PlayScene::BlockSize/16, 7*PlayScene::BlockSize/12 + PlayScene::BlockSize/4, 10, 255, 255, 255, 0.5, 0.5);
     AddNewObject(SortLabel);
 
     // Close Button
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200 - 5, halfH * 3 / 2 + 30, 400, 100);
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - 1.5*PlayScene::BlockSize, H-2*PlayScene::BlockSize, 3*PlayScene::BlockSize,  PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&ScoreboardScene::CloseOnClick, this, 0));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Close", "pirulen.ttf", 48, halfW - 8, halfH * 3 / 2 + 80, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Close", "pirulen.ttf", PlayScene::BlockSize*2/5, halfW, H-1.5*PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
 
     // > Next Page
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200 - 5 + 500, halfH * 3 / 2 + 30, 100, 100);
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW + 2.6*PlayScene::BlockSize, H-1.9*PlayScene::BlockSize, 0.8*PlayScene::BlockSize, 0.8*PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&ScoreboardScene::PageButtonOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label(">", "pirulen.ttf", 88, halfW - 8 + 355, halfH * 3 / 2 + 78, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label(">", "pirulen.ttf", PlayScene::BlockSize*22/30, halfW + 3*PlayScene::BlockSize, H-1.5*PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
 
     // < Prev Page
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200 - 5 - 200, halfH * 3 / 2 + 30, 100, 100);
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - 3.4*PlayScene::BlockSize, H-1.9*PlayScene::BlockSize, 0.8*PlayScene::BlockSize, 0.8*PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&ScoreboardScene::PageButtonOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("<", "pirulen.ttf", 88, halfW - 8 - 350, halfH * 3 / 2 + 78, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("<", "pirulen.ttf", PlayScene::BlockSize*22/30, halfW - 3*PlayScene::BlockSize, H-1.5*PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
+    //AddNewObject(new Engine::Label("1ABC", "pirulen.ttf", PlayScene::BlockSize, 3*PlayScene::BlockSize, 1.5*PlayScene::BlockSize, 255, 255, 255, 255, 0, 0.5));
+    AddNewObject(new Engine::Image("scoreboard/bryanmedal.png",W,halfH+PlayScene::BlockSize,PlayScene::BlockSize*3.5,PlayScene::BlockSize*5,1,0.5));
+    AddNewObject(new Engine::Image("scoreboard/arwenmedal.png",0,halfH+PlayScene::BlockSize,PlayScene::BlockSize*3.5,PlayScene::BlockSize*5,0,0.5));
+    Spacing = (5-(10/6))*PlayScene::BlockSize/11;
 }
 
 void ScoreboardScene::OnKeyDown(int keyCode) {
@@ -89,36 +94,36 @@ void ScoreboardScene::Draw() const {
     int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
     int halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
 
-    ALLEGRO_FONT* font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", 20).get();
-    ALLEGRO_FONT* Numfont = Engine::Resources::GetInstance().GetFont("pirulen.ttf", 25).get();
+    ALLEGRO_FONT* font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", PlayScene::BlockSize/6).get();
+    ALLEGRO_FONT* Numfont = Engine::Resources::GetInstance().GetFont("pirulen.ttf", PlayScene::BlockSize*5/24).get();
     int point = List_per_Page * Page;
     for (int i = 0; i < List_per_Page; i++) {
 
         if (i + point < static_cast<int>(Data.size())) {
             al_draw_textf(
-                Numfont, al_map_rgb(215, 215, 215),
-                halfW - 660, halfH / 4 + 105 + i * Spacing,
-                ALLEGRO_ALIGN_CENTER,
+                Numfont, al_map_rgb(255, 255, 255),
+                PlayScene::BlockSize*3.5, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 - i*PlayScene::BlockSize/480 + (i+1) * Spacing,
+                ALLEGRO_ALIGN_CENTRE,
                 "%d.", i + point + 1
             );
 
             al_draw_textf(
-                font, al_map_rgb(150, 150, 150),
-                halfW - 560, halfH / 4 + 105 + i * Spacing,
+                font, al_map_rgb(255, 255, 255),
+                PlayScene::BlockSize*4, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
                 "%s", (Data[i + point].name).c_str()
             );
 
             al_draw_textf(
-                font, al_map_rgb(150, 150, 150),
-                halfW - 85, halfH / 4 + 105 + i * Spacing,
+                font, al_map_rgb(255, 255, 255),
+                halfW - PlayScene::BlockSize/2, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
                 "%d", Data[i + point].scores
             );
 
             al_draw_textf(
-                font, al_map_rgb(150, 150, 150),
-                halfW + 365, halfH / 4 + 105 + i * Spacing,
+                font, al_map_rgb(255,255,255),
+                halfW + PlayScene::BlockSize*3, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
                 "%s", (Data[i + point].date_n_time).c_str()
             );

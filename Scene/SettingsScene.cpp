@@ -18,22 +18,26 @@ void SettingsScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
+    float Blocksize = w/16;
     backgroundIMG = Engine::Resources::GetInstance().GetBitmap("start/settingbg.png");
     Engine::ImageButton *btn;
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW-1.5*Blocksize, h-2.5*Blocksize, 3*Blocksize, Blocksize);
     btn->SetOnClickCallback(std::bind(&SettingsScene::BackOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Back", "pirulen.ttf", 2 * Blocksize/5, halfW, h-2*Blocksize, 10, 255, 255, 255, 0.5, 0.5));
 
     Slider *BGM, *SFX;
-    BGM = new Slider(40 + halfW - 95, halfH - 50 - 2, 190, 4);
+    BGM = new Slider(halfW - Blocksize*1.1, halfH - Blocksize/2 - Blocksize/60, 3*Blocksize, Blocksize/30);
     BGM->SetOnValueChangedCallback(std::bind(&SettingsScene::BGMSlideOnValueChanged, this, std::placeholders::_1));
     AddNewControlObject(BGM);
-    AddNewObject(new Engine::Label("BGM: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 50, 255, 255, 255, 255, 0.5, 0.5));
-    SFX = new Slider(40 + halfW - 95, halfH + 50 - 2, 190, 4);
+    AddNewObject(new Engine::Label("BGM: ", "pirulen.ttf", Blocksize * 7/30,halfW - 2 * Blocksize, halfH - Blocksize/2, 255, 255, 255, 255, 0, 0.5));
+    SFX = new Slider(halfW - Blocksize*1.1, halfH + Blocksize/2 - Blocksize/60, 3 *Blocksize, Blocksize/30);
     SFX->SetOnValueChangedCallback(std::bind(&SettingsScene::SFXSlideOnValueChanged, this, std::placeholders::_1));
     AddNewControlObject(SFX);
-    AddNewObject(new Engine::Label("SFX: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH + 50, 255, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("SFX: ", "pirulen.ttf", Blocksize * 7/30, halfW - 2 * Blocksize, halfH + Blocksize/2, 255, 255, 255, 255, 0, 0.5));
+    AddNewObject(new Engine::Image("start/bryancon.png",w-3 *Blocksize,halfH+Blocksize,5.5*Blocksize,8*Blocksize,0.5,0.5));
+    AddNewObject(new Engine::Image("start/arwencon.png",3*Blocksize,halfH+Blocksize,5.5*Blocksize,8*Blocksize,0.5,0.5));
+
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
     // bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
     if (!AudioHelper::sharedBGMInstance ||

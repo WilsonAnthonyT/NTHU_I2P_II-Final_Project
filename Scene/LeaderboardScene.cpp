@@ -22,17 +22,20 @@ int LeaderboardScene::val = 0;
 bool SelectProfileScene::isSaved = false;
 
 void LeaderboardScene::Initialize() {
-    int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
-    int halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
-
-    AddNewObject(new Engine::Label("enter your name", "pirulen.ttf", 40, halfW, halfH / 4 + 90, 255, 255, 255, 255, 0.5, 0.5));
+    float W = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    float H = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    float halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
+    float halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
+    float Blocksize = W/16;
+    backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-2.png");
+    AddNewObject(new Engine::Label("enter your name", "pirulen.ttf", Blocksize/3, halfW, Blocksize*2, 255, 255, 255, 255, 0.5,1));
     AddNewObject(new Engine::Label("press [enter] to save", "pirulen.ttf", 22, halfW-3, halfH / 4 + 340, 155, 255, 255, 125, 0.5, 0.5));
 
     Engine::ImageButton *btn;
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - 2*Blocksize, H-2.5*Blocksize, 4*Blocksize, Blocksize);
     btn->SetOnClickCallback(std::bind(&LeaderboardScene::DontSaveOnClick, this, 0));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Don't Save", "pirulen.ttf", 45, halfW - 2, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Don't Save", "pirulen.ttf", 45, halfW, H-2*Blocksize, 10, 255, 255, 255, 0.5, 0.5));
 
     if (!AudioHelper::sharedBGMInstance ||
     !al_get_sample_instance_playing(AudioHelper::sharedBGMInstance.get())) {
@@ -107,11 +110,11 @@ void LeaderboardScene::OnKeyDown(int keyCode) {
         }
     } else if (keyCode == ALLEGRO_KEY_BACKSPACE && !Name.empty()){
         Name.pop_back();
-    } else if (length == 1 && Name.length() <= maxChar) {
+    } else if (length == 1 && Name.length() < maxChar) {
         Name += al_keycode_to_name(keyCode);
-    } else if (keyCode == ALLEGRO_KEY_SPACE && Name.length() <= maxChar) {
+    } else if (keyCode == ALLEGRO_KEY_SPACE && Name.length() < maxChar) {
         Name += " ";
-    } else if (keyCode == ALLEGRO_KEY_MINUS && Name.length() <= maxChar) {
+    } else if (keyCode == ALLEGRO_KEY_MINUS && Name.length() < maxChar) {
         Name += "-";
     }
 }
@@ -167,18 +170,21 @@ void LeaderboardScene::Update(float deltaTime) {
 
 void LeaderboardScene::Draw() const {
     IScene::Draw();
-    int halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
-    int halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
+    float W = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    float H = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    float halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
+    float halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
+    float Blocksize = W/16;
 
     // Draw white rectangle
-    al_draw_filled_rectangle(halfW - 450, halfH - 40 - 65, halfW + 450, halfH + 40 - 60,
+    al_draw_filled_rectangle(halfW - 3.75*Blocksize, halfH - Blocksize, halfW + 3.75*Blocksize, halfH ,
         al_map_rgba(255, 255, 255, 255)
     );
 
-    ALLEGRO_FONT* font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", 35).get();
+    ALLEGRO_FONT* font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", Blocksize/4).get();
     al_draw_textf(
         font, al_map_rgb(76, 64, 45),
-        halfW, halfH - 85,
+        halfW, 4*Blocksize,
         ALLEGRO_ALIGN_CENTER,
         "%s" ,Name.c_str()
     );

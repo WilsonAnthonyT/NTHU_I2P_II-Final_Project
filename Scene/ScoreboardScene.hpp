@@ -13,10 +13,10 @@ private:
 
     std::ifstream ifs;
     std::string Name;
-    const int Spacing = 53;
+    float Spacing;
     int Page = 0;
     int MAXPAGES = 0;
-    int List_per_Page = 8;
+    const int List_per_Page = 10;
     std::vector<saved> Data;
 
     Engine::Label *SortLabel;

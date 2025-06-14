@@ -38,10 +38,23 @@ private:
         float cooldown;
         float direction;
     };
+    struct PlayerHealthBar {
+        Engine::Image* head;
+        Engine::Image* bg;
+        Engine::Image* fg;
+        Player* player;
+        bool isPlayer1; // To track which player this belongs to
+    };
+
+    PlayerHealthBar healthBarP1;
+    PlayerHealthBar healthBarP2;
+
     std::vector<Wave> enemyWave;
     float waveEnemy_spawnCount, waveEnemy_index, waveEnemy_delay;
 
     ALLEGRO_FONT* dialogFont = nullptr;
+    Group * HealthBarGroup;
+
     struct Dialog {
         std::string text;
         float duration;
@@ -189,6 +202,8 @@ public:
 
     //remove player
     void RemovePlayer(Player *player);
+
+    void UpdateHealthBarPositions();
 
     //for level 2 only
     int TotalMiniEjojo = 0;
