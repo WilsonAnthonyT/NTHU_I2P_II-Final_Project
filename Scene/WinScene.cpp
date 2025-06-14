@@ -25,13 +25,13 @@ void WinScene::Initialize() {
     int halfH = h / 2;
     PlayScene::Camera.x = 0;
     PlayScene::Camera.y = 0;
-    AddNewObject(new Engine::Image("win/trophy.png", halfW, halfH, PlayScene::BlockSize*8, PlayScene::BlockSize*5.5, 0.5, 0.5));
+    AddNewObject(new Engine::Image("win/trophy.png", halfW, halfH, PlayScene::BlockSize*5.5, PlayScene::BlockSize*7, 0.5, 0.5));
     AddNewObject(new Engine::Label("You Win!", "pirulen.ttf", 29*PlayScene::BlockSize/60, halfW, halfH / 4, 255, 215,  0, 255, 0.5, 0.5));
     Engine::ImageButton *btn;
     btn = new Engine::ImageButton("start/button.png", "win/floor.png", halfW - 1.5*PlayScene::BlockSize, h-1.5*PlayScene::BlockSize, 3*PlayScene::BlockSize, PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&WinScene::ReturnOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Return", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, w-PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Next", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, h-PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
     bgmId = AudioHelper::PlayAudio("win.wav");
 }
 void WinScene::Terminate() {
@@ -96,7 +96,7 @@ void WinScene::ReturnOnClick(int stage) {
         //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     }
 
-    Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
+    Engine::GameEngine::GetInstance().ChangeScene("credit");
 }
 
 void WinScene::setScore(int scr) {
