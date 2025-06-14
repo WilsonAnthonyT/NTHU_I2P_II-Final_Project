@@ -174,10 +174,5 @@ void JetpackPlayerB::Draw() const {
         al_draw_filled_rectangle(healthBarX, healthBarY,
                                 healthBarX + healthBarWidth, healthBarY + healthBarHeight,
                                 al_map_rgb(0, 0, 0)); // Red background
-
-        float healthRatio = static_cast<float>(jetpackFuel) / static_cast<float>(maxJetpackFuel);
-        al_draw_filled_rectangle(healthBarX, healthBarY,
-                                healthBarX + healthBarWidth * healthRatio, healthBarY + healthBarHeight,
-                                al_map_rgb(180, 180, 255)); // Green health
     }
 }

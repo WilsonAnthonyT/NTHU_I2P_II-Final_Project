@@ -219,6 +219,7 @@ public:
     bool isShop = false;
 
     //
+    bool ismasked = false;
     ALLEGRO_BITMAP* mask;
 };
 #endif   // PLAYSCENE_HPP

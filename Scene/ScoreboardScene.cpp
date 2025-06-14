@@ -138,22 +138,21 @@ void ScoreboardScene::sortData(int type){
     switch (type) {
 
         case 1: // by Name
-            std::sort(Data.begin(), Data.end(), [](const auto& a, const auto& b)
-            {
-                size_t i = 0, j = 0;
-                while (i < a.name.size() && j < b.name.size()) {
-                    if (!std::isalpha(a.name[i])) { ++i; continue; }
-                    if (!std::isalpha(b.name[j])) { ++j; continue; }
+            std::sort(Data.begin(), Data.end(), [](const auto& a, const auto& b) {
+            size_t i = 0, j = 0;
+            while (i < a.name.size() && j < b.name.size()) {
+                if (!std::isalpha(a.name[i])) { ++i; continue; }
+                if (!std::isalpha(b.name[j])) { ++j; continue; }
 
-                    if (a.name[i] < b.name[j]) return true;
-                    if (a.name[i] > b.name[j]) return false;
+                if (a.name[i] < b.name[j]) return true;
+                if (a.name[i] > b.name[j]) return false;
 
-                    ++i;
-                    ++j;
+                ++i;
+                ++j;
                 }
-            }
-            );
-        break;
+                return a.name.size() < b.name.size();
+            });
+            break;
 
         case 2: // by Time
             std::sort(Data.begin(), Data.end(), [](const auto& a, const auto& b)

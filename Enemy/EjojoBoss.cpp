@@ -10,7 +10,7 @@
 #include "Engine/Resources.hpp"
 #include "Scene/SelectProfileScene.h"
 
-EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBoss.png", x, y, 1000, 100.0f, 20, 5, 5, 10),
+EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBoss.png", x, y, 1000, 100.0f, 500, 5, 5, 10),
                                                       rng(std::random_device{}()) {
     // Base setup - position locked to right side
     Size = Engine::Point(PlayScene::BlockSize*3, PlayScene::BlockSize*3);

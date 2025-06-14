@@ -118,6 +118,7 @@ void PlayScene::Initialize() {
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
 
+
     if (MapId == 5) {
         //for flashlight
         if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
@@ -367,7 +368,7 @@ void PlayScene::Initialize() {
         dialogs.push_back({
             "Fortunately we brought our own flashlight",
             3.0f,
-            "play/ArwenDialog.png",
+            "play/arwenDialog.png",
             "Arwen"
         });
         dialogs.push_back({
@@ -379,7 +380,7 @@ void PlayScene::Initialize() {
         dialogs.push_back({
             "Hell no you coward..",
             3.0f,
-            "play/ArwenDialog.png",
+            "play/arwenDialog.png",
             "Arwen"
         });
         dialogs.push_back({
@@ -391,7 +392,7 @@ void PlayScene::Initialize() {
         dialogs.push_back({
             "I don't know, just keep moving..",
             3.0f,
-            "play/ArwenDialog.png",
+            "play/arwenDialog.png",
             "Arwen"
         });
     }
@@ -461,7 +462,6 @@ void PlayScene::Terminate() {
         al_destroy_font(dialogFont);
         dialogFont = nullptr;
     }
-
     player1 = player2 = nullptr;
 
     AudioHelper::StopSample(bgmInstance);
@@ -471,6 +471,11 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
+    // if (MapId == 5) {
+    //     //for flashlight
+    //     if (mask) return;
+    //     mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
+    // }
 
     float clampedDT = std::min(deltaTime, Engine::GameEngine::GetInstance().GetDeltaTimeThreshold());
     total_time += clampedDT;
@@ -756,7 +761,7 @@ void PlayScene::Draw() const {
 
     IScene::Draw(); // will draw tiles/UI, now offset by camera
 
-    if (MapId == 5 && !DebugMode) FlashLight();
+    //if (MapId == 5 && !DebugMode) FlashLight();
 
     PlayerGroup->Draw();
     WeaponGroup->Draw();
@@ -1092,8 +1097,6 @@ void PlayScene::ReadMap() {
                 player1 = (new MazePlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/floortile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player1);
-            } else if (num=='3'){
-                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             } else if (num=='4') {
                 TileMapGroup->AddNewObject(new Engine::Image("play/blocktile.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }else if (num=='5'){
@@ -1681,6 +1684,7 @@ void PlayScene::FullMap() const {
 
 void PlayScene::FlashLight() const {
     if (!player1 || !player2) return;
+    if (!mask) return;
 
     // Set the target to our mask bitmap
     al_set_target_bitmap(mask);

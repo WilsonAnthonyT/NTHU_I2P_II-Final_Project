@@ -31,7 +31,7 @@ void WinScene::Initialize() {
     btn = new Engine::ImageButton("start/button.png", "win/floor.png", halfW - 1.5*PlayScene::BlockSize, h-1.5*PlayScene::BlockSize, 3*PlayScene::BlockSize, PlayScene::BlockSize);
     btn->SetOnClickCallback(std::bind(&WinScene::ReturnOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Return", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, w-PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Return", "pirulen.ttf", 2*PlayScene::BlockSize/5, halfW, h-PlayScene::BlockSize, 10, 255, 255, 255, 0.5, 0.5));
     bgmId = AudioHelper::PlayAudio("winning.mp3");
 }
 void WinScene::Terminate() {

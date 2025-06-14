@@ -120,12 +120,12 @@ void CutScene::Initialize() {
     ticks = 0;
     IsPaused = false;
 
-    if (scene->mask) {
-        al_destroy_bitmap(scene->mask);
-        scene->mask = nullptr;
-        al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
-        al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
-    }
+    // if (scene->mask) {
+    //     al_destroy_bitmap(scene->mask);
+    //     scene->mask = nullptr;
+    //     al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
+    //     al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+    // }
 
 
     //for rain
@@ -158,7 +158,7 @@ void CutScene::Initialize() {
         AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
         AudioHelper::sharedBGMInstance = nullptr;
     }
-    
+
     CreatePauseUI();
 
     // Initialize dialog system
@@ -365,7 +365,7 @@ void CutScene::Initialize() {
         AddCharacterAnimation("tankb", tankbFrames, 10.0f, true);
         SetCharacterScale("tankb", 2*Blocksize/438, 2*Blocksize/438);
         SetCharacterPosition("tankb", screenWidth-3*Blocksize, Blocksize * 5);
-        
+
         std::vector<std::string> bryanFrames;
         for (int i = 1; i <= 4; i++) {
             bryanFrames.push_back("animation/bryan-walk" + std::to_string(i) + ".png");
@@ -387,7 +387,7 @@ void CutScene::Initialize() {
         StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
-        sceneTransition.targetScene = "win";
+        sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
     }
@@ -543,11 +543,6 @@ void CutScene::Initialize() {
         sceneTransition.delay = 7.0f;
         sceneTransition.targetScene = "play";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
-        sceneTransition.delay = 0.01f;
-        sceneTransition.targetScene = "play";
-        sceneTransition.transitionType = AnimationType::FADE_OUT;
-        sceneTransition.duration = 0.001f;
     }
     else if (scene->MapId == 6 ) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("cut-scene/captainroom.png");
