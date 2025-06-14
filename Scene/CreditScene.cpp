@@ -2,11 +2,11 @@
 #include "Engine/GameEngine.hpp"
 #include <allegro5/allegro_primitives.h>
 
+#include "Engine/Resources.hpp"
 #include "UI/Component/Label.hpp"
 
 CreditScene::CreditScene() :
     scrollY(0),
-    scrollSpeed(120),
     isScrolling(true),
     creditGroup(nullptr),
     UIGroup(nullptr),
@@ -20,6 +20,7 @@ void CreditScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
+    scrollSpeed=w/(16*4);
 
     // Create groups
     AddNewObject(creditGroup = new Engine::Group());
@@ -79,10 +80,16 @@ void CreditScene::Initialize() {
     creditGroup->AddNewObject(new Engine::Label(
             "Wilson \"wilsonanthonyt\" Tang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    creditGroup->AddNewObject(new Engine::Image(
+        "start/bryan.png", w-PlayScene::BlockSize*2.5, currentY,
+        PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
     currentY += PlayScene::BlockSize;
     creditGroup->AddNewObject(new Engine::Label(
             "michael \"mihu21\" huang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    creditGroup->AddNewObject(new Engine::Image(
+        "start/arwen.png", PlayScene::BlockSize*2.5, currentY,
+        PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
     currentY += PlayScene::BlockSize*1.5;
 
     creditGroup->AddNewObject(new Engine::Label(
@@ -117,12 +124,18 @@ void CreditScene::Initialize() {
     creditGroup->AddNewObject(new Engine::Label(
             "Wilson \"wilsonanthonyt\" Tang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    creditGroup->AddNewObject(new Engine::Image(
+        "scoreboard/bryanmedal.png", w-PlayScene::BlockSize*2.5, currentY,
+        PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
     currentY += PlayScene::BlockSize;
     creditGroup->AddNewObject(new Engine::Label(
             "michael \"mihu21\" huang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
-    currentY += PlayScene::BlockSize*1.5;
 
+    creditGroup->AddNewObject(new Engine::Image(
+            "scoreboard/arwenmedal.png", PlayScene::BlockSize*2.5, currentY,
+            PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
+    currentY += PlayScene::BlockSize*1.5;
     creditGroup->AddNewObject(new Engine::Label(
         "Story Developer", "pirulen.ttf", PlayScene::BlockSize/3,
         halfW, currentY, 255, 215, 0, 255, 0.5, 0.5));
@@ -159,11 +172,27 @@ void CreditScene::Initialize() {
     creditGroup->AddNewObject(new Engine::Image(
         "start/arwenreal.jpg", PlayScene::BlockSize*2.5, currentY,
         PlayScene::BlockSize*3, PlayScene::BlockSize*3, 0.5, 0.5));
-    currentY += PlayScene::BlockSize * 2.f;
+    currentY += PlayScene::BlockSize * 4;
     // Final thank you
     creditGroup->AddNewObject(new Engine::Label(
         "THANK YOU FOR PLAYING!", "pirulen.ttf", PlayScene::BlockSize/2,
         halfW, currentY, 255, 215, 0, 255, 0.5, 0.5));
+    currentY += PlayScene::BlockSize * 5;
+    creditGroup->AddNewObject(new Engine::Label(
+    "You haven't seen the last of Ejojo...", "pirulen.ttf", PlayScene::BlockSize/3,
+    halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    currentY += PlayScene::BlockSize;
+    creditGroup->AddNewObject(new Engine::Label(
+        "Something worse is coming...", "pirulen.ttf", PlayScene::BlockSize/3,
+        halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    currentY += h/2;
+    creditGroup->AddNewObject(new Engine::Label(
+        "To be continued...", "pirulen.ttf", PlayScene::BlockSize/3,
+        halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    currentY += h;
+    creditGroup->AddNewObject(new Engine::Image(
+        "play/doraemon.png", halfW, currentY,
+        PlayScene::BlockSize*6, PlayScene::BlockSize*6, 0.5, 0));
 
     CreateUI();
     ResetScroll();
@@ -177,7 +206,7 @@ void CreditScene::Update(float deltaTime) {
         float totalHeight = creditGroup->GetObjects().back()->Position.y + PlayScene::BlockSize*2;
         int screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
         if (scrollY < -totalHeight) {
-            ResetScroll();
+            Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
         }
     }
 
@@ -205,14 +234,14 @@ void CreditScene::Draw() const {
     UIGroup->Draw();
 
     // Draw instructions using built-in font (no AddNewObject in Draw)
-    const char* instruction = isScrolling ? "Press any key to pause/resume" : "Scrolling paused - press any key to resume";
+    ALLEGRO_FONT* font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", PlayScene::BlockSize/6).get();
     al_draw_text(
-        al_create_builtin_font(),
+        font,
         al_map_rgb(200, 200, 200),
-        Engine::GameEngine::GetInstance().GetScreenWidth()/2,
-        Engine::GameEngine::GetInstance().GetScreenHeight() - PlayScene::BlockSize,
-        ALLEGRO_ALIGN_CENTER,
-        instruction
+        Engine::GameEngine::GetInstance().GetScreenWidth()-PlayScene::BlockSize/4,
+        PlayScene::BlockSize/4,
+        ALLEGRO_ALIGN_RIGHT,
+        "Press any key to fast forward"
     );
 }
 
@@ -230,28 +259,31 @@ void CreditScene::CreateUI() {
 
     // Back button
     backButton = new Engine::ImageButton(
-        "stage-select/dirt.png",
+        "start/button.png",
         "stage-select/floor.png",
-        w - PlayScene::BlockSize*4,
-        h - PlayScene::BlockSize*2,
-        PlayScene::BlockSize*3.5,
-        PlayScene::BlockSize*1.5
+        w - PlayScene::BlockSize*2.5,
+        h - PlayScene::BlockSize*1.5,
+        PlayScene::BlockSize*2,
+        PlayScene::BlockSize
     );
     backButton->SetOnClickCallback(std::bind(&CreditScene::BackOnClick, this, 0));
     UIGroup->AddNewControlObject(backButton);
 
     // Back button label
     UIGroup->AddNewObject(new Engine::Label(
-        "Back", "pirulen.ttf", PlayScene::BlockSize/3,
-        w - PlayScene::BlockSize*2.25,
-        h - PlayScene::BlockSize*1.75,
-        0, 0, 0, 255, 0.5, 0.5));
+        "Skip", "pirulen.ttf", PlayScene::BlockSize/3,
+        w - PlayScene::BlockSize*1.5,
+        h - PlayScene::BlockSize,
+        10, 255, 255, 255, 0.5, 0.5));
 }
 
 void CreditScene::BackOnClick(int stage) {
-    Engine::GameEngine::GetInstance().ChangeScene("start");
+    Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
 }
 
 void CreditScene::OnKeyDown(int keyCode) {
-    isScrolling = !isScrolling;
+    scrollSpeed=scrollSpeed*4;
+}
+void CreditScene::OnKeyUp(int keyCode) {
+    scrollSpeed=scrollSpeed/4;
 }

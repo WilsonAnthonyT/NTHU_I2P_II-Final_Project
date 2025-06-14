@@ -2,7 +2,7 @@
 # Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage ~ already win?
 # MAX data 4
 
-PLAY~2025/06/14  20:42~2025/06/14  22:29~1173.834839~645~2~1
+PLAY~2025/06/14  20:42~2025/06/14  21:25~735.452576~535~4~0
 +~-~-~-~0~0~0
 +~-~-~-~0~0~0
 +~-~-~-~0~0~0

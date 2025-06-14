@@ -28,6 +28,7 @@ public:
     void CreateUI();
     void BackOnClick(int stage);
     void OnKeyDown(int keyCode) override;
+    void OnKeyUp(int keyCode) override;
 };
 
 #endif // CREDITSCENE_H

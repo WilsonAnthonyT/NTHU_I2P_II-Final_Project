@@ -887,10 +887,10 @@ void PlayScene::ReadMap() {
             case 'a': mapData.push_back('a'); break;
             case '<': mapData.push_back('<'); break;
             case 'g': mapData.push_back('g'); break;
-            case '>': mapData.push_back('>'); break;
             case '8': mapData.push_back('8'); break;
             case '9': mapData.push_back('9'); break;
             case '7': mapData.push_back('7'); break;
+            case 'W': mapData.push_back('W'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -958,9 +958,6 @@ void PlayScene::ReadMap() {
                 case 'D':
                     mapState[i][j]=TILE_AIR;
                     break;
-                case '3':
-                    mapState[i][j]=TILE_AIR;
-                    break;
                 case '4':
                     mapState[i][j]=TILE_DIRT;
                     break;
@@ -981,7 +978,7 @@ void PlayScene::ReadMap() {
                 case '<':
                     mapState[i][j]=TILE_AIR;
                     break;
-                case '>':
+                case '3':
                     mapState[i][j]=TILE_AIR;
                     break;
                 case 'g':
@@ -991,6 +988,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_AIR;
                     break;
                 case '9':
+                    mapState[i][j]=TILE_DIRT;
+                    break;
+                case 'W':
                     mapState[i][j]=TILE_DIRT;
                     break;
 
@@ -1129,8 +1129,12 @@ void PlayScene::ReadMap() {
                 player2 = (new JetpackPlayerA(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 PlayerGroup->AddNewObject(player2);
+            }else if (num == 'W') {
+                Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                InteractiveBlockGroup->AddNewObject(new Box("play/doraemon.png",SpawnCoordinate.x, SpawnCoordinate.y));
             }
-            else if (num == '>') {
+            else if (num == '3') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);
                 player1 = (new JetpackPlayerB(SpawnCoordinate.x, SpawnCoordinate.y));
                 TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
