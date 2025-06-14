@@ -7,8 +7,10 @@ class WinScene final : public Engine::IScene {
 private:
     float ticks;
     ALLEGRO_SAMPLE_ID bgmId;
+    int score;
 
 public:
+    void setScore(int);
     explicit WinScene() = default;
     void Initialize() override;
     void Terminate() override;

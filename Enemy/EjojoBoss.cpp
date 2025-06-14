@@ -8,6 +8,7 @@
 #include "ArcherSkelly.h"
 #include "EnemyBullet/EnemyRedBullet.h"
 #include "Engine/Resources.hpp"
+#include "Scene/SelectProfileScene.h"
 
 EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBoss.png", x, y, 1000, 100.0f, 500, 5, 5, 10),
                                                       rng(std::random_device{}()) {
@@ -629,6 +630,22 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
                 getPlayScene()->MapId++;
                 getPlayScene()->EnemyGroup->RemoveObject(GetObjectIterator());
                 Engine::GameEngine::GetInstance().ChangeScene("story");
+
+                PlayScene::total_money += this->money;
+
+                //this 3 lines is for updating the profile.
+                auto scene = getPlayScene();
+                if (SelectProfileScene::isSaved && !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) {
+                    auto* newdata = new SelectProfileScene::textData();
+                    newdata->level = scene->MapId;
+                    newdata->coin_counts = PlayScene::total_money;
+                    SelectProfileScene::WriteProfileData(newdata);
+                }
+                //----------------------------------------
+
+                if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+
                 return;
             }
         }

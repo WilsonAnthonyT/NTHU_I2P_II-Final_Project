@@ -18,15 +18,18 @@
 void ScoreboardScene::Initialize() {
     ifs.open("../Resource/scoreboard.txt", std::ios_base::in);
     if (ifs.is_open()) {
-        std::string name, score, date_time;
-        while (getline(ifs, name, '~') && getline(ifs, score, '~') && getline(ifs, date_time, '~')) {
-            if (name != " ") {
-                Data.push_back( {name.substr(0,name.length()-1), std::stoi(score.substr(1, score.length()-1)), date_time.substr(1, date_time.length()-1)} );
-            }
+        std::string name, scors, dur;
+        while (getline(ifs, name, '~') && getline(ifs, scors, '~') && getline(ifs, dur)) {
+            if (name.empty() || name[0] == '#') continue;
+
+            //float sc = (scores[0] == '0')? 0.00f : std::stof(scores);
+            //float dr = (scores[0] == '0')? 0.00f : std::stof(dur);
+            std::cout << "NAMA: " << name << ", SKOR:" << std::stoi(scors) << ", DURR:" << std::stof(dur) << std::endl;
+            Data.push_back( {name, std::stoi(scors), std::stof(dur)} );
 
             name.clear();
-            score.clear();
-            date_time.clear();
+            scors.clear();
+            dur.clear();
         }
 
         ifs.close();
@@ -125,7 +128,7 @@ void ScoreboardScene::Draw() const {
                 font, al_map_rgb(255,255,255),
                 halfW + PlayScene::BlockSize*3, 2*PlayScene::BlockSize + i * PlayScene::BlockSize/12 + (i+1) * Spacing,
                 ALLEGRO_ALIGN_LEFT,
-                "%s", (Data[i + point].date_n_time).c_str()
+                "%.3f", (Data[i + point].duration)
             );
         }
     }
@@ -154,7 +157,7 @@ void ScoreboardScene::sortData(int type){
 
         case 2: // by Time
             std::sort(Data.begin(), Data.end(), [](const auto& a, const auto& b)
-            { return a.date_n_time > b.date_n_time; }
+            { return a.duration < b.duration; }
             );
         break;
 
@@ -192,7 +195,7 @@ void ScoreboardScene::SortOnClick(int stage) {
     switch (sortType) {
         case 0: Stype = "Score"; break;
         case 1: Stype = "Name"; break;
-        case 2: Stype = "Current"; break;
+        case 2: Stype = "Duration"; break;
         default: break;
     }
     SortLabel->Text = Stype;

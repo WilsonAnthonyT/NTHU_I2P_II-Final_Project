@@ -25,6 +25,7 @@
 
 std::vector<SelectProfileScene::ProfileData> SelectProfileScene::playerData;
 int SelectProfileScene::profileID = 0;
+int PlayScene::total_money = 0;
 
 void SelectProfileScene::Initialize() {
 
@@ -50,22 +51,25 @@ void SelectProfileScene::Initialize() {
             }
 
             std::stringstream ss(str);
-            std::string name, made, last, dur, cc, level;
+            std::string name, made, last, dur, cc, level, winned;
             while (
             getline(ss, name, '~') &&
             getline(ss, made, '~') &&
             getline(ss, last, '~') &&
             getline(ss, dur, '~') &&
             getline(ss, cc, '~') &&
-            getline(ss, level)
+            getline(ss, level, '~') &&
+            getline(ss, winned)
             ) {
+
                 playerData.push_back( {
                     name,
                     made,
                     last,
                     dur,
                     cc,
-                    level
+                    level,
+                    (winned == "1")? true : false
                 });
 
                 name.clear();
@@ -74,6 +78,7 @@ void SelectProfileScene::Initialize() {
                 dur.clear();
                 cc.clear();
                 level.clear();
+                winned.clear();
             }
 
             str.clear();
@@ -91,7 +96,8 @@ void SelectProfileScene::Initialize() {
             "-",
             "-",
             "0",
-            "0"
+            "0",
+            false
         });
     }
 
@@ -190,6 +196,7 @@ void SelectProfileScene::RemoveOnClick(int ID) {
     playerData[ID-1].Duration = "-";
     playerData[ID-1].Coins = "0";
     playerData[ID-1].Stage = "0";
+    playerData[ID-1].isWin = false;
 
     WriteProfileData(nullptr);
 
@@ -204,8 +211,14 @@ void SelectProfileScene::PlayOnClick(int ID) {
     }
     else {
         PlayScene *scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
-        scene->MapId = stoi(playerData[ID-1].Stage);
-        Engine::GameEngine::GetInstance().ChangeScene("story");
+        if (!playerData[ID-1].isWin) {
+            PlayScene::total_money = std::stoi(playerData[ID-1].Coins);
+            scene->MapId = stoi(playerData[ID-1].Stage);
+            Engine::GameEngine::GetInstance().ChangeScene("story");
+        }
+        else {
+            Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+        }
     }
 }
 
@@ -251,33 +264,28 @@ void SelectProfileScene::WriteProfileData(textData* allplayers) {
     if (ofs.is_open()) {
         ofs
         << "# everything related to the profile will be saved here" << std::endl
-        << "# Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage" << std::endl
-        << "# MAX data 3" << std::endl
+        << "# Name ~ date created ~ last played ~ Screen time ~ Coins ~ last stage ~ already win?" << std::endl
+        << "# MAX data 4" << std::endl
         << std::endl;
 
         if (allplayers) {
             playerData[profileID-1].Stage = std::to_string(allplayers->level);
             playerData[profileID-1].Coins = std::to_string(std::stoi(playerData[profileID-1].Coins) + allplayers->coin_counts);
+
+            delete allplayers;
         }
 
         for (auto& it : SelectProfileScene::playerData) {
+            std::string tmp = (it.isWin)? "1" : "0";
+            //std::cout << "Profile: " << it.Name << ", Win Status: " << tmp << std::endl;
             ofs
             << it.Name << "~"
             << it.Created << "~"
             << it.Last_Played << "~"
             << it.Duration << "~"
             << it.Coins << "~"
-            << it.Stage << std::endl;
-
-            // ofs << it.Name << "~"
-            //     << it.Created << "~"
-            //     << it.Last_Played << "~";
-            //
-            // // Set precision for the Duration value (0.00f)
-            // ofs << std::fixed << std::setprecision(2) << std::stod(it.Duration) << "~";
-            //
-            // ofs << it.Coins << "~"
-            //     << it.Stage << std::endl;
+            << it.Stage << "~"
+            << tmp << std::endl;
         }
 
         ofs.close();

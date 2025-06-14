@@ -119,8 +119,7 @@ void SwordSkelly::UpdateAnimation(float deltaTime) {
     if (currentState == DEAD &&
         currentFrame >= deathAnimation.size() - 1)
     {
-        auto *scene = getPlayScene();
-        scene->EnemyGroup->RemoveObject(this->GetObjectIterator());
+        Enemy::OnDeath();
     }
 }
 

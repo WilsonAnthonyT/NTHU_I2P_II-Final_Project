@@ -325,8 +325,7 @@ void ArcherSkelly::UpdateAnimation(float deltaTime) {
         currentFrame >= deathAnimation.size() - 1)
     {
         getPlayScene()->TotalArcherSkelly--;
-        auto *scene = getPlayScene();
-        scene->EnemyGroup->RemoveObject(this->GetObjectIterator());
+        Enemy::OnDeath();
     }
 }
 

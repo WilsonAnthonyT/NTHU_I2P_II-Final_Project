@@ -5,7 +5,11 @@
 #include "Engine/GameEngine.hpp"
 #include "Engine/Point.hpp"
 #include "LoseScene.hpp"
+
+#include <iomanip>
+
 #include "PlayScene.hpp"
+#include "SelectProfileScene.h"
 #include "UI/Component/Image.hpp"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
@@ -30,6 +34,5 @@ void LoseScene::Terminate() {
     IScene::Terminate();
 }
 void LoseScene::BackOnClick(int stage) {
-    // Change to select scene.
-    Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+    Engine::GameEngine::GetInstance().ChangeScene("start");
 }

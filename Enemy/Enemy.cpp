@@ -68,7 +68,8 @@ void Enemy::OnDeath() {
     attackingAnimation.clear();
 
     auto *scene = getPlayScene();
-    scene->EarnMoney(this->money);
+
+    PlayScene::total_money += money;
 
     scene->EffectGroup->AddNewObject(new ExplosionEffect(Position.x, Position.y));
     scene->EnemyGroup->RemoveObject(GetObjectIterator());

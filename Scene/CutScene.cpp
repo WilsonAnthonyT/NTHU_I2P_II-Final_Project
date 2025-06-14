@@ -388,7 +388,7 @@ void CutScene::Initialize() {
         StartDialog(dialogs, true);
 
         sceneTransition.delay = 23.0f;
-        sceneTransition.targetScene = "play";
+        sceneTransition.targetScene = "win";
         sceneTransition.transitionType = AnimationType::FADE_OUT;
         sceneTransition.duration = 1.0f;
     }

@@ -88,9 +88,9 @@ private:
 
 protected:
     int SpeedMult;
-    float total_time;
-    int total_money;
 public:
+    static int total_money;
+    static float total_time;
     bool isCamLocked = false;
 
     enum TileType {
@@ -141,7 +141,6 @@ public:
     void OnMouseMove(int mx, int my) override;
     void OnMouseUp(int button, int mx, int my) override;
     void OnKeyDown(int keyCode) override;
-    int GetMoney() const;
     void EarnMoney(int m);
     void ReadMap();
     void ReadEnemyWave();

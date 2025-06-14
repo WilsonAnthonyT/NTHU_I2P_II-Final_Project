@@ -8,7 +8,7 @@ private:
     struct saved {
         std::string name;
         int scores;
-        std::string date_n_time;
+        float duration;
     };
 
     std::ifstream ifs;
