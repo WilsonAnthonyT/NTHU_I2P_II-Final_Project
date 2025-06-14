@@ -81,15 +81,15 @@ void CreditScene::Initialize() {
             "Wilson \"wilsonanthonyt\" Tang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
     creditGroup->AddNewObject(new Engine::Image(
-        "start/arwen.jpg", PlayScene::BlockSize*2.5, currentY,
+        "start/bryan.png", w-PlayScene::BlockSize*2.5, currentY,
         PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
     currentY += PlayScene::BlockSize;
     creditGroup->AddNewObject(new Engine::Label(
             "michael \"mihu21\" huang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
     creditGroup->AddNewObject(new Engine::Image(
-        "start/bryan.jpg", w-PlayScene::BlockSize*2.5, currentY,
-        PlayScene::BlockSize*3, PlayScene::BlockSize*3, 0.5, 0.5));
+        "start/arwen.png", PlayScene::BlockSize*2.5, currentY,
+        PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
     currentY += PlayScene::BlockSize*1.5;
 
     creditGroup->AddNewObject(new Engine::Label(
@@ -124,12 +124,18 @@ void CreditScene::Initialize() {
     creditGroup->AddNewObject(new Engine::Label(
             "Wilson \"wilsonanthonyt\" Tang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
+    creditGroup->AddNewObject(new Engine::Image(
+        "scoreboard/bryanmedal.png", w-PlayScene::BlockSize*2.5, currentY,
+        PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
     currentY += PlayScene::BlockSize;
     creditGroup->AddNewObject(new Engine::Label(
             "michael \"mihu21\" huang", "pirulen.ttf", PlayScene::BlockSize/3,
             halfW, currentY, 255, 255, 255, 255, 0.5, 0.5));
-    currentY += PlayScene::BlockSize*1.5;
 
+    creditGroup->AddNewObject(new Engine::Image(
+            "scoreboard/arwenmedal.png", PlayScene::BlockSize*2.5, currentY,
+            PlayScene::BlockSize*3, PlayScene::BlockSize*4, 0.5, 0.5));
+    currentY += PlayScene::BlockSize*1.5;
     creditGroup->AddNewObject(new Engine::Label(
         "Story Developer", "pirulen.ttf", PlayScene::BlockSize/3,
         halfW, currentY, 255, 215, 0, 255, 0.5, 0.5));
