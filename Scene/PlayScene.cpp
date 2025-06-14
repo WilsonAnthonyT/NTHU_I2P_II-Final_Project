@@ -591,7 +591,7 @@ void PlayScene::Update(float deltaTime) {
             waveEnemy_delay = enemyWave[idx].cooldown;
             waveEnemy_spawnCount--;
 
-            float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 1.0f * BlockSize;
+            float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : Camera.x + screenWidth + 1.0f * BlockSize;
             float spawn_y;
             if (MapId == 1) spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
             else if (MapId == 4) spawn_y = (enemyWave[idx].position_y) * BlockSize;
@@ -1173,7 +1173,7 @@ void PlayScene::ReadMap() {
             }
         }
     }
-    if (MapId == 3) {
+    if (MapId == 3 || MapId == 4) {
         DoorSensorAssignments.clear();
         sensorAssign();
     }
