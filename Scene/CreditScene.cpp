@@ -21,7 +21,11 @@ void CreditScene::Initialize() {
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     scrollSpeed=w/(16*4);
-
+    if (AudioHelper::sharedBGMInstance) {
+        AudioHelper::StopSample(AudioHelper::sharedBGMInstance);
+        AudioHelper::sharedBGMInstance = nullptr;
+    }
+    bgmInstance = AudioHelper::PlaySample("victory.mp3", true, AudioHelper::BGMVolume);
     // Create groups
     AddNewObject(creditGroup = new Engine::Group());
     AddNewControlObject(UIGroup = new Engine::Group());
@@ -246,6 +250,7 @@ void CreditScene::Draw() const {
 }
 
 void CreditScene::Terminate() {
+    AudioHelper::StopSample(bgmInstance);
     IScene::Terminate();
 }
 

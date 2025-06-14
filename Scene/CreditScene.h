@@ -14,6 +14,7 @@ private:
     Engine::Group* creditGroup;
     Engine::Group* UIGroup;
     Engine::ImageButton* backButton;
+    std::shared_ptr<struct ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
 
 public:
     CreditScene();

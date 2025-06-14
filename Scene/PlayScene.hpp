@@ -30,6 +30,10 @@ namespace Engine {
 class Sensor;
 class PlayScene final : public Engine::IScene {
 private:
+    mutable ALLEGRO_BITMAP* lightTexture = nullptr;
+    mutable bool lightTextureInitialized = false;
+    static constexpr float LIGHT_RADIUS_FACTOR = 2.5f;  // Now a constant
+
     struct Wave {
         //spawn point y, type, count, cooldown, left/right (1/0)
         float position_y;
@@ -220,6 +224,6 @@ public:
 
     //
     bool ismasked = false;
-    ALLEGRO_BITMAP* mask;
+
 };
 #endif   // PLAYSCENE_HPP

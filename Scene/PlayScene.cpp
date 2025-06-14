@@ -84,8 +84,10 @@ Engine::Point PlayScene::GetClientSize() {
 void PlayScene::Initialize() {
     screenWidth = Engine::GameEngine::GetInstance().GetScreenWidth();
     screenHeight = Engine::GameEngine::GetInstance().GetScreenHeight();
-    mask = nullptr;
+
     player1 = player2 = nullptr;
+
+    backgroundIMG.reset();
 
     isCamLocked = false;
     total_time = .0f;
@@ -117,20 +119,6 @@ void PlayScene::Initialize() {
     // Should support buttons.
     AddNewControlObject(UIGroup = new Group());
     ReadMap();
-
-
-    if (MapId == 5) {
-        //for flashlight
-        if (!mask) mask = al_create_bitmap(MapWidth * BlockSize,MapHeight * BlockSize);
-    }
-    else {
-        if (mask) {
-            al_destroy_bitmap(mask);
-            mask = nullptr;
-            al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
-            al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
-        }
-    }
 
     if (MapId == 1 || MapId == 4) {
         ReadEnemyWave();
@@ -761,13 +749,17 @@ void PlayScene::Draw() const {
 
     IScene::Draw(); // will draw tiles/UI, now offset by camera
 
-    //if (MapId == 5 && !DebugMode) FlashLight();
+    if (MapId == 5 && !DebugMode) FlashLight();
 
     PlayerGroup->Draw();
     WeaponGroup->Draw();
     EffectGroup->Draw();
     EnemyBulletGroup->Draw();
     HealthBarGroup->Draw();
+
+    // if (MapId == 5) {
+    //     al_draw_filled_rectangle(0, 0, MapWidth * BlockSize, MapHeight * BlockSize, al_map_rgba(0,0,0,150));
+    // }
 
     al_identity_transform(&trans);
     al_use_transform(&trans);
@@ -1684,32 +1676,56 @@ void PlayScene::FullMap() const {
 
 void PlayScene::FlashLight() const {
     if (!player1 || !player2) return;
-    if (!mask) return;
 
-    // Set the target to our mask bitmap
-    al_set_target_bitmap(mask);
-    const float radius = BlockSize * 2.f;
+    // 1. Validate bitmap dimensions
+    int light_w = MapWidth * BlockSize;
+    int light_h = MapHeight * BlockSize;
 
-    // Clear to completely black (transparent)
-    al_clear_to_color(al_map_rgba(0, 0, 0, 0));
-
-    // Draw white circles where we want light (opaque)
-    for (float i = radius; i > 0; i-=2.f) {
-        al_draw_filled_circle(player1->Position.x, player1->Position.y + abs(player1->Size.y/2),
-                             i, al_map_rgba(255, 255, 255, 255/i * 2.f));
-        al_draw_filled_circle(player2->Position.x, player2->Position.y + abs(player1->Size.y/2),
-                             i, al_map_rgba(255, 255, 255, 255/i * 2.f));
+    // 2. Create bitmap (with GPU-friendly settings)
+    al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
+    ALLEGRO_BITMAP* light = al_create_bitmap(light_w, light_h);
+    if (!light) {
+        std::cerr << "Error: Failed to create light bitmap (Allegro error: " << al_get_errno() << ")" << std::endl;
+        return;
     }
 
-    // Switch back to main display
-    al_set_target_bitmap(al_get_backbuffer(al_get_current_display()));
+    // 3. Backup Allegro state
+    ALLEGRO_STATE old_state;
+    al_store_state(&old_state, ALLEGRO_STATE_TARGET_BITMAP | ALLEGRO_STATE_BLENDER);
 
-    // Use the mask to determine what's visible
+    // 4. Draw light (with coordinate clamping)
+    al_set_target_bitmap(light);
+    al_clear_to_color(al_map_rgba(0, 0, 0, 200));
+
+    const float radius = BlockSize * 3.f;
+    float p1_x = std::max(0.f, std::min(player1->Position.x, static_cast<float>(light_w)));
+    float p1_y = std::max(0.f, std::min(player1->Position.y + abs(player1->Size.y / 2), static_cast<float>(light_h)));
+    float p2_x = std::max(0.f, std::min(player2->Position.x, static_cast<float>(light_w)));
+    float p2_y = std::max(0.f, std::min(player2->Position.y + abs(player2->Size.y / 2), static_cast<float>(light_h)));
+
+    al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ONE);
+    for (float i = radius; i > 0; i -= radius / 30.f) {
+        float safe_radius = std::min(i, static_cast<float>(std::min(light_w, light_h)));
+        float alpha = 10.f * (i / radius);
+        al_draw_filled_circle(p1_x, p1_y, safe_radius, al_map_rgba(alpha, alpha, alpha, alpha));
+        al_draw_filled_circle(p2_x, p2_y, safe_radius, al_map_rgba(alpha, alpha, alpha, alpha));
+    }
+
+    // 5. Restore target and apply light
+    ALLEGRO_DISPLAY* display = al_get_current_display();
+    if (!display) {
+        al_restore_state(&old_state);
+        al_destroy_bitmap(light);
+        return;
+    }
+
+    al_set_target_backbuffer(display);
     al_set_blender(ALLEGRO_ADD, ALLEGRO_DEST_COLOR, ALLEGRO_ZERO);
-    al_draw_bitmap(mask, 0, 0, 0);
+    al_draw_tinted_bitmap(light, al_map_rgba_f(0.7, 0.7, 0.7, 1), 0, 0, 0);
 
-    // Set normal blending for other drawings
-    al_set_blender(ALLEGRO_ADD, ALLEGRO_ALPHA, ALLEGRO_INVERSE_ALPHA);
+    // 6. Cleanup
+    al_restore_state(&old_state);
+    al_destroy_bitmap(light);
 }
 
 void PlayScene::MiniMapOnClick(int stage) {
@@ -2243,7 +2259,7 @@ void PlayScene::UpdateHealthBarPositions() {
         healthBarP1.bg->Position = Engine::Point(Camera.x + headSize,Camera.y + yPos + BlockSize/2.5);
         healthBarP1.fg->Position = healthBarP1.bg->Position;
         healthBarP1.fg->Size.x = healthBarWidth * (player1->hp / player1->MaxHp);
-        std::cout << (player1->hp / player1->MaxHp) << std::endl;
+        //std::cout << (player1->hp / player1->MaxHp) << std::endl;
         healthBarP1.bg->Size.x = healthBarWidth;
 
         healthBarP1.head->Visible = player1->Visible;
