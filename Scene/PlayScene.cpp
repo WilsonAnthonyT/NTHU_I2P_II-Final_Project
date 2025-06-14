@@ -131,7 +131,7 @@ void PlayScene::Initialize() {
         }
     }
 
-    if (MapId == 1) {
+    if (MapId == 1 || MapId == 4) {
         ReadEnemyWave();
         waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
     }
@@ -271,7 +271,25 @@ void PlayScene::Initialize() {
     else if (MapId == 3) {
         backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
         dialogs.push_back({
-            "Wow, this ship is enormous!",
+            "Did we just get teleported here",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Where da heck are you?",
+            3.0f,
+            "play/arwenDialog.png",
+            "Arwen"
+        });
+        dialogs.push_back({
+            "IDK, I think your voice is from downstairs",
+            3.0f,
+            "play/bryanDialog.png",
+            "Bryan"
+        });
+        dialogs.push_back({
+            "Holy, this ship is enormous!",
             3.0f,
             "play/arwenDialog.png",
             "Arwen"
@@ -303,6 +321,7 @@ void PlayScene::Initialize() {
     }
 
     else if (MapId == 4) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
         dialogs.push_back({
             "The whole thing was confusing..",
             3.0f,
@@ -373,17 +392,18 @@ void PlayScene::Initialize() {
         });
     }
     else if (MapId == 6) {
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/captainbackground.png");
         dialogs.push_back({
-            "Hello, adventurer!",
+            "Note: Players are equipped with ak and jetpack",
             3.0f,
-            "play/arwen.png",
-            "Arwen"
+            "play/tool-base.png",
+            "System"
         });
         dialogs.push_back({
-            "The castle is dangerous!",
+            "Control: Try it yourself..GOOD LUCK!!",
             3.0f,
-            "play/bryan.png",
-            "Bryan"
+            "play/Control.png",
+            "Control"
         });
     }
     StartDialog(dialogs, true);
@@ -477,6 +497,8 @@ void PlayScene::Update(float deltaTime) {
 
     UpdatePauseState();
     if (IsPaused) {
+        BGMval->Text = std::to_string((int)(AudioHelper::BGMVolume/1.0f * 100)) + "%";
+        SFXval->Text = std::to_string((int)(AudioHelper::SFXVolume / 1.0f * 100)) + "%";
         UIGroup->Update(deltaTime);
         return;
     }
@@ -570,9 +592,14 @@ void PlayScene::Update(float deltaTime) {
         }
     }
 
-    const float camLock_x = MapWidth*BlockSize - BlockSize - screenWidth;
+    float camLock_x;
+    if (MapId == 1) camLock_x = MapWidth*BlockSize - BlockSize - screenWidth;
+    else if (MapId == 4) camLock_x = BlockSize * 18;
+
     if (MapId == 1 && EnemyGroup->GetObjects().empty() && Camera.x >= camLock_x && !isCamLocked) {
         Camera.x = camLock_x;
+        isCamLocked = true;
+    } else if (MapId == 4 && EnemyGroup->GetObjects().empty() && Camera.x >= camLock_x && Camera.y <= BlockSize*8  && !isCamLocked) {
         isCamLocked = true;
     }
 
@@ -586,13 +613,17 @@ void PlayScene::Update(float deltaTime) {
             waveEnemy_delay = enemyWave[idx].cooldown;
             waveEnemy_spawnCount--;
 
-            float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 1.0f * BlockSize;
-            float spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
+            float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : Camera.x + screenWidth + 1.0f * BlockSize;
+            float spawn_y;
+            if (MapId == 1) spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
+            else if (MapId == 4) spawn_y = (enemyWave[idx].position_y) * BlockSize;
 
             //std::cout << "Posisi SPAWN: " << enemyWave[idx].position_y << std::endl;
 
             switch (static_cast<int>(enemyWave[idx].type)) {
             case 1:
+                EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
+                break;
             case 2:
             case 3:
                 EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
@@ -1164,7 +1195,7 @@ void PlayScene::ReadMap() {
             }
         }
     }
-    if (MapId == 3) {
+    if (MapId == 3 || MapId == 4) {
         DoorSensorAssignments.clear();
         sensorAssign();
     }
@@ -1748,80 +1779,89 @@ void PlayScene::CreatePauseUI() {
 
 
     //outer box bbc and text
-    pauseOverlay = new Engine::Image("play/sand.png", (w - w_obj) / 2, (h - h_obj) / 2, w_obj, h_obj);
+    pauseOverlay = new Engine::Image("play/pausebox.png", halfW, halfH, 5*BlockSize,5.4*BlockSize,0.5, 0.5);
     pauseOverlay->Visible = false;
     UIGroup->AddNewObject(pauseOverlay);
 
-    pauseText = new Engine::Label("PAUSED", "pirulen.ttf", 48, lblPosX, lblPosY - 100, 0, 0, 100, 255, 0.5, 0.5);
+    pauseText = new Engine::Label("PAUSED", "pirulen.ttf", 2*BlockSize/5, halfW, halfH-2*BlockSize, 10, 255, 255, 255, 0.5, 0.5);
     pauseText->Visible = false;
     UIGroup->AddNewObject(pauseText);
 
     //to continue perhaps
-    continueButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 100, 400, 100);
+    continueButton = new Engine::ImageButton("play/pausebutton.png", "stage-select/floor.png", halfW-1.5*BlockSize, halfH-(5*BlockSize/12), 3*BlockSize, 5*BlockSize/6);
     continueButton->Visible = false;
     continueButton->Enabled = false;
     UIGroup->AddNewControlObject(continueButton);
     continueButton->SetOnClickCallback(std::bind(&PlayScene::ContinueOnClick, this, 1));
 
     //restart if frustrated
-    restartButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 230, 400, 100);
+    restartButton = new Engine::ImageButton("play/pausebutton.png", "stage-select/floor.png", halfW-1.5*BlockSize, halfH + BlockSize -(5*BlockSize/12), 3*BlockSize, 5*BlockSize/6);
     restartButton->Visible = false;
     restartButton->Enabled = false;
     UIGroup->AddNewControlObject(restartButton);
     restartButton->SetOnClickCallback(std::bind(&PlayScene::RestartOnClick, this, 1));
 
     //exit to stage scene
-    exitButton = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", btnPosX, btnPosY + 360, 400, 100);
+    exitButton = new Engine::ImageButton("play/pausebutton.png", "stage-select/floor.png", halfW-1.5*BlockSize, halfH + 2* BlockSize -(5*BlockSize/12), 3*BlockSize, 5*BlockSize/6);
     exitButton->Visible = false;
     exitButton->Enabled = false;
     UIGroup->AddNewControlObject(exitButton);
     exitButton->SetOnClickCallback(std::bind(&PlayScene::BackOnClick, this, 1));
 
     //the label
-    continueLabel = new Engine::Label("Continue", "pirulen.ttf", 48, lblPosX, lblPosY + 150, 0, 0, 0, 255, 0.5, 0.5);
+    continueLabel = new Engine::Label("Continue", "pirulen.ttf", 2*BlockSize/5, halfW, halfH, 10, 255, 255, 255, 0.5, 0.5);
     continueLabel->Visible = false;
     UIGroup->AddNewObject(continueLabel);
 
-    restartLabel = new Engine::Label("Retry", "pirulen.ttf", 48, lblPosX, lblPosY + 280, 0, 0, 0, 255, 0.5, 0.5);
+    restartLabel = new Engine::Label("Retry", "pirulen.ttf", 2*BlockSize/5, halfW, halfH+BlockSize, 10, 255, 255, 255, 0.5, 0.5);
     restartLabel->Visible = false;
     UIGroup->AddNewObject(restartLabel);
 
-    exitLabel = new Engine::Label("Exit", "pirulen.ttf", 48, lblPosX, lblPosY + 410, 0, 0, 0, 255, 0.5, 0.5);
+    exitLabel = new Engine::Label("Exit", "pirulen.ttf", 2*BlockSize/5, halfW, halfH+2*BlockSize, 10, 255, 255, 255, 0.5, 0.5);
     exitLabel->Visible = false;
     UIGroup->AddNewObject(exitLabel);
 
     //slider
-    sliderBGM = new Slider(40 + halfW - 95, halfH - 200 - 2, 190, 4);
+    sliderBGM = new Slider(halfW - BlockSize, halfH - 5*BlockSize/4, 2.1*BlockSize, BlockSize/30);
     sliderBGM->Visible = false;
     sliderBGM->Enabled = false;
     sliderBGM->SetValue(AudioHelper::BGMVolume);
     sliderBGM->SetOnValueChangedCallback(std::bind(&PlayScene::BGMSlideOnValueChanged, this, std::placeholders::_1));
     UIGroup->AddNewControlObject(sliderBGM);
 
-    BGMSlider = new Engine::Label("BGM: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 200, 0, 0, 0, 255, 0.5, 0.5);
+    BGMSlider = new Engine::Label("BGM: ", "pirulen.ttf", 7*BlockSize/30, halfW-1 * BlockSize, halfH - BlockSize - BlockSize/4, 255, 255, 255, 255, 1, 0.5);
     BGMSlider->Visible = false;
     UIGroup->AddNewObject(BGMSlider);
 
+    BGMval = new Engine::Label(std::to_string((int)(AudioHelper::BGMVolume / 1.0f) * 100) + "%", "pirulen.ttf", 7*BlockSize/30, halfW+1.65 * BlockSize, halfH - BlockSize - BlockSize/4, 255, 255, 255, 255, 0.5, 0.5);
+    BGMval->Visible = false;
+    UIGroup->AddNewObject(BGMval);
+
+
     //slider
-    sliderSFX = new Slider(40 + halfW - 95, halfH - 150 + 2, 190, 4);
+    sliderSFX = new Slider(halfW - BlockSize, halfH - 3*BlockSize/4, 2.1*BlockSize, BlockSize/30);
     sliderSFX->Visible = false;
     sliderSFX->Enabled = false;
     sliderSFX->SetValue(AudioHelper::SFXVolume);
     sliderSFX->SetOnValueChangedCallback(std::bind(&PlayScene::SFXSlideOnValueChanged, this, std::placeholders::_1));
     UIGroup->AddNewControlObject(sliderSFX);
 
-    SFXSlider = new Engine::Label("SFX: ", "pirulen.ttf", 28, 40 + halfW - 60 - 95, halfH - 150, 0, 0, 0, 255, 0.5, 0.5);
+    SFXSlider = new Engine::Label("SFX: ", "pirulen.ttf", 7*BlockSize/30, halfW - 1 * BlockSize, halfH - BlockSize + BlockSize/4, 255, 255, 255, 255, 1, 0.5);
     SFXSlider->Visible = false;
     UIGroup->AddNewObject(SFXSlider);
 
+    SFXval = new Engine::Label(std::to_string((int)(AudioHelper::SFXVolume / 1.0f * 100)) + "%", "pirulen.ttf", 7*BlockSize/30, halfW+1.65 * BlockSize, halfH - BlockSize + BlockSize/4, 255, 255, 255, 255, 0.5, 0.5);
+    SFXval->Visible = false;
+    UIGroup->AddNewObject(SFXval);
+
     //enable 2nd player
-    enable2nd = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", lblPosX - 200,  lblPosY - 350, 400, 100);
+    enable2nd = new Engine::ImageButton("play/pausebutton.png", "stage-select/floor.png", halfW-1.625*BlockSize,  BlockSize/12, 3.25*BlockSize, 5*BlockSize/6);
     UIGroup->AddNewControlObject(enable2nd);
     enable2nd->SetOnClickCallback(std::bind(&PlayScene::Enable2ndPlayer, this, 1));
     enable2nd->Visible = false;
     enable2nd->Enabled = false;
 
-    enable2ndLabel = new Engine::Label("2nd Enabled", "pirulen.ttf", 36, lblPosX - 200 + 24, lblPosY - 336, 0, 0, 0, 255, 0, 0);
+    enable2ndLabel = new Engine::Label("2nd Enabled", "pirulen.ttf", 3*BlockSize/10, halfW, BlockSize/2, 10, 255, 255, 255, 0.5, 0.5);
     enable2ndLabel->Visible = false;
     UIGroup->AddNewObject(enable2ndLabel);
 }
@@ -1920,11 +1960,13 @@ void PlayScene::UpdatePauseState() {
         sliderBGM->Visible = show;
         sliderBGM->Enabled = show;
         BGMSlider->Visible = show;
+        BGMval->Visible = show;
     }
     if (sliderSFX) {
         sliderSFX->Visible = show;
         sliderSFX->Enabled = show;
         SFXSlider->Visible = show;
+        SFXval->Visible = show;
     }
     if (enable2nd) {
         enable2nd->Visible = show;

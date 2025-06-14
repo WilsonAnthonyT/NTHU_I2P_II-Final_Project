@@ -6,6 +6,7 @@
 #include "EjojoBoss.h"
 
 #include "ArcherSkelly.h"
+#include "EnemyBullet/EnemyRedBullet.h"
 #include "Engine/Resources.hpp"
 #include "Scene/SelectProfileScene.h"
 
@@ -76,28 +77,37 @@ EjojoBoss::EjojoBoss(std::string img, int x, int y) : FlyingEnemy("play/EjojoBos
 
 void EjojoBoss::SetupPhase(int phase) {
     switch(phase) {
-        case 1:
+        case 1: {
             // Initial phase - simpler attacks
             fixedAltitude = PlayScene::BlockSize * 8;
             movementSpeed = PlayScene::BlockSize * 1.5f;
             break;
-
-        case 2:
+        }
+        case 2: {
             // More aggressive phase
-            fixedAltitude = PlayScene::BlockSize * 6;
+            fixedAltitude = PlayScene::BlockSize * 8;
             movementSpeed = PlayScene::BlockSize * 2.0f;
+            LightEffect *light2 = new LightEffect(Position.x, Position.y);
+            light2->Size.x = Size.x/2;
+            light2->Size.y = Size.y/2;
+            getPlayScene()->EffectGroup->AddNewObject(light2);
             // Add phase-specific visual effect
             break;
-
-        case 3:
+        }
+        case 3: {
             // Final desperate phase
             fixedAltitude = PlayScene::BlockSize * 4;
             movementSpeed = PlayScene::BlockSize * 2.5f;
+            LightEffect *light3 = new LightEffect(Position.x, Position.y + Size.y/2);
+            light3->Size.x = Size.x/2;
+            light3->Size.y = Size.y/2;
+            getPlayScene()->EffectGroup->AddNewObject(light3);
             // Add rage visual effects
             break;
+        }
     }
 
-    Position.y = PlayScene::GetClientSize().y - fixedAltitude;
+    //Position.y = PlayScene::GetClientSize().y - fixedAltitude;
 }
 
 void EjojoBoss::StartPhaseTransition() {
@@ -274,7 +284,7 @@ void EjojoBoss::PerformAttack() {
     else if (currentAttack == "ChargeBeam") {
         // Powerful leftward beam
         scene->EnemyBulletGroup->AddNewObject(
-            new EnemyFireBullet(
+            new EnemyRedBullet(
                 Engine::Point(Position.x, Position.y),
                 Engine::Point(-1, 0), // Straight left
                 ALLEGRO_PI,
@@ -308,7 +318,7 @@ void EjojoBoss::PerformAttack() {
             Engine::Point dir2(-0.7f - 0.3f*abs(cos(angle2)), sin(angle2));
 
             scene->EnemyBulletGroup->AddNewObject(
-                new EnemyFireBullet(
+                new EnemyRedBullet(
                     Engine::Point(Position.x, Position.y),
                     dir1,
                     atan2(dir1.y, dir1.x),
@@ -317,7 +327,7 @@ void EjojoBoss::PerformAttack() {
                 )
             );
             scene->EnemyBulletGroup->AddNewObject(
-                new EnemyFireBullet(
+                new EnemyRedBullet(
                     Engine::Point(Position.x, Position.y),
                     dir2,
                     atan2(dir2.y, dir2.x),
@@ -338,7 +348,7 @@ void EjojoBoss::PerformAttack() {
             float variedAngle = baseAngle + (angle - ALLEGRO_PI/2) * 0.7f;
 
             scene->EnemyBulletGroup->AddNewObject(
-                new EnemyFireBullet(
+                new EnemyRedBullet(
                     Engine::Point(Position.x, Position.y),
                     Engine::Point(cos(variedAngle), sin(variedAngle)),
                     variedAngle,
@@ -354,7 +364,7 @@ void EjojoBoss::PerformAttack() {
         float spacing = Size.y / 8;
         for (int i = -6; i <= 6; i++) {
             scene->EnemyBulletGroup->AddNewObject(
-                new EnemyFireBullet(
+                new EnemyRedBullet(
                     Engine::Point(Position.x, Position.y + i*spacing),
                     Engine::Point(-1, i*0.1f), // Slight fan out
                     atan2(i*0.1f, -1),
@@ -371,7 +381,7 @@ void EjojoBoss::PerformAttack() {
             Engine::Point dir(-0.8f - 0.2f*abs(cos(angle)), sin(angle)*0.6f);
 
             scene->EnemyBulletGroup->AddNewObject(
-                new EnemyFireBullet(
+                new EnemyRedBullet(
                     Engine::Point(Position.x, Position.y),
                     dir,
                     atan2(dir.y, dir.x),
@@ -617,6 +627,13 @@ void EjojoBoss::HandleCrashSequence(float deltaTime) {
             // Countdown to removal
             crashShakeTimer -= deltaTime;
             if (crashShakeTimer <= 0) {
+                getPlayScene()->MapId++;
+                getPlayScene()->EnemyGroup->RemoveObject(GetObjectIterator());
+                Engine::GameEngine::GetInstance().ChangeScene("story");
+
+                PlayScene::total_money += this->money;
+
+                //this 3 lines is for updating the profile.
                 auto scene = getPlayScene();
                 scene->MapId++;
 
