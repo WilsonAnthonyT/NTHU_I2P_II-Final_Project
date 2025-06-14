@@ -39,5 +39,5 @@ void WinScene::Update(float deltaTime) {
 }
 void WinScene::ReturnOnClick(int stage) {
     // Change to select scene.
-    Engine::GameEngine::GetInstance().ChangeScene("leaderboard");
+    Engine::GameEngine::GetInstance().ChangeScene("start");
 }

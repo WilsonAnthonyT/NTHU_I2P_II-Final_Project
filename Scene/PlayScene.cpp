@@ -267,8 +267,7 @@ void PlayScene::Initialize() {
     }
 
     else if (MapId == 3) {
-        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-1.png");
-        backgroundIMG2 = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-2.png");
+        backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-3.png");
         dialogs.push_back({
             "Wow, this ship is enormous!",
             3.0f,
@@ -819,6 +818,7 @@ void PlayScene::ReadMap() {
             case '>': mapData.push_back('>'); break;
             case '8': mapData.push_back('8'); break;
             case '9': mapData.push_back('9'); break;
+            case '7': mapData.push_back('7'); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -845,6 +845,9 @@ void PlayScene::ReadMap() {
                     mapState[i][j]=TILE_DIRT;
                     break;
                 case '2':
+                    mapState[i][j]=TILE_WPLATFORM;
+                    break;
+                case '7':
                     mapState[i][j]=TILE_WPLATFORM;
                     break;
                 case 'B':
@@ -950,6 +953,10 @@ void PlayScene::ReadMap() {
                 //     TileMapGroup->AddNewObject(new Engine::Image("play/platform-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
                 // else if (mapData[idx-1]=='2'||mapData[idx+1]=='2')
                 //     TileMapGroup->AddNewObject(new Engine::Image("play/platform-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }
+            else if (num=='7') {
+                TileMapGroup->AddNewObject(new Engine::Image("play/tool-base.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize/6));
+                TileMapGroup->AddNewObject(new Engine::Image("play/platform-steel.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize/6));
             }
             else if (num == 'B') {
                 Engine::Point SpawnCoordinate = Engine::Point( j * BlockSize + BlockSize/2, i * BlockSize);

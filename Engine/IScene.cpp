@@ -15,37 +15,10 @@ namespace Engine {
     void IScene::Terminate() {
         Clear();
     }
+
     void IScene::Draw() const {
         auto scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetActiveScene());
         al_clear_to_color(al_map_rgb(0, 0, 0));
-        if (scene && scene->MapId == 3) {
-            if (backgroundIMG && backgroundIMG2) {
-                const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
-                const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
-
-                // Get background dimensions
-                const int bgWidth1 = al_get_bitmap_width(backgroundIMG.get());
-                const int bgHeight1 = al_get_bitmap_height(backgroundIMG.get());
-                const int bgWidth2 = al_get_bitmap_width(backgroundIMG2.get());
-                const int bgHeight2 = al_get_bitmap_height(backgroundIMG2.get());
-
-                // Determine which background to draw
-                for (float x = 0; x < PlayScene::MapWidth * PlayScene::BlockSize; x += PlayScene::BlockSize * 16) {
-                    ALLEGRO_BITMAP* bgToDraw = (static_cast<int>(x / (PlayScene::BlockSize * 16)) % 2 == 0) ? backgroundIMG.get() : backgroundIMG2.get();
-
-                    al_draw_scaled_bitmap(
-                        bgToDraw,               // Source bitmap
-                        0, 0,                   // Source X, Y
-                        (bgToDraw == backgroundIMG.get() ? bgWidth1 : bgWidth2),
-                        (bgToDraw == backgroundIMG.get() ? bgHeight1 : bgHeight2),
-                        x, PlayScene::Camera.y, // Destination X, Y
-                        PlayScene::BlockSize * 16, PlayScene::BlockSize * 10, // Destination width, height
-                        0                       // Flags (0 = no blending)
-                    );
-                }
-            }
-        }
-        else {
             if (backgroundIMG) {
                 const int screenW = Engine::GameEngine::GetInstance().GetScreenWidth();
                 const int screenH = Engine::GameEngine::GetInstance().GetScreenHeight();
@@ -76,9 +49,7 @@ namespace Engine {
                         1.5f
                     );
                 }
-
             }
-        }
 
         if (DebugMode) {
             const int block = Engine::GameEngine::GetInstance().GetScreenWidth() / 16;
@@ -92,6 +63,7 @@ namespace Engine {
         }
         Group::Draw();
     }
+
     void IScene::OnKeyDown(int keyCode) {
         if (keyCode == ALLEGRO_KEY_TAB) {
             DebugMode = !DebugMode;
