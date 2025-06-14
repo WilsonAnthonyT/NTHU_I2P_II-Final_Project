@@ -398,13 +398,13 @@ void PlayScene::Initialize() {
     if (MapId == 1 || MapId == 2 || MapId == 4 || MapId == 6) {
         // Player 1 health bar
         float padding = BlockSize /12;
-        float headSize = BlockSize;
+        float headSize = BlockSize*0.8;
         float healthBarWidth = BlockSize * 3;
-        float healthBarHeight = BlockSize/2;
+        float healthBarHeight = BlockSize/3;
         if (player1) {
             healthBarP1.head = new Engine::Image("play/bryanhead.png", 0, 0, headSize, headSize);
-            healthBarP1.fg = new Engine::Image("play/green.png", 0, 0, healthBarWidth, healthBarHeight);
-            healthBarP1.bg = new Engine::Image("play/red.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP1.fg = new Engine::Image("play/healthbar_full.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP1.bg = new Engine::Image("play/healthbar_empty.png", 0, 0, healthBarWidth, healthBarHeight);
             healthBarP1.player = player1;
             healthBarP1.isPlayer1 = true;
 
@@ -416,8 +416,8 @@ void PlayScene::Initialize() {
         // Player 2 health bar
         if (player2) {
             healthBarP2.head = new Engine::Image("play/arwenhead.png", 0, 0, headSize, headSize);
-            healthBarP2.fg = new Engine::Image("play/green.png", 0, 0, healthBarWidth, healthBarHeight);
-            healthBarP2.bg = new Engine::Image("play/red.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP2.fg = new Engine::Image("play/healthbar_full.png", 0, 0, healthBarWidth, healthBarHeight);
+            healthBarP2.bg = new Engine::Image("play/healthbar_empty.png", 0, 0, healthBarWidth, healthBarHeight);
 
             healthBarP2.player = player2;
             healthBarP2.isPlayer1 = false;
@@ -2165,17 +2165,17 @@ void PlayScene::RemovePlayer(Player* player) {
 }
 
 void PlayScene::UpdateHealthBarPositions() {
-    float padding = BlockSize /12;
-    float headSize = BlockSize;
+    float padding = BlockSize *0.1;
+    float headSize = BlockSize*0.8;
     float healthBarWidth = BlockSize * 3;
-    float healthBarHeight = BlockSize/2;
+    float healthBarHeight = BlockSize/3;
 
     float yPos = padding;
 
     // Update Player 1 health bar
     if (player1) {
         healthBarP1.head->Position = Engine::Point(Camera.x+padding,Camera.y + yPos);
-        healthBarP1.bg->Position = Engine::Point(Camera.x+padding + headSize + padding,Camera.y + yPos + (headSize - healthBarHeight)/2);
+        healthBarP1.bg->Position = Engine::Point(Camera.x + headSize,Camera.y + yPos + BlockSize/2.5);
         healthBarP1.fg->Position = healthBarP1.bg->Position;
         healthBarP1.fg->Size.x = healthBarWidth * (player1->hp / player1->MaxHp);
         std::cout << (player1->hp / player1->MaxHp) << std::endl;
@@ -2185,13 +2185,13 @@ void PlayScene::UpdateHealthBarPositions() {
         healthBarP1.bg->Visible = player1->Visible;
         healthBarP1.fg->Visible = player1->Visible;
 
-        yPos += headSize + padding;
+        yPos += headSize + 2*padding;
     }
 
     // Update Player 2 health bar
     if (player2) {
         healthBarP2.head->Position = Engine::Point( Camera.x + padding,Camera.y + yPos);
-        healthBarP2.bg->Position = Engine::Point(Camera.x + padding + headSize + padding,Camera.y + yPos + (headSize - healthBarHeight)/2);
+        healthBarP2.bg->Position = Engine::Point(Camera.x + headSize,Camera.y + yPos + BlockSize/2.5);
         healthBarP2.fg->Position = healthBarP2.bg->Position;
         healthBarP2.fg->Size.x = healthBarWidth * (player2->hp / player2->MaxHp);
 
