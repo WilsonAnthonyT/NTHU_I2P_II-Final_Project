@@ -393,13 +393,13 @@ void PlayScene::Initialize() {
     //for specific
     TotalMiniEjojo = 0;
     TotalArcherSkelly = 0;
-    const float healthBarWidth = 200;
-    const float healthBarHeight = 20;
-    const float padding = 10;
-    const float headSize = 40;
 
     if (MapId == 1 || MapId == 2 || MapId == 4 || MapId == 6) {
         // Player 1 health bar
+        float padding = BlockSize /12;
+        float headSize = BlockSize;
+        float healthBarWidth = BlockSize * 3;
+        float healthBarHeight = BlockSize/2;
         if (player1) {
             healthBarP1.head = new Engine::Image("play/bryanhead.png", 0, 0, headSize, headSize);
             healthBarP1.fg = new Engine::Image("play/green.png", 0, 0, healthBarWidth, healthBarHeight);
@@ -445,6 +445,7 @@ void PlayScene::Terminate() {
     IScene::Terminate();
 }
 void PlayScene::Update(float deltaTime) {
+
     float clampedDT = std::min(deltaTime, Engine::GameEngine::GetInstance().GetDeltaTimeThreshold());
     total_time += clampedDT;
 
@@ -453,6 +454,8 @@ void PlayScene::Update(float deltaTime) {
             transitionTick += deltaTime;
             if (transitionTick >= desiredTransitionTick) {
                 MapId++;
+
+                //this 3 lines is for updating the profile.
                 if (SelectProfileScene::isSaved) {
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = MapId;
@@ -461,6 +464,7 @@ void PlayScene::Update(float deltaTime) {
                     delete newdata;
                 }
                 //----------------------------------------
+
                 Engine::GameEngine::GetInstance().ChangeScene("story");
                 return;
             }
@@ -504,7 +508,9 @@ void PlayScene::Update(float deltaTime) {
             p.x = rand() % (PlayScene::MapWidth * PlayScene::BlockSize);
         }
     }
-
+    if (MapId==1||MapId==2||MapId==4||MapId==6) {
+        UpdateHealthBarPositions();
+    }
     BulletGroup->Update(deltaTime);
     if (currentState != GameState::Dialog)EnemyBulletGroup->Update(deltaTime);
     WeaponGroup->Update(deltaTime);
@@ -513,8 +519,6 @@ void PlayScene::Update(float deltaTime) {
     DamageTextGroup->Update(deltaTime);
     EffectGroup->Update(deltaTime);
     InteractiveBlockGroup->Update(deltaTime);
-
-    UpdateHealthBarPositions();
 
     //players
     std::vector<Player*> players;
@@ -638,7 +642,7 @@ void PlayScene::Update(float deltaTime) {
             }
         }
     }
-    const float healthBarWidth = 200; // Match initialization width
+    float healthBarWidth = BlockSize * 3; // Match initialization width
 
     // Player 1 health bar update
     if (player1 && healthBarP1.fg) {
@@ -686,11 +690,10 @@ void PlayScene::Draw() const {
     EffectGroup->Draw();
     EnemyBulletGroup->Draw();
     HealthBarGroup->Draw();
+
     al_identity_transform(&trans);
     al_use_transform(&trans);
     // Draw UI elements (health bars, minimap, etc.)
-
-     // Draws all health bar components
     //for map debug
     if((MapId == 5 && DebugMode) || (MapId != 5)) {
         Map_btn->Enabled = true;
@@ -2116,19 +2119,21 @@ void PlayScene::RemovePlayer(Player* player) {
 }
 
 void PlayScene::UpdateHealthBarPositions() {
-    const float padding = 10;
-    const float headSize = 40;
-    const float healthBarWidth = 200;
-    const float healthBarHeight = 20;
+    float padding = BlockSize /12;
+    float headSize = BlockSize;
+    float healthBarWidth = BlockSize * 3;
+    float healthBarHeight = BlockSize/2;
 
     float yPos = padding;
 
     // Update Player 1 health bar
     if (player1) {
-        healthBarP1.head->Position = Engine::Point(Camera.x+padding, Camera.y+yPos);
-        healthBarP1.bg->Position = Engine::Point(Camera.x+padding + headSize + padding,Camera.y+ yPos + (headSize - healthBarHeight)/2);
+        healthBarP1.head->Position = Engine::Point(Camera.x+padding,Camera.y + yPos);
+        healthBarP1.bg->Position = Engine::Point(Camera.x+padding + headSize + padding,Camera.y + yPos + (headSize - healthBarHeight)/2);
         healthBarP1.fg->Position = healthBarP1.bg->Position;
         healthBarP1.fg->Size.x = healthBarWidth * (player1->hp / player1->MaxHp);
+        std::cout << (player1->hp / player1->MaxHp) << std::endl;
+        healthBarP1.bg->Size.x = healthBarWidth;
 
         healthBarP1.head->Visible = player1->Visible;
         healthBarP1.bg->Visible = player1->Visible;
@@ -2139,8 +2144,8 @@ void PlayScene::UpdateHealthBarPositions() {
 
     // Update Player 2 health bar
     if (player2) {
-        healthBarP2.head->Position = Engine::Point(Camera.x+padding, Camera.y+yPos);
-        healthBarP2.bg->Position = Engine::Point(Camera.x+padding + headSize + padding, Camera.y+yPos + (headSize - healthBarHeight)/2);
+        healthBarP2.head->Position = Engine::Point( Camera.x + padding,Camera.y + yPos);
+        healthBarP2.bg->Position = Engine::Point(Camera.x + padding + headSize + padding,Camera.y + yPos + (headSize - healthBarHeight)/2);
         healthBarP2.fg->Position = healthBarP2.bg->Position;
         healthBarP2.fg->Size.x = healthBarWidth * (player2->hp / player2->MaxHp);
 
