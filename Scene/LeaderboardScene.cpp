@@ -28,7 +28,7 @@ void LeaderboardScene::Initialize() {
     float Blocksize = W/16;
     backgroundIMG = Engine::Resources::GetInstance().GetBitmap("play/shipbackground-2.png");
     AddNewObject(new Engine::Label("enter your name", "pirulen.ttf", Blocksize/3, halfW, Blocksize*3, 255, 255, 255, 255, 0.5,1));
-    AddNewObject(new Engine::Label("press [enter] to save", "pirulen.ttf", Blocksize/4, halfW-3, 5.65*Blocksize, 105, 255, 255, 185, 0.5, 0.5));
+    AddNewObject(new Engine::Label("press [enter] to save", "pirulen.ttf", Blocksize/4, halfW-3, halfH + 0.5*Blocksize, 105, 255, 255, 185, 0.5, 0.5));
 
     Engine::ImageButton *btn;
     btn = new Engine::ImageButton("start/button.png", "stage-select/floor.png", halfW - 2*Blocksize, H-3*Blocksize, 4*Blocksize, Blocksize);
