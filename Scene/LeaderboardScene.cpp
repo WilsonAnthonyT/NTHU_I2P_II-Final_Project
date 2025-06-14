@@ -151,7 +151,7 @@ void LeaderboardScene::Draw() const {
     ALLEGRO_FONT *font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", Blocksize / 2).get();
     al_draw_textf(
         font, al_map_rgb(76, 64, 45),
-        halfW, 4.25 * Blocksize,
+        halfW, halfH - Blocksize*0.875,
         ALLEGRO_ALIGN_CENTER,
         "%s", Name.c_str()
     );
