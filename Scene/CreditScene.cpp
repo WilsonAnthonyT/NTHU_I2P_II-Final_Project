@@ -159,7 +159,7 @@ void CreditScene::Initialize() {
     creditGroup->AddNewObject(new Engine::Image(
         "start/arwenreal.jpg", PlayScene::BlockSize*2.5, currentY,
         PlayScene::BlockSize*3, PlayScene::BlockSize*3, 0.5, 0.5));
-    currentY += PlayScene::BlockSize * 2f;
+    currentY += PlayScene::BlockSize * 2.f;
     // Final thank you
     creditGroup->AddNewObject(new Engine::Label(
         "THANK YOU FOR PLAYING!", "pirulen.ttf", PlayScene::BlockSize/2,

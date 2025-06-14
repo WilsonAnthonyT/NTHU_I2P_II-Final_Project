@@ -603,6 +603,10 @@ void PlayScene::Update(float deltaTime) {
         isCamLocked = true;
     }
 
+    if (isCamLocked && enemyWave.empty()) {
+        isCamLocked = false;
+    }
+
     if (isCamLocked && !enemyWave.empty()) {
         Enemy *enemy;
         if (waveEnemy_index == -1) waveEnemy_index = 0;
@@ -613,7 +617,10 @@ void PlayScene::Update(float deltaTime) {
             waveEnemy_delay = enemyWave[idx].cooldown;
             waveEnemy_spawnCount--;
 
-            float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : Camera.x + screenWidth + 1.0f * BlockSize;
+            float spawn_x;
+            if (MapId == 1) spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 1.0f * BlockSize;
+            else if (MapId == 4) spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 15 * BlockSize;
+
             float spawn_y;
             if (MapId == 1) spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
             else if (MapId == 4) spawn_y = (enemyWave[idx].position_y) * BlockSize;
@@ -622,7 +629,7 @@ void PlayScene::Update(float deltaTime) {
 
             switch (static_cast<int>(enemyWave[idx].type)) {
             case 1:
-                EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
+                EnemyGroup->AddNewObject(enemy = new SoldierEnemy(spawn_x, spawn_y));
                 break;
             case 2:
             case 3:
