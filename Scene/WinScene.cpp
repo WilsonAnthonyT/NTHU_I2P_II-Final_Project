@@ -10,6 +10,13 @@
 #include "UI/Component/Label.hpp"
 #include "WinScene.hpp"
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
+#include "SelectProfileScene.h"
+#include "StageSelectScene.hpp"
+
 void WinScene::Initialize() {
     ticks = 0;
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -38,6 +45,58 @@ void WinScene::Update(float deltaTime) {
     }
 }
 void WinScene::ReturnOnClick(int stage) {
-    // Change to select scene.
-    Engine::GameEngine::GetInstance().ChangeScene("start");
+    if (SelectProfileScene::isSaved && !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) {
+
+        //UPDATE PROFILE --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        std::time_t now = std::time(nullptr);
+
+        // Convert to local time
+        std::tm tm{};
+
+        #ifdef _WIN32
+            localtime_s(&tm, &now);  // Windows
+        #else
+            localtime_r(&now, &tm);  // Linux / macOS
+        #endif
+
+        // Format date with slashes: YYYY/MM/DD
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+        std::string date_time = oss.str();
+
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Last_Played = date_time;
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration = std::to_string(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration) + PlayScene::total_time);
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin = true;
+        SelectProfileScene::WriteProfileData(nullptr);
+        //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        //SAVE TO LEADERBOARD ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        const int total_points = static_cast<int>(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Coins) * 3600.0f / std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration));
+
+        setScore(total_points);
+        std::string Name = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Name;
+        std::string dur = SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration;
+
+        std::string filename = "../Resource/scoreboard.txt";
+        std::ofstream ofs(filename, std::ios_base::app);
+
+        if (ofs.is_open()) {
+
+            ofs
+            << Name << "~"
+            << std::to_string(score) << "~"
+            << dur << std::endl;
+
+            ofs.close();
+        } else {
+            std::cerr << "[ERROR] Could not open scoreboard.txt for writing!" << std::endl;
+        }
+        //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    }
+
+    Engine::GameEngine::GetInstance().ChangeScene("scoreboard");
+}
+
+void WinScene::setScore(int scr) {
+    score = scr;
 }

@@ -20,6 +20,8 @@ public:
         std::string Duration;
         std::string Coins;
         std::string Stage;
+
+        bool isWin = false;
     };
     static std::vector<ProfileData> playerData;
 
@@ -33,6 +35,7 @@ public:
     struct textData {
         int level;
         int coin_counts;
+        int col_counts;
     };
 
     //static textData* ReadProfileData(const int);

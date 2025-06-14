@@ -63,6 +63,7 @@ namespace Engine {
     class ImageButton;
 }
 
+float PlayScene::total_time = 0.000f;
 int PlayScene::MapWidth = 0, PlayScene::MapHeight = 0;
 bool pressed;
 Engine::Point PlayScene::Camera;
@@ -456,16 +457,17 @@ void PlayScene::Update(float deltaTime) {
                 MapId++;
 
                 //this 3 lines is for updating the profile.
-                if (SelectProfileScene::isSaved) {
+                if (SelectProfileScene::isSaved && !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) {
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = MapId;
                     newdata->coin_counts = total_money;
                     SelectProfileScene::WriteProfileData(newdata);
-                    delete newdata;
                 }
                 //----------------------------------------
 
-                Engine::GameEngine::GetInstance().ChangeScene("story");
+                if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
+
                 return;
             }
         }
@@ -533,7 +535,29 @@ void PlayScene::Update(float deltaTime) {
 
     for (auto& it : players) {
         if (it->hp <= 0) {
-            PlayerGroup->RemoveObject(it->GetObjectIterator());
+            //PlayerGroup->RemoveObject(it->GetObjectIterator());
+            if (SelectProfileScene::isSaved) {
+                std::time_t now = std::time(nullptr);
+
+                // Convert to local time
+                std::tm tm{};
+
+                #ifdef _WIN32
+                    localtime_s(&tm, &now);  // Windows
+                #else
+                    localtime_r(&now, &tm);  // Linux / macOS
+                #endif
+
+                // Format date with slashes: YYYY/MM/DD
+                std::ostringstream oss;
+                oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+                std::string date_time = oss.str();
+
+                SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Last_Played = date_time;
+                SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration = std::to_string(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration) + total_time);
+                SelectProfileScene::WriteProfileData(nullptr);
+            }
+
             Engine::GameEngine::GetInstance().ChangeScene("lose");
         }
     }
@@ -565,7 +589,7 @@ void PlayScene::Update(float deltaTime) {
             float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 1.0f * BlockSize;
             float spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
 
-            std::cout << "Posisi SPAWN: " << enemyWave[idx].position_y << std::endl;
+            //std::cout << "Posisi SPAWN: " << enemyWave[idx].position_y << std::endl;
 
             switch (static_cast<int>(enemyWave[idx].type)) {
             case 1:
@@ -629,16 +653,19 @@ void PlayScene::Update(float deltaTime) {
                 MapId++;
 
                 //this 3 lines is for updating the profile.
-                if (SelectProfileScene::isSaved) {
+                if (SelectProfileScene::isSaved && !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) {
                     auto* newdata = new SelectProfileScene::textData();
                     newdata->level = MapId;
                     newdata->coin_counts = total_money;
                     SelectProfileScene::WriteProfileData(newdata);
-                    delete newdata;
+                }
+                else {
+
                 }
                 //----------------------------------------
 
-                Engine::GameEngine::GetInstance().ChangeScene("story");
+                if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
             }
         }
     }
@@ -775,12 +802,8 @@ void PlayScene::OnKeyDown(int keyCode) {
     }
 }
 
-int PlayScene::GetMoney() const {
-    return total_money;
-}
-
 void PlayScene::EarnMoney(int m) {
-    this->total_money += m;
+    total_money += m;
 }
 
 void PlayScene::ReadMap() {
@@ -1837,6 +1860,29 @@ void PlayScene::ContinueOnClick(int state) {
 
 void PlayScene::RestartOnClick(int state) {
     IsPaused = false;
+
+    if (SelectProfileScene::isSaved) {
+        std::time_t now = std::time(nullptr);
+
+        // Convert to local time
+        std::tm tm{};
+
+        #ifdef _WIN32
+            localtime_s(&tm, &now);  // Windows
+        #else
+            localtime_r(&now, &tm);  // Linux / macOS
+        #endif
+
+        // Format date with slashes: YYYY/MM/DD
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
+        std::string date_time = oss.str();
+
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Last_Played = date_time;
+        SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration = std::to_string(std::stof(SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].Duration) + total_time);
+        SelectProfileScene::WriteProfileData(nullptr);
+    }
+
     Engine::GameEngine::GetInstance().ChangeScene("play");
 }
 //volume

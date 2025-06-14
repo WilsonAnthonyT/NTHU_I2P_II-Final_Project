@@ -273,16 +273,16 @@ void ArcherSkelly::UpdateAnimation(float deltaTime) {
         currentFrameDuration = &attackFrameDuration;
         looping = true;  // Attacks shouldn't loop
     }
-    else if (isJumping || isFalling || std::abs(VelocityX) > 0.1f) {
-        currentState = WALKING;
-        currentAnimation = &walkAnimation;
-        currentFrameDuration = &walkFrameDuration;
-    }
-    else {
-        currentState = IDLE;
-        currentAnimation = &idleAnimation;
-        currentFrameDuration = &idleFrameDuration;
-    }
+    // else if (isJumping || isFalling || std::abs(VelocityX) > 0.1f) {
+    //     currentState = WALKING;
+    //     currentAnimation = &walkAnimation;
+    //     currentFrameDuration = &walkFrameDuration;
+    // }
+    // else {
+    //     currentState = IDLE;
+    //     currentAnimation = &idleAnimation;
+    //     currentFrameDuration = &idleFrameDuration;
+    // }
 
     // Update animation frames
     if (currentAnimation && !currentAnimation->empty()) {
@@ -325,8 +325,7 @@ void ArcherSkelly::UpdateAnimation(float deltaTime) {
         currentFrame >= deathAnimation.size() - 1)
     {
         getPlayScene()->TotalArcherSkelly--;
-        auto *scene = getPlayScene();
-        scene->EnemyGroup->RemoveObject(this->GetObjectIterator());
+        Enemy::OnDeath();
     }
 }
 

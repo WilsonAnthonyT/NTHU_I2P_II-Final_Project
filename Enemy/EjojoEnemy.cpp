@@ -14,7 +14,7 @@
 #include "UI/Animation/ExplosionEffect.hpp"
 #include "UI/Animation/LightEffect.h"
 
-EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 10, 5, 5, 10),
+EjojoEnemy::EjojoEnemy(std::string img, int x, int y) : FlyingEnemy(img, x, y, 500, 100.0f, 200, 5, 5, 10),
                                        rng(std::random_device{}()) {
     Size = Engine::Point(PlayScene::BlockSize*4, PlayScene::BlockSize*2);
     fixedAltitude = PlayScene::BlockSize * 8;
@@ -103,17 +103,19 @@ void EjojoEnemy::Update(float deltaTime) {
                 if (scene->transitionTick >= scene->desiredTransitionTick) {
                     scene->MapId++;
 
+                    PlayScene::total_money += this->money;
+
                     //this 3 lines is for updating the profile.
-                    if (SelectProfileScene::isSaved) {
+                    if (SelectProfileScene::isSaved && !SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) {
                         auto* newdata = new SelectProfileScene::textData();
                         newdata->level = scene->MapId;
-                        newdata->coin_counts = scene->GetMoney();
+                        newdata->coin_counts = PlayScene::total_money;
                         SelectProfileScene::WriteProfileData(newdata);
-                        delete newdata;
                     }
                     //----------------------------------------
 
-                    Engine::GameEngine::GetInstance().ChangeScene("story");
+                    if (!SelectProfileScene::playerData[SelectProfileScene::getProfileID()-1].isWin) Engine::GameEngine::GetInstance().ChangeScene("story");
+                    else Engine::GameEngine::GetInstance().ChangeScene("stage-select");
                     return;
                 }
             }

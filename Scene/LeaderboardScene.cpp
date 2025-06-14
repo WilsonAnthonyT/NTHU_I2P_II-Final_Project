@@ -18,7 +18,6 @@
 #include "PlayScene.hpp"
 #include "SelectProfileScene.h"
 
-int LeaderboardScene::val = 0;
 bool SelectProfileScene::isSaved = false;
 
 void LeaderboardScene::Initialize() {
@@ -76,6 +75,7 @@ void LeaderboardScene::OnKeyDown(int keyCode) {
         player_data.Duration = "0";
         player_data.Coins = "0";
         player_data.Stage = "1";
+        player_data.isWin = false;
 
         Name.clear();
         dateNtime.clear();
@@ -87,18 +87,20 @@ void LeaderboardScene::OnKeyDown(int keyCode) {
             ofs
             << "# everything related to the profile will be saved here" << std::endl
             << "# Name ~ date created ~ last played ~ Screen time ~ last stage" << std::endl
-            << "# MAX data 3" << std::endl
+            << "# MAX data 4" << std::endl
             << std::endl;
 
 
             for (auto& it : SelectProfileScene::playerData) {
+                std::string tmp = (it.isWin)? "1" : "0";
                 ofs
                 << it.Name << "~"
                 << it.Created << "~"
                 << it.Last_Played << "~"
                 << it.Duration << "~"
                 << it.Coins << "~"
-                << it.Stage << std::endl;
+                << it.Stage << "~"
+                << tmp << std::endl;
             }
 
             ofs.close();
@@ -123,46 +125,11 @@ void LeaderboardScene::Update(float deltaTime) {
     if (tick > 1) {
         tick--;
     }
-    // else if (tick == 1) {
-    //     tick = 0;
-    //     setScore();
-    //     // Get current time
-    //     std::time_t now = std::time(nullptr);
-    //
-    //     // Convert to local time
-    //     std::tm tm;
-    //     #ifdef _WIN32
-    //             localtime_s(&tm, &now);  // Windows
-    //     #else
-    //             localtime_r(&now, &tm);  // Linux / macOS
-    //     #endif
-    //
-    //     // Format date with slashes: YYYY/MM/DD
-    //     std::ostringstream oss;
-    //     oss << std::put_time(&tm, "%Y/%m/%d  %H:%M");
-    //     dateNtime = oss.str();
-    //
-    //     ofs.open("../Resource/scoreboard.txt", std::ios_base::app);
-    //     if (ofs.is_open()) {
-    //         std::cout << "Successfully saved name: " << Name << std::endl;
-    //         ofs
-    //         << Name << " ~ "
-    //         << score << " ~ "
-    //         << dateNtime << " ~"
-    //         << std::endl;
-    //
-    //         ofs.close();
-    //     } else {
-    //         std::cerr << "[ERROR] Could not open scoreboard.txt for writing!" << std::endl;
-    //     }
-    //
-    //     Engine::GameEngine::GetInstance().ChangeScene("start");
-    // }
 
     else if (tick == 1) {
         tick = 0;
 
-        auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
+        auto scene = dynamic_cast<PlayScene *>(Engine::GameEngine::GetInstance().GetScene("play"));
         scene->MapId = 1;
         Engine::GameEngine::GetInstance().ChangeScene("story");
     }
@@ -174,19 +141,19 @@ void LeaderboardScene::Draw() const {
     float H = Engine::GameEngine::GetInstance().GetScreenSize().y;
     float halfW = Engine::GameEngine::GetInstance().GetScreenSize().x / 2;
     float halfH = Engine::GameEngine::GetInstance().GetScreenSize().y / 2;
-    float Blocksize = W/16;
+    float Blocksize = W / 16;
 
     // Draw white rectangle
-    al_draw_filled_rectangle(halfW - 3.75*Blocksize, halfH - Blocksize, halfW + 3.75*Blocksize, halfH ,
-        al_map_rgba(255, 255, 255, 255)
+    al_draw_filled_rectangle(halfW - 3.75 * Blocksize, halfH - Blocksize, halfW + 3.75 * Blocksize, halfH,
+                             al_map_rgba(255, 255, 255, 255)
     );
 
-    ALLEGRO_FONT* font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", Blocksize/4).get();
+    ALLEGRO_FONT *font = Engine::Resources::GetInstance().GetFont("pirulen.ttf", Blocksize / 4).get();
     al_draw_textf(
         font, al_map_rgb(76, 64, 45),
-        halfW, 4*Blocksize,
+        halfW, 4 * Blocksize,
         ALLEGRO_ALIGN_CENTER,
-        "%s" ,Name.c_str()
+        "%s", Name.c_str()
     );
 
     if (tick > 0) {
@@ -202,7 +169,8 @@ void LeaderboardScene::Terminate() {
 }
 
 void LeaderboardScene::DontSaveOnClick(int stage) {
-    // Change to select scene.
+    Name.clear();
+
     SelectProfileScene::isSaved = false;
     auto scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
     scene->MapId = 1;
