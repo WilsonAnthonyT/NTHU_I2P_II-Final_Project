@@ -131,7 +131,7 @@ void PlayScene::Initialize() {
         }
     }
 
-    if (MapId == 1) {
+    if (MapId == 1 || MapId == 4) {
         ReadEnemyWave();
         waveEnemy_spawnCount = waveEnemy_index = waveEnemy_delay = -1;
     }
@@ -570,9 +570,14 @@ void PlayScene::Update(float deltaTime) {
         }
     }
 
-    const float camLock_x = MapWidth*BlockSize - BlockSize - screenWidth;
+    float camLock_x;
+    if (MapId == 1) camLock_x = MapWidth*BlockSize - BlockSize - screenWidth;
+    else if (MapId == 4) camLock_x = BlockSize * 18;
+
     if (MapId == 1 && EnemyGroup->GetObjects().empty() && Camera.x >= camLock_x && !isCamLocked) {
         Camera.x = camLock_x;
+        isCamLocked = true;
+    } else if (MapId == 4 && EnemyGroup->GetObjects().empty() && Camera.x >= camLock_x && Camera.y <= BlockSize*8  && !isCamLocked) {
         isCamLocked = true;
     }
 
@@ -587,12 +592,16 @@ void PlayScene::Update(float deltaTime) {
             waveEnemy_spawnCount--;
 
             float spawn_x = (enemyWave[idx].direction)? Camera.x + (-1.0f) * BlockSize : MapWidth * BlockSize - 1.0f * BlockSize;
-            float spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
+            float spawn_y;
+            if (MapId == 1) spawn_y = MapHeight * BlockSize - (enemyWave[idx].position_y) * BlockSize;
+            else if (MapId == 4) spawn_y = (enemyWave[idx].position_y) * BlockSize;
 
             //std::cout << "Posisi SPAWN: " << enemyWave[idx].position_y << std::endl;
 
             switch (static_cast<int>(enemyWave[idx].type)) {
             case 1:
+                EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
+                break;
             case 2:
             case 3:
                 EnemyGroup->AddNewObject(enemy = new SwordSkelly(spawn_x, spawn_y));
