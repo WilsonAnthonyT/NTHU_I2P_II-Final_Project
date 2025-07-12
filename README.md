@@ -9,3 +9,5 @@ There are exactly 6 levels with 5 different gamemodes, each with it's own unique
 3. Puzzle and logic
 4. Maze
 5. Boss Fight (Cuphead's style)
+
+Time created: 1.5 weeks
